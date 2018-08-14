@@ -3,6 +3,7 @@ package com.sap.exercise.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class Connector {
 
@@ -13,9 +14,11 @@ public class Connector {
         Statement stmt;
         try {
             Class.forName("org.postgresql.Driver");
+            Properties p = new Properties();
+            p.put("user", "postgres");
+            p.put("password", "postgres");
             c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/testdb",
-                            "test", "1234");
+                    .getConnection("jdbc:postgresql://localhost:5432/postgres", p);
             System.out.println("Opened database successfully");
 
             stmt = c.createStatement();
