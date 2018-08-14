@@ -1,44 +1,65 @@
 package com.sap.exercise.dbactions;
 
 import com.sap.exercise.model.Task;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+//import org.junit.platform.runner.JUnitPlatform;
+//import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+//@RunWith(JUnitPlatform.class)
 public class TaskManagerTest {
 
-    @Rule
-    public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
-
     private Task task;
+    private static ByteArrayOutputStream out;
 
-    @Before
+    @BeforeAll
+    public static void setup() {
+        out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+    }
+
+    @AfterAll
+    public static void onEnd() {
+        System.setOut(System.out);
+    }
+
+    @BeforeEach
     public void init() {
         task = new Task();
+    }
+
+    @AfterEach
+    public void after() {
+        out.reset();
     }
 
     @Test
     @DisplayName("Database entry creation test")
     public void creationTest() {
         task.create();
-        assertEquals(systemOutRule.getLog(), "event created\n");
+        assertEquals("event created\n", out.toString());
     }
 
     @Test
     @DisplayName("Database entry updating with valid input test")
     public void updateWithValidInputTest() {
         task.update("test");
-        assertEquals(systemOutRule.getLog(), "event updated\n");
+        assertEquals("event updated\n", out.toString());
     }
 
     @Test
     @DisplayName("Database entry deletion test")
     public void deletionTest() {
         task.delete();
-        assertEquals(systemOutRule.getLog(), "event deleted\n");
+        assertEquals("event deleted\n", out.toString());
     }
 }
