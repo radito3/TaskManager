@@ -1,11 +1,11 @@
 package com.sap.exercise.model;
 
-public interface EventActions {
+public interface EventActions<T extends BaseEvent> {
     // database modification actions
 
-    <T extends BaseEvent> void create(T obj);
+    void create(T obj);
 
-    <T extends BaseEvent> void update(T obj);
+    void update(T obj);
 
-    <T extends BaseEvent> void delete(T obj);
+    void delete(T obj);
 }
