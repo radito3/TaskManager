@@ -16,28 +16,28 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class TaskTest {
 
     private Task task;
-    private static ByteArrayOutputStream out;
+//    private static ByteArrayOutputStream out;
 
-    @BeforeAll
-    public static void setup() {
-        out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-    }
-
-    @AfterAll
-    public static void onEnd() {
-        System.setOut(System.out);
-    }
+//    @BeforeAll
+//    public static void setup() {
+//        out = new ByteArrayOutputStream();
+//        System.setOut(new PrintStream(out));
+//    }
+//
+//    @AfterAll
+//    public static void onEnd() {
+//        System.setOut(System.out);
+//    }
 
     @BeforeEach
     public void init() {
         task = new Task();
     }
 
-    @AfterEach
-    public void after() {
-        out.reset();
-    }
+//    @AfterEach
+//    public void after() {
+//        out.reset();
+//    }
 
     @Test
     @DisplayName("Constructor without arguments test")
@@ -68,24 +68,24 @@ public class TaskTest {
         });
     }
 
-    @Test
-    @DisplayName("Database entry creation test")
-    public void dbCreationTest() {
-        task.create(new Task());
-        assertEquals("event created\n", out.toString());
-    }
-
-    @Test
-    @DisplayName("Database entry updating with valid input test")
-    public void updateWithValidInputTest() {
-        task.update(new Task());
-        assertEquals("event updated\n", out.toString());
-    }
-
-    @Test
-    @DisplayName("Database entry deletion test")
-    public void deletionTest() {
-        task.delete(new Task());
-        assertEquals("event deleted\n", out.toString());
-    }
+//    @Test
+//    @DisplayName("Database entry creation test")
+//    public void dbCreationTest() {
+//        task.create(new Task());
+//        assertEquals("event created\n", out.toString());
+//    }
+//
+//    @Test
+//    @DisplayName("Database entry updating with valid input test")
+//    public void updateWithValidInputTest() {
+//        task.update(new Task());
+//        assertEquals("event updated\n", out.toString());
+//    }
+//
+//    @Test
+//    @DisplayName("Database entry deletion test")
+//    public void deletionTest() {
+//        task.delete(new Task());
+//        assertEquals("event deleted\n", out.toString());
+//    }
 }

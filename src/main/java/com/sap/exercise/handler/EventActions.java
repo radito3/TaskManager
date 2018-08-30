@@ -1,4 +1,6 @@
-package com.sap.exercise.model;
+package com.sap.exercise.handler;
+
+import com.sap.exercise.model.BaseEvent;
 
 public interface EventActions<T extends BaseEvent> {
     // database modification actions
