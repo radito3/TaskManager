@@ -8,10 +8,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskTest {
 
@@ -72,24 +72,52 @@ public class TaskTest {
 
     @Test
     @DisplayName("Database entry creation test")
-    public void dbCreationTest() {
-
-
+    public void dbCreationTest() throws IOException {
         task.create();
-        assertEquals("event created\n", out.toString());
+
+        assertNotNull(task.getTask());
+
+        out.write(task.toString().getBytes());
+        assertEquals(task.getTask().toString(), out.toString());
     }
 
     @Test
-    @DisplayName("Database entry updating with valid input test")
-    public void updateWithValidInputTest() {
+    @DisplayName("Database entry updating with title only test")
+    public void updateWithTitleTest() throws IOException {
+        task.create();
+
         task.update("new title");
-        assertEquals("event updated\n", out.toString());
+
+        out.write(task.toString().getBytes());
+        assertEquals(task.getTask().toString(), out.toString());
+    }
+
+    @Test
+    @DisplayName("Database entry updating with title and body test")
+    public void updateWithTitleAndBodyTest() throws IOException {
+        task.create();
+
+        task.update("new title", "new body");
+
+        out.write(task.toString().getBytes());
+        assertEquals(task.getTask().toString(), out.toString());
+    }
+
+    @Test
+    @DisplayName("Database entry updating with invalid input test")
+    public void updateWithInvalidInputTest() {
+        task.create();
+
+        assertThrows(IllegalArgumentException.class, () -> task.update(), "Wrong amount of arguments");
     }
 
     @Test
     @DisplayName("Database entry deletion test")
     public void deletionTest() {
+        task.create();
+
         task.delete();
-        assertEquals("event deleted\n", out.toString());
+
+        assertNull(task.getTask());
     }
 }

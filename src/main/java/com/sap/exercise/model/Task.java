@@ -2,22 +2,15 @@ package com.sap.exercise.model;
 
 import com.sap.exercise.db.DatabaseUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 @Table(name = "Task")
 public class Task implements Serializable/*extends BaseEvent*/ {
 
-    @Transient
-    private AtomicInteger counter = new AtomicInteger(0);
-
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "mysql->int(11)", name = "Id", nullable = false, unique = true)
     private Integer id;
 
@@ -37,7 +30,6 @@ public class Task implements Serializable/*extends BaseEvent*/ {
     }
 
     public Task(String title, String body) {
-        setId(counter.getAndIncrement());
         setTitle(title);
         setBody(body);
     }
@@ -69,43 +61,35 @@ public class Task implements Serializable/*extends BaseEvent*/ {
     }
 
     public Task getTask() {
-        return new DatabaseUtil().getObject(s -> s.get(Task.class, getId()));
+        return new DatabaseUtil().getObject(s -> s.get(Task.class, this.getId()));
     }
 
     public void create() {
         DatabaseUtil db = new DatabaseUtil();
 
         db.processObject(s -> s.save(this));
-
-        System.out.println("event created");
     }
 
     public void update(String... vars) {
         DatabaseUtil db = new DatabaseUtil();
-        Task updated = new Task();
-        updated.setId(this.getId());
 
         if (vars.length < 1 || vars.length > 2) {
             throw new IllegalArgumentException("Wrong amount of arguments");
         }
 
-        updated.setTitle(vars[0]);
+        this.setTitle(vars[0]);
 
         if (vars.length == 2) {
-            updated.setBody(vars[1]);
+            this.setBody(vars[1]);
         }
 
-        db.processObject(s -> s.update(updated));
-
-        System.out.println("event updated");
+        db.processObject(s -> s.update(this));
     }
 
     public void delete() {
         DatabaseUtil db = new DatabaseUtil();
 
         db.processObject(s -> s.delete(this));
-
-        System.out.println("event deleted");
     }
 
     @Override
