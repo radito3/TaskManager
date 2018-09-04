@@ -1,6 +1,5 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.Main;
 import com.sap.exercise.db.DatabaseUtil;
 import com.sap.exercise.model.Task;
 

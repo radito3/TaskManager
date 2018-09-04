@@ -1,5 +1,7 @@
 package com.sap.exercise.model;
 
+import com.sap.exercise.db.DatabaseUtil;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -64,6 +66,46 @@ public class Task implements Serializable/*extends BaseEvent*/ {
     public void setBody(String body) {
         // input filters
         this.body = body;
+    }
+
+    public Task getTask() {
+        return new DatabaseUtil().getObject(s -> s.get(Task.class, getId()));
+    }
+
+    public void create() {
+        DatabaseUtil db = new DatabaseUtil();
+
+        db.processObject(s -> s.save(this));
+
+        System.out.println("event created");
+    }
+
+    public void update(String... vars) {
+        DatabaseUtil db = new DatabaseUtil();
+        Task updated = new Task();
+        updated.setId(this.getId());
+
+        if (vars.length < 1 || vars.length > 2) {
+            throw new IllegalArgumentException("Wrong amount of arguments");
+        }
+
+        updated.setTitle(vars[0]);
+
+        if (vars.length == 2) {
+            updated.setBody(vars[1]);
+        }
+
+        db.processObject(s -> s.update(updated));
+
+        System.out.println("event updated");
+    }
+
+    public void delete() {
+        DatabaseUtil db = new DatabaseUtil();
+
+        db.processObject(s -> s.delete(this));
+
+        System.out.println("event deleted");
     }
 
     @Override
