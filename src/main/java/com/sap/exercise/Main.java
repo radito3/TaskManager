@@ -1,20 +1,9 @@
 package com.sap.exercise;
 
-import com.sap.exercise.model.Task;
-
 public class Main {
 
     public static void main(String[] args) {
-        Task t1 = new Task("title1", "body1");
-        t1.create();
-        System.out.println(t1.getTask().toString());
-
-//        t1.delete();
-        t1.update("new title");
-        System.out.println(t1.getTask().toString());
-        t1.update("new title1", "new body");
-        System.out.println(t1.getTask().toString());
-
+        //TODO read from System.in
     }
 
     private void displayCalendar() {

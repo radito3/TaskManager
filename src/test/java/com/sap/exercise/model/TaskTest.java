@@ -68,8 +68,6 @@ public class TaskTest {
         });
     }
 
-    //TODO fix db modification tests
-
     @Test
     @DisplayName("Database entry creation test")
     public void dbCreationTest() throws IOException {

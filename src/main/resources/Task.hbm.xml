@@ -10,12 +10,12 @@
             This class represents a basic task
         </meta>
 
-        <id name = "Id" type = "int" column = "Id">
-            <generator class="native"/>
-        </id>
+        <!--<id name = "Id" type = "int" column = "Id">-->
+            <!--<generator class="native"/>-->
+        <!--</id>-->
 
-        <property name = "title" type = "string" column = "Title" />
-        <property name = "body" type = "text" column = "Body" />
+        <!--<property name = "title" type = "string" column = "Title" />-->
+        <!--<property name = "body" type = "text" column = "Body" />-->
 
     </class>
 </hibernate-mapping>
