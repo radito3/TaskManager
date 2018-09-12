@@ -58,7 +58,7 @@ public class DatabaseUtil {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new HibernateException("Something went wrong", e);
+            throw new HibernateException("Something went wrong", e); //maybe something more descriptive
         }
 
         return null;

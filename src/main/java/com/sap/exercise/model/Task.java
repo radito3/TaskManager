@@ -45,6 +45,7 @@ public class Task extends BaseEvent implements Serializable {
         setDuration(duration);
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
