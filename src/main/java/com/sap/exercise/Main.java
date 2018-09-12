@@ -1,6 +1,7 @@
 package com.sap.exercise;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.parser.InputParser;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,66 +9,11 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        //TODO read from System.in
+        DatabaseUtilFactory.createDbClient();
+        InputParser.run(System.in);
 
-//        DatabaseUtilFactory.createDbClient();
-
-        Logger logger = Logger.getLogger(Main.class.getName());
-        logger.log(Level.FINE, "test log");
-//        System.out.println("%h: " + System.getProperty("user.home"));
-    }
-
-    private void displayCalendar() {
-        int Y = 2018;    // year
-        int startDayOfMonth = 1;
-        int spaces = startDayOfMonth;
-
-        // months[i] = name of month i
-        String[] months = {
-                "",                               // leave empty so that we start with months[1] = "January"
-                "January", "February", "March",
-                "April", "May", "June",
-                "July", "August", "September",
-                "October", "November", "December"
-        };
-
-        // days[i] = number of days in month i
-        int[] days = {
-                0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-        };
-
-        for (int M = 1; M <= 12; M++) {
-
-            // check for leap year
-            if  ((((Y % 4 == 0) && (Y % 100 != 0)) ||  (Y % 400 == 0)) && M == 2) {
-                days[M] = 29;
-            }
-
-            // print calendar header
-            // Display the month and year
-            System.out.println("          " + months[M] + " " + Y);
-
-            // Display the lines
-            System.out.println("____________________________________");
-            System.out.println("  Sun  Mon  Tue  Wed  Thu  Fri  Sat");
-
-            // spaces required
-            spaces = (days[M-1] + spaces)%7;
-
-            // print the calendar
-            for (int i = 0; i < spaces; i++) {
-                System.out.print("     ");
-            }
-
-            for (int i = 1; i <= days[M]; i++) {
-                System.out.printf(" %3d ", i);
-                if (((i + spaces) % 7 == 0) || (i == days[M])) {
-                    System.out.println();
-                }
-            }
-
-            System.out.println();
-        }
+//        Logger logger = Logger.getLogger(Main.class.getName());
+//        logger.log(Level.FINE, "test log");
     }
 
 }

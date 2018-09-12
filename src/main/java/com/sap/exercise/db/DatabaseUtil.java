@@ -1,5 +1,6 @@
 package com.sap.exercise.db;
 
+import com.sap.exercise.model.BaseEvent;
 import com.sap.exercise.model.Task;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -16,7 +17,6 @@ public class DatabaseUtil {
 
     private SessionFactory factory;
 
-    //need to limit the instances and connections
     public DatabaseUtil() {
         Configuration configuration = new Configuration()
                 .configure("hibernate.cfg.xml")
@@ -32,8 +32,12 @@ public class DatabaseUtil {
         processObject(consumer, null);
     }
 
-    public <T> T getObject(Function<Session, T> function) {
+    public <T extends BaseEvent> T getObject(Function<Session, T> function) {
         return processObject(null, function);
+    }
+
+    public void closeConnection() {
+        factory.close();
     }
 
     private <T> T processObject(Consumer<Session> consumer, Function<Session, T> function) {
@@ -54,7 +58,7 @@ public class DatabaseUtil {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new HibernateException("Something went wrongs", e);
+            throw new HibernateException("Something went wrong", e);
         }
 
         return null;

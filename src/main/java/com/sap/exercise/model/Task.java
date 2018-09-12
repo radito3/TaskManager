@@ -1,9 +1,9 @@
 package com.sap.exercise.model;
 
-import com.sap.exercise.db.DatabaseUtil;
-
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "Task")
@@ -20,6 +20,12 @@ public class Task extends BaseEvent implements Serializable {
     @Column(columnDefinition = "mysql->text", name = "Body", nullable = false)
     private String body;
 
+    @Column(columnDefinition = "mysql->tinyint(1)", name = "AllDay", nullable = false)
+    private Boolean allDay;
+
+    @Column(columnDefinition = "mysql->time", name = "Duration", nullable = false)
+    private Time duration;
+
     public Task() {
         this("task title", "task body");
     }
@@ -29,8 +35,14 @@ public class Task extends BaseEvent implements Serializable {
     }
 
     public Task(String title, String body) {
+        this(title, body, false, Time.valueOf(LocalTime.MIN));
+    }
+
+    public Task(String title, String body, Boolean allDay, Time duration) {
         setTitle(title);
         setBody(body);
+        setAllDay(allDay);
+        setDuration(duration);
     }
 
     public Integer getId() {
@@ -59,44 +71,30 @@ public class Task extends BaseEvent implements Serializable {
         this.body = body;
     }
 
-    public Task getTask() {
-        return new DatabaseUtil().getObject(s -> s.get(Task.class, this.getId()));
+    public Boolean getAllDay() {
+        return allDay;
     }
 
-    public void create() {
-        DatabaseUtil db = new DatabaseUtil();
-
-        db.processObject(s -> s.save(this));
+    public void setAllDay(Boolean allDay) {
+        this.allDay = allDay;
     }
 
-    public void update(String... vars) {
-        DatabaseUtil db = new DatabaseUtil();
-
-        if (vars.length < 1 || vars.length > 2) {
-            throw new IllegalArgumentException("Wrong amount of arguments");
-        }
-
-        this.setTitle(vars[0]);
-
-        if (vars.length == 2) {
-            this.setBody(vars[1]);
-        }
-
-        db.processObject(s -> s.update(this));
+    public Time getDuration() {
+        return duration;
     }
 
-    public void delete() {
-        DatabaseUtil db = new DatabaseUtil();
-
-        db.processObject(s -> s.delete(this));
+    public void setDuration(Time duration) {
+        this.duration = duration;
     }
 
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + getId() +
-                ",title=" + getTitle() +
-                ",body=" + getBody() +
+                "id=" + id +
+                ",title=" + title +
+                ",body=" + body +
+                ",allDay=" + allDay +
+                ",duration=" + duration +
                 "}";
     }
 }
