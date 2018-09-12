@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Task")
-public class Task implements Serializable/*extends BaseEvent*/ {
+public class Task extends BaseEvent implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,6 @@ public class Task implements Serializable/*extends BaseEvent*/ {
 
     @Column(columnDefinition = "mysql->text", name = "Body", nullable = false)
     private String body;
-
 
     public Task() {
         this("task title", "task body");

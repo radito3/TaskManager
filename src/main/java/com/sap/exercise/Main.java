@@ -1,9 +1,20 @@
 package com.sap.exercise;
 
+import com.sap.exercise.db.DatabaseUtilFactory;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Main {
 
     public static void main(String[] args) {
         //TODO read from System.in
+
+//        DatabaseUtilFactory.createDbClient();
+
+        Logger logger = Logger.getLogger(Main.class.getName());
+        logger.log(Level.FINE, "test log");
+//        System.out.println("%h: " + System.getProperty("user.home"));
     }
 
     private void displayCalendar() {

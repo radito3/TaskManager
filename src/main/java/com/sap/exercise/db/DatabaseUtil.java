@@ -1,6 +1,7 @@
 package com.sap.exercise.db;
 
 import com.sap.exercise.model.Task;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -50,11 +51,10 @@ public class DatabaseUtil {
             transaction.commit();
 
         } catch (Exception e) {
-            e.printStackTrace();
             if (transaction != null) {
                 transaction.rollback();
             }
-
+            throw new HibernateException("Something went wrongs", e);
         }
 
         return null;
