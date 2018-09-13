@@ -10,7 +10,7 @@ public class DatabaseUtilFactory {
     }
 
     public static DatabaseUtil getDbClient() {
-        boolean set = !(System.getProperty("db-instance") == null) && System.getProperty("db-instance").equals("true");
+        boolean set = System.getProperty("db-instance") != null && System.getProperty("db-instance").equals("true");
 
         if (set) {
             return db;

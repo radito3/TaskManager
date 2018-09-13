@@ -1,6 +1,5 @@
 package com.sap.exercise;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.parser.InputParser;
 
 import java.util.logging.Level;
@@ -9,7 +8,6 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        DatabaseUtilFactory.createDbClient();
         InputParser.run(System.in);
 
 //        Logger logger = Logger.getLogger(Main.class.getName());
