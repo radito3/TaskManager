@@ -24,6 +24,8 @@ public class InputParser {
                         command.execute();
                     }
                 }
+
+                //wrong / non-existent command handler
             }
         }
     }

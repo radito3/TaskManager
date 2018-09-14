@@ -30,6 +30,8 @@
 
         <!-- List of XML mapping files -->
         <mapping resource = "Task.hbm.xml" />
+        <mapping resource = "Reminder.hbm.xml" />
+        <mapping resource = "Goal.hbm.xml" />
 
     </session-factory>
 </hibernate-configuration>

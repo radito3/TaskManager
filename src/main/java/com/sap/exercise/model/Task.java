@@ -85,6 +85,7 @@ public class Task extends BaseEvent implements Serializable {
     }
 
     public void setDuration(Time duration) {
+        //input filter
         this.duration = duration;
     }
 
@@ -92,10 +93,10 @@ public class Task extends BaseEvent implements Serializable {
     public String toString() {
         return "Task{" +
                 "id=" + id +
-                ",title=" + title +
-                ",body=" + body +
-                ",allDay=" + allDay +
-                ",duration=" + duration +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", allDay=" + allDay +
+                ", duration=" + duration +
                 "}";
     }
 }
