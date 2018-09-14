@@ -24,7 +24,7 @@
             Think-a-bit2018
         </property>
 
-        <property name = "hbm2ddl.auto">
+        <property name = "hibernate.hbm2ddl.auto">
             update
         </property>
 

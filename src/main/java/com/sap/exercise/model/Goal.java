@@ -47,7 +47,7 @@ public class Goal extends BaseEvent implements Serializable {
     }
 
     public void setTitle(String title) {
-        //input filter
+//        filter(title, str -> str.matches("[-_.a-zA-Z0-9]"), IllegalArgumentException::new);
         this.title = title;
     }
 
@@ -56,7 +56,8 @@ public class Goal extends BaseEvent implements Serializable {
     }
 
     public void setDuration(Time duration) {
-        //input filter
+//        filter(duration, time -> time.toLocalTime().isAfter(LocalTime.MAX)
+//                || time.toLocalTime().isBefore(LocalTime.MIN), IllegalArgumentException::new);
         this.duration = duration;
     }
 

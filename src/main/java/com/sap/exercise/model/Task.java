@@ -59,7 +59,7 @@ public class Task extends BaseEvent implements Serializable {
     }
 
     public void setTitle(String title) {
-        // input filters
+//        filter(title, str -> str.matches("[-_.a-zA-Z0-9]"), IllegalArgumentException::new);
         this.title = title;
     }
 
@@ -68,7 +68,7 @@ public class Task extends BaseEvent implements Serializable {
     }
 
     public void setBody(String body) {
-        // input filters
+//        filter(body, str -> str.matches("[-_.a-zA-Z0-9]"), IllegalArgumentException::new);
         this.body = body;
     }
 
@@ -85,7 +85,8 @@ public class Task extends BaseEvent implements Serializable {
     }
 
     public void setDuration(Time duration) {
-        //input filter
+//        filter(duration, time -> time.toLocalTime().isAfter(LocalTime.MAX)
+//                || time.toLocalTime().isBefore(LocalTime.MIN), IllegalArgumentException::new);
         this.duration = duration;
     }
 

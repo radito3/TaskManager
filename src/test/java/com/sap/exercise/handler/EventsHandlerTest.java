@@ -32,14 +32,14 @@ public class EventsHandlerTest {
     }
 
     @Test
-    @DisplayName("hacker implementation test")
+//    @DisplayName("")
     public void test() throws IOException {
         Task task = new Task();
         EventsHandler.create(task);
 
         out.write(task.toString().getBytes());
 
-        assertEquals(out.toString(), EventsHandler.getObject(task).toString(), "hell yeah");
+        assertEquals(out.toString(), EventsHandler.getObject(task).toString());
     }
 
     /*

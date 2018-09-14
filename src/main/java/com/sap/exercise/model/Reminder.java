@@ -37,7 +37,7 @@ public class Reminder extends BaseEvent implements Serializable {
     }
 
     public void setTitle(String title) {
-        //input filter
+//        filter(title, str -> str.matches("[-_.a-zA-Z0-9]"), IllegalArgumentException::new);
         this.title = title;
     }
 
