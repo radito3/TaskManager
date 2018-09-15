@@ -57,7 +57,7 @@ public class TaskTest {
             assertEquals(task.getDuration(), Time.valueOf(LocalTime.NOON));
         });
     }
-
+    /*
     @Test
     @DisplayName("Title setting with correct argument test")
     public void setTitleTest() {
@@ -96,5 +96,5 @@ public class TaskTest {
     public void setIncDurationTest() {
 
     }
-
+    */
 }

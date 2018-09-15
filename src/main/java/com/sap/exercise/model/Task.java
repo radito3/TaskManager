@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Task")
@@ -99,5 +100,22 @@ public class Task extends BaseEvent implements Serializable {
                 ", allDay=" + allDay +
                 ", duration=" + duration +
                 "}";
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Task task = (Task) object;
+        return Objects.equals(id, task.id) &&
+                Objects.equals(title, task.title) &&
+                Objects.equals(body, task.body) &&
+                Objects.equals(allDay, task.allDay) &&
+                Objects.equals(duration, task.duration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, body, allDay, duration);
     }
 }
