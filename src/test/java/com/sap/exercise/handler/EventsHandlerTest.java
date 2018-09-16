@@ -1,97 +1,52 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.model.Task;
-import org.junit.jupiter.api.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("CRUD operations test class")
 public class EventsHandlerTest {
 
-    //TODO add db events handler tests
-
-    private static ByteArrayOutputStream out;
-
-    @BeforeAll
-    public static void setup() {
-        out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
-    }
-
-    @AfterAll
-    public static void onEnd() {
-        System.setOut(System.out);
-    }
-
-    @AfterEach
-    public void after() {
-        out.reset();
-    }
-
     @Test
-//    @DisplayName("")
-    public void test() throws IOException {
+    @DisplayName("Creation and reading test")
+    public void createAndReadTest() {
         Task task = new Task();
         EventsHandler.create(task);
 
-        out.write(task.toString().getBytes());
-
-        assertEquals(out.toString(), EventsHandler.getObject(task).toString());
-    }
-
-    /*
-    @Test
-    @DisplayName("Database entry creation test")
-    public void dbCreationTest() throws IOException {
-        task.create();
-
-        assertNotNull(task.getTask());
-
-        out.write(task.toString().getBytes());
-        assertEquals(task.getTask().toString(), out.toString());
+        assertAll("Object integrity assertions",
+                () -> assertNotNull(EventsHandler.getObject(task), "Object retrieved from db is null"),
+                () -> assertEquals(task, EventsHandler.getObject(task), "Object retrieved from db doesn't match")
+        );
     }
 
     @Test
-    @DisplayName("Database entry updating with title only test")
-    public void updateWithTitleTest() throws IOException {
-        task.create();
+    @DisplayName("Updating test")
+    public void updateTest()  {
+        Task task = new Task();
+        EventsHandler.create(task);
 
-        task.update("new title");
+        task.setTitle("new title");
+        task.setBody("new body");
+        EventsHandler.update(task);
 
-        out.write(task.toString().getBytes());
-        assertEquals(task.getTask().toString(), out.toString());
+        assertAll("Object integrity assertions",
+                () -> assertNotNull(EventsHandler.getObject(task), "Object retrieved from db is null"),
+                () -> assertEquals(task, EventsHandler.getObject(task), "Object retrieved from db doesn't match")
+        );
     }
 
     @Test
-    @DisplayName("Database entry updating with title and body test")
-    public void updateWithTitleAndBodyTest() throws IOException {
-        task.create();
+    @DisplayName("Deletion test")
+    public void deleteTest() {
+        Task task = new Task();
+        EventsHandler.create(task);
 
-        task.update("new title", "new body");
-
-        out.write(task.toString().getBytes());
-        assertEquals(task.getTask().toString(), out.toString());
+        EventsHandler.delete(task);
+        assertThrows(NullPointerException.class,
+                () -> EventsHandler.getObject(task),
+                "Returning null from db doesn't throw exception");
     }
 
-    @Test
-    @DisplayName("Database entry updating with invalid input test")
-    public void updateWithInvalidInputTest() {
-        task.create();
-
-        assertThrows(IllegalArgumentException.class, () -> task.update(), "Wrong amount of arguments");
-    }
-
-    @Test
-    @DisplayName("Database entry deletion test")
-    public void deletionTest() {
-        task.create();
-
-        task.delete();
-
-        assertNull(task.getTask());
-    }
-    */
 }

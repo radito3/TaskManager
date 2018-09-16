@@ -16,19 +16,23 @@ public class DatabaseUtilTest {
         DatabaseUtil client = new DatabaseUtil();
         Task task = new Task();
         client.processObject((Session s) -> s.save(task));
-        assertAll(() -> {
-            assertNotNull(client.getObject(s -> s.get(Task.class, task.getId())));
-            assertEquals(client.getObject(s -> s.get(Task.class, task.getId())), task);
-        });
+        assertAll("Retrieved object integrity assertions",
+                () -> assertNotNull(client.getObject(s -> s.get(Task.class, task.getId())), "Object retrieved from db is null"),
+                () -> assertEquals(client.getObject(s -> s.get(Task.class, task.getId())), task, "Object retrieved from db is incorrect")
+        );
     }
 
     @Test
     @DisplayName("Getting invalid object from db test")
     public void getInvalidObjectTest() {
         DatabaseUtil client = new DatabaseUtil();
-        assertAll(() -> {
-            assertThrows(IllegalStateException.class, () -> client.getObject(s -> s.get(BaseEvent.class, 0)));
-            assertThrows(NullPointerException.class, () -> client.getObject(s -> s.get(Task.class, -1)));
-        });
+        assertAll("Exception throwing assertions",
+                () -> assertThrows(IllegalStateException.class,
+                        () -> client.getObject(s -> s.get(BaseEvent.class, 0)),
+                        "No exception thrown in case of non-configured class"),
+                () -> assertThrows(NullPointerException.class,
+                        () -> client.getObject(s -> s.get(Task.class, -1)),
+                        "No exception thrown in case of invalid Id argument")
+        );
     }
 }
