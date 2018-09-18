@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import static com.sap.exercise.Main.OUTPUT;
+
 public class InputParser {
 
     //TODO create input arguments parser
@@ -15,18 +17,18 @@ public class InputParser {
     private static List<Command> commands = Arrays.asList(
             new Exit(), new Add(), new Edit(), new Delete());
 
-    private static OutputPrinter printer = new OutputPrinter().configure(System.out);
+    private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void run(InputStream in) {
         try (Scanner scanner = new Scanner(in)) {
             outside:
             while (scanner.hasNext()) {
-                String input = scanner.nextLine();
-                List<String> args = inputArgs(input);
+                //doesn't work when a command is written after a series of \s characters (works with \r|\n)
+                String[] inputArgs = scanner.nextLine().split("\\s+");
 
                 for (Command command : commands) {
-                    if (args.get(0).equals(command.getName())) {
-                        command.execute();
+                    if (inputArgs[0].equals(command.getName())) {
+                        command.execute(inputArgs);
                         continue outside;
                     }
                 }
@@ -39,7 +41,4 @@ public class InputParser {
         }
     }
 
-    private static List<String> inputArgs(String input) {
-        return Arrays.asList(input.split("\\s+")); //doesn't work when a command is written after a series of \s characters (works with \r|\n)
-    }
 }

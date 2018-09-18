@@ -11,8 +11,7 @@ public abstract class BaseEvent {
     /**
      * Filter the input data when updating an object.
      *
-     * (Since Hibernate doesn't allow this in the models, this needs to happen in the controller)
-     * (The MVC controller is {@link com.sap.exercise.handler.EventsHandler})
+     * (Since Hibernate doesn't allow this in the models, this needs to happen in another part of the MVC)
      *
      * @param obj The input data
      * @param condition The filter data

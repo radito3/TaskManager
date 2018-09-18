@@ -11,9 +11,8 @@ public class OutputPrinter {
 
     //TODO create calendar output formatter and printer
 
-    public OutputPrinter configure(OutputStream out) {
+    public OutputPrinter(OutputStream out) {
         writer = new PrintStream(out);
-        return this;
     }
 
     public void print(String val) {
