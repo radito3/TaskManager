@@ -2,6 +2,10 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.printer.OutputPrinter;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import static com.sap.exercise.Main.OUTPUT;
 
 public interface Command {
@@ -11,4 +15,8 @@ public interface Command {
     String getName();
 
     void execute(String... args);
+
+    static <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {
+        return Optional.ofNullable(obj).filter(condition).orElseThrow(supplier);
+    }
 }
