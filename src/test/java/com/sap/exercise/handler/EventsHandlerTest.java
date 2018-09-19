@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.model.Task;
+import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,40 +12,39 @@ public class EventsHandlerTest {
     @Test
     @DisplayName("Creation and reading test")
     public void createAndReadTest() {
-        Task task = new Task();
-        EventsHandler.create(task);
+        Event event = new Event();
+        EventsHandler.create(event);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(EventsHandler.getObject(task), "Object retrieved from db is null"),
-                () -> assertEquals(task, EventsHandler.getObject(task), "Object retrieved from db doesn't match")
+                () -> assertNotNull(EventsHandler.getObject(event), "Object retrieved from db is null"),
+                () -> assertEquals(event, EventsHandler.getObject(event), "Object retrieved from db doesn't match")
         );
     }
 
     @Test
     @DisplayName("Updating test")
     public void updateTest()  {
-        Task task = new Task();
-        EventsHandler.create(task);
+        Event event = new Event();
+        EventsHandler.create(event);
 
-        task.setTitle("new title");
-        task.setBody("new body");
-        EventsHandler.update(task);
+        event.setTitle("new title");
+        EventsHandler.update(event);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(EventsHandler.getObject(task), "Object retrieved from db is null"),
-                () -> assertEquals(task, EventsHandler.getObject(task), "Object retrieved from db doesn't match")
+                () -> assertNotNull(EventsHandler.getObject(event), "Object retrieved from db is null"),
+                () -> assertEquals(event, EventsHandler.getObject(event), "Object retrieved from db doesn't match")
         );
     }
 
     @Test
     @DisplayName("Deletion test")
     public void deleteTest() {
-        Task task = new Task();
-        EventsHandler.create(task);
+        Event event = new Event();
+        EventsHandler.create(event);
 
-        EventsHandler.delete(task);
+        EventsHandler.delete(event);
         assertThrows(NullPointerException.class,
-                () -> EventsHandler.getObject(task),
+                () -> EventsHandler.getObject(event),
                 "Returning null from db doesn't throw exception");
     }
 

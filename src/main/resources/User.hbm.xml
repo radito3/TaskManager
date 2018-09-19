@@ -4,10 +4,10 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name = "com.sap.exercise.model.Goal" table = "Goal">
+    <class name = "com.sap.exercise.model.User" table = "User">
 
         <meta attribute = "class-description">
-            This class represents a goal
+            This class represents a user
         </meta>
 
         <id name = "Id" type = "int" column = "Id">

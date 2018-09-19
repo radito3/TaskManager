@@ -2,11 +2,12 @@ package com.sap.exercise.printer;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-//import java.util.Calendar;
+import java.util.Calendar;
 
 public class OutputPrinter {
 
-//    private Calendar calendar = Calendar.getInstance();
+    private Calendar calendar = Calendar.getInstance();
+
     private PrintStream writer;
 
     //TODO create calendar output formatter and printer

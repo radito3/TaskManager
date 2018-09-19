@@ -29,9 +29,8 @@
         </property>
 
         <!-- List of XML mapping files -->
-        <mapping resource = "Task.hbm.xml" />
-        <mapping resource = "Reminder.hbm.xml" />
-        <mapping resource = "Goal.hbm.xml" />
+        <mapping resource = "Event.hbm.xml" />
+        <mapping resource = "User.hbm.xml" />
 
     </session-factory>
 </hibernate-configuration>

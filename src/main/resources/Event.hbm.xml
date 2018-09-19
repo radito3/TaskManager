@@ -4,13 +4,13 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name = "com.sap.exercise.model.Reminder" table = "Reminder">
+    <class name = "com.sap.exercise.model.Event" table = "Eventt">
 
         <meta attribute = "class-description">
-            This class represents a reminder
+            This class represents an event
         </meta>
 
-        <id name = "Id" type = "int" column = "Id">
+        <id name = "id" type = "int" column = "Id">
             <generator class="native"/>
         </id>
 

@@ -15,7 +15,7 @@ public class InputParser {
     //TODO create input arguments parser
 
     private static List<Command> commands = Arrays.asList(
-            new Exit(), new Add(), new Edit(), new Delete());
+            new Exit(), new Add(), new Edit(), new Delete(), new Help());
 
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
@@ -35,7 +35,7 @@ public class InputParser {
 
                 printer.print("Invalid command");
             }
-        } catch (Exception e) { //will specify the exception later
+        } catch (Exception e) {
             printer.print(e.getMessage());
             run(in); //not the best solution
         }

@@ -12,6 +12,8 @@ public class Main {
     //system config
     public static final InputStream INPUT = System.in;
     public static final OutputStream OUTPUT = System.out;
+//    public static final boolean COLOUR = false; //for output formatter
+    //may have configurable colour palette for every coloured output
 
     public static void main(String[] args) {
         InputParser.run(INPUT);

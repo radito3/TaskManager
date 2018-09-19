@@ -1,9 +1,6 @@
 package com.sap.exercise.db;
 
-import com.sap.exercise.model.BaseEvent;
-import com.sap.exercise.model.Goal;
-import com.sap.exercise.model.Reminder;
-import com.sap.exercise.model.Task;
+import com.sap.exercise.model.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,9 +19,8 @@ public class DatabaseUtil {
     DatabaseUtil() {
         Configuration configuration = new Configuration()
                 .configure("hibernate.cfg.xml")
-                .addAnnotatedClass(Task.class)
-                .addAnnotatedClass(Reminder.class)
-                .addAnnotatedClass(Goal.class);
+                .addAnnotatedClass(Event.class)
+                .addAnnotatedClass(User.class);
 
         ServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();

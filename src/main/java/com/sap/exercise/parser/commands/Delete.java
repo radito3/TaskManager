@@ -2,52 +2,45 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.db.DatabaseUtil;
 import com.sap.exercise.db.DatabaseUtilFactory;
-import com.sap.exercise.model.Task;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.sap.exercise.model.Event;
 
 public class Delete implements Command {
 
-    //example command
-    //del -t DoHW -r Work
-    //this will delete the task "DoHW" and the reminder "Work"
-
-    //"del -all" will not be a valid command
-
     @Override
     public String getName() {
-        return "del";
+        return "delete";
     }
+
+    /*
+    Optional flags will be for whether to delete a repeatable event in a time frame or every repetition of the event
+    If these flags are present for a non-repeatable event, nothing will happen
+
+    delete [start] [end] <event name> //don't know if command args are going to be in that order
+
+    one flag - start time (delete repetitions of event from 'start' argument to end of event
+    two flags - delete repetitions of event in specified time frame
+     */
 
     @Override
     public void execute(String... args) {
+        String name = buildEventName(args);
         DatabaseUtil db = DatabaseUtilFactory.getDbClient();
-        //verify if arguments are valid tasks/reminders/goals
 
-        for (int i = 1; i < args.length - 1; i++) {
-            final int k = i + 1;
-            switch (args[i]) {
-                case "-t":
-                    if (args[k].startsWith("-")) throw new IllegalArgumentException("Invalid task name");
+        try {
+            Event event = db.getObject(s ->
+                    s.createNativeQuery("SELECT * FROM Eventt WHERE Title = " + name + ";", Event.class).getSingleResult());
 
-                    Task task = db.getObject(s ->
-                            s.createNativeQuery("FROM Task WHERE Title = " + args[k], Task.class).getSingleResult());
+            db.processObject(s -> s.delete(event));
+            printer.print("Event deleted");
 
-                    db.processObject(s -> s.delete(task));
-                    break;
-                case "-r":
-                    if (args[k].startsWith("-")) throw new IllegalArgumentException("Invalid reminder name");
-
-                    throw new NotImplementedException();
-//                    break;
-                case "-g":
-                    if (args[k].startsWith("-")) throw new IllegalArgumentException("Invalid goal name");
-
-                    throw new NotImplementedException();
-//                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid event type argument");
-            }
+        } catch (NullPointerException npe) {
+            printer.print("Invalid event name");
         }
-        printer.print("Deletion successful"); //only if arguments are valid
+    }
+
+    private String buildEventName(String[] input) {
+        StringBuilder sb = new StringBuilder(input[1]);
+        for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
+        return sb.toString();
     }
 }
