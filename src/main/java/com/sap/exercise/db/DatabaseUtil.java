@@ -19,7 +19,7 @@ public class DatabaseUtil {
 
     private SessionFactory factory;
 
-    public DatabaseUtil() {
+    DatabaseUtil() {
         Configuration configuration = new Configuration()
                 .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(Task.class)
@@ -33,7 +33,6 @@ public class DatabaseUtil {
     }
 
     public void processObject(Consumer<Session> consumer) {
-//        processObject(consumer, null);
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {
@@ -50,7 +49,6 @@ public class DatabaseUtil {
     }
 
     public <T extends BaseEvent> T getObject(Function<Session, T> function) {
-//        return processObject(null, function);
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {
@@ -58,7 +56,7 @@ public class DatabaseUtil {
 
             T obj = function.apply(session);
             transaction.commit();
-            if (obj == null) throw new NullPointerException("Nothing is returned from database");
+            if (obj == null) throw new NullPointerException("Object does not exist");
 
             return obj;
         } catch (HibernateException e) {
@@ -73,28 +71,4 @@ public class DatabaseUtil {
         factory.close();
     }
 
-//    private <T> T processObject(Consumer<Session> consumer, Function<Session, T> function) {
-//        Transaction transaction = null;
-//
-//        try (Session session = factory.openSession()) {
-//            transaction = session.beginTransaction();
-//
-//            if (function != null) {
-//                T obj = function.apply(session);
-//                transaction.commit();
-//                if (obj == null) throw new NullPointerException("Nothing is returned from database");
-//                return obj;
-//            }
-//            consumer.accept(session);
-//            transaction.commit();
-//
-//        } catch (HibernateException e) {
-//            if (transaction != null) {
-//                transaction.rollback();
-//            }
-//            throw e;
-//        }
-//
-//        return null;
-//    }
 }

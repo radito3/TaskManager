@@ -14,7 +14,7 @@ public abstract class BaseEvent {
      * (Since Hibernate doesn't allow this in the models, this needs to happen in another part of the MVC)
      *
      * @param obj The input data
-     * @param condition The filter data
+     * @param condition The filter condition
      * @param supplier A supplier of an Exception class when the filter condition is not fulfilled
      * @param <T> The input data type
      * @param <X> The Exception type

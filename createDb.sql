@@ -7,6 +7,8 @@ CREATE TABLE Task (
   Title VARCHAR(64) NOT NULL,
   Body TEXT NOT NULL,
   AllDay BOOLEAN NOT NULL DEFAULT FALSE,
+-- Location
+-- When
   Duration TIME NOT NULL DEFAULT 0
 );
 
