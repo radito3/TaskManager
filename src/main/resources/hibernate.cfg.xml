@@ -4,29 +4,35 @@
 <hibernate-configuration>
     <session-factory>
 
-        <property name = "hibernate.dialect">
-            org.hibernate.dialect.MySQL5Dialect
-        </property>
-
-        <property name = "hibernate.connection.driver_class">
-            com.mysql.jdbc.Driver
-        </property>
-
+        <!-- Database connection settings -->
+        <property name = "hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name = "hibernate.connection.url">
-            jdbc:mysql://localhost:3306/Think_a_bitDB
+            jdbc:mysql://localhost:3306/Think_a_bitDB?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true
         </property>
+        <property name = "hibernate.connection.username">netprog</property>
+        <property name = "hibernate.connection.password">Think-a-bit2018</property>
+        <property name = "hibernate.hbm2ddl.auto">update</property>
 
-        <property name = "hibernate.connection.username">
-            netprog
-        </property>
+        <!-- JDBC connection pool (use the built-in) -->
+        <property name="hibernate.connection.pool_size">1</property>
 
-        <property name = "hibernate.connection.password">
-            Think-a-bit2018
-        </property>
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
 
-        <property name = "hibernate.hbm2ddl.auto">
-            update
-        </property>
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.use_sql_comments">false</property>
+
+        <!--<property name="hibernate.c3p0.acquire_increment">1</property>-->
+        <!--<property name="hibernate.c3p0.idle_test_period">600</property>-->
+        <!--<property name="hibernate.c3p0.min_size">1</property>-->
+        <!--<property name="hibernate.c3p0.max_size">30</property>-->
+        <!--<property name="hibernate.c3p0.max_statements">50</property>-->
+        <!--<property name="hibernate.c3p0.timeout">1800</property>-->
+        <!--<property name="hibernate.c3p0.acquireRetryAttempts">1</property>-->
+        <!--<property name="hibernate.c3p0.acquireRetryDelay">250</property>-->
 
         <!-- List of XML mapping files -->
         <mapping resource = "Event.hbm.xml" />

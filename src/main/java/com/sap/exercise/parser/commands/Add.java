@@ -1,5 +1,9 @@
 package com.sap.exercise.parser.commands;
 
+import com.sap.exercise.db.DatabaseUtil;
+import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.model.Event;
+
 public class Add implements Command {
 
     @Override
@@ -11,7 +15,14 @@ public class Add implements Command {
     public void execute(String... args) {
         //if AllDay is true -> Duration will be in number of days
         //if AllDay is false -> Duration is number of minutes
-        printer.print("in add class");
+
+        String name = buildEventName(args);
+        Event event = new Event(name);
+        DatabaseUtil db = DatabaseUtilFactory.getDbClient();
+
+        db.processObject(s -> s.save(event));
+
+        printer.print("Event created");
     }
 
     /*
@@ -41,5 +52,12 @@ public class Add implements Command {
 
     private String flagHandler(String input) {
         return input.startsWith("--") ? input.replace(input.charAt(1), input.charAt(2)).substring(0, 2) : input;
+    }
+
+    //temporary
+    private String buildEventName(String[] input) {
+        StringBuilder sb = new StringBuilder(input[1]);
+        for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
+        return sb.toString();
     }
 }

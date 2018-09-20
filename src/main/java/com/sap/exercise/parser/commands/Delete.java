@@ -12,6 +12,8 @@ public class Delete implements Command {
     }
 
     /*
+    <<<FOR FUTURE IMPLEMENTATION>>>
+
     Optional flags will be for whether to delete a repeatable event in a time frame or every repetition of the event
     If these flags are present for a non-repeatable event, nothing will happen
 
@@ -23,22 +25,25 @@ public class Delete implements Command {
 
     @Override
     public void execute(String... args) {
-        String name = buildEventName(args);
-        DatabaseUtil db = DatabaseUtilFactory.getDbClient();
-
         try {
+            String name = buildEventName(args);
+            DatabaseUtil db = DatabaseUtilFactory.getDbClient();
+
             Event event = db.getObject(s ->
-                    s.createNativeQuery("SELECT * FROM Eventt WHERE Title = " + name + ";", Event.class).getSingleResult());
+                    s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + name + "\';", Event.class)
+                            .uniqueResultOptional().orElseThrow(NullPointerException::new));
 
             db.processObject(s -> s.delete(event));
             printer.print("Event deleted");
-
         } catch (NullPointerException npe) {
             printer.print("Invalid event name");
+        } catch (IllegalArgumentException iae) {
+            printer.print("Event name not specified");
         }
     }
 
     private String buildEventName(String[] input) {
+        if (input.length == 1) throw new IllegalArgumentException();
         StringBuilder sb = new StringBuilder(input[1]);
         for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
         return sb.toString();

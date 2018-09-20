@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import static com.sap.exercise.Main.INPUT;
 import static com.sap.exercise.Main.OUTPUT;
 
 public class InputParser {
@@ -37,7 +38,7 @@ public class InputParser {
             }
         } catch (Exception e) {
             printer.print(e.getMessage());
-            run(in); //not the best solution
+            run(INPUT); //doesn't work for some reason
         }
     }
 

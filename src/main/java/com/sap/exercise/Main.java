@@ -4,8 +4,8 @@ import com.sap.exercise.parser.InputParser;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
@@ -16,6 +16,8 @@ public class Main {
     //may have configurable colour palette for every coloured output
 
     public static void main(String[] args) {
+        Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+
         InputParser.run(INPUT);
 
 //        Logger logger = Logger.getLogger(Main.class.getName());
