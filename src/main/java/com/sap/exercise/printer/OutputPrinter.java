@@ -16,8 +16,12 @@ public class OutputPrinter {
         writer = new PrintStream(out);
     }
 
-    public void print(String val) {
+    public void println(String val) {
         writer.println(val);
+    }
+
+    public void print(String val) {
+        writer.print(val);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.sap.exercise.parser.commands;
 
-import com.sap.exercise.db.DatabaseUtil;
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
 
 public class Add implements Command {
@@ -16,13 +15,12 @@ public class Add implements Command {
         //if AllDay is true -> Duration will be in number of days
         //if AllDay is false -> Duration is number of minutes
 
+        /* temporary implementation */
         String name = buildEventName(args);
         Event event = new Event(name);
-        DatabaseUtil db = DatabaseUtilFactory.getDbClient();
+        EventsHandler.create(event);
 
-        db.processObject(s -> s.save(event));
-
-        printer.print("Event created");
+        printer.println("Event created");
     }
 
     /*
@@ -40,7 +38,7 @@ public class Add implements Command {
 
         try (Scanner s = new Scanner(inputStream)) {
             for (field f : fields) {
-                printer.print(f.name() + ": ");
+                printer.println(f.name() + ": ");
                 String input = s.nextLine().filter(<criteria>);
                 event.setField(input);
             }

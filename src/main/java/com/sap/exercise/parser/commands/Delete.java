@@ -1,7 +1,6 @@
 package com.sap.exercise.parser.commands;
 
-import com.sap.exercise.db.DatabaseUtil;
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
 
 public class Delete implements Command {
@@ -27,21 +26,19 @@ public class Delete implements Command {
     public void execute(String... args) {
         try {
             String name = buildEventName(args);
-            DatabaseUtil db = DatabaseUtilFactory.getDbClient();
+            Event event = EventsHandler.getObjectFromTitle(name);
 
-            Event event = db.getObject(s ->
-                    s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + name + "\';", Event.class)
-                            .uniqueResultOptional().orElseThrow(NullPointerException::new));
-
-            db.processObject(s -> s.delete(event));
-            printer.print("Event deleted");
+            EventsHandler.delete(event);
+            printer.println("Event deleted");
         } catch (NullPointerException npe) {
-            printer.print("Invalid event name");
+            printer.println("Invalid event name");
         } catch (IllegalArgumentException iae) {
-            printer.print("Event name not specified");
+            printer.println("Event name not specified");
         }
     }
 
+    //this method is used in Edit as well
+    //should remove redundancy
     private String buildEventName(String[] input) {
         if (input.length == 1) throw new IllegalArgumentException();
         StringBuilder sb = new StringBuilder(input[1]);

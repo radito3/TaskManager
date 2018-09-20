@@ -13,7 +13,7 @@ public class Help implements Command {
         if no arguments are present -> display pseudo man page for application
         if an argument is present -> display helper for that argument
          */
-        printer.print("in help class");
+        printer.println("in help class");
     }
 
     /*

@@ -8,12 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import static com.sap.exercise.Main.INPUT;
 import static com.sap.exercise.Main.OUTPUT;
 
 public class InputParser {
-
-    //TODO create input arguments parser
 
     private static List<Command> commands = Arrays.asList(
             new Exit(), new Add(), new Edit(), new Delete(), new Help());
@@ -34,11 +31,11 @@ public class InputParser {
                     }
                 }
 
-                printer.print("Invalid command");
+                printer.println("Invalid command");
             }
         } catch (Exception e) {
-            printer.print(e.getMessage());
-            run(INPUT); //doesn't work for some reason
+            //this should not be reached
+            printer.println("FATAL: " + e.getMessage());
         }
     }
 

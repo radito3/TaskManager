@@ -2,6 +2,7 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.BaseEvent;
+import com.sap.exercise.model.Event;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -37,5 +38,13 @@ public class EventsHandler {
             System.setProperty("db-instance", "false");
             throw e;
         }
+    }
+
+    //tested but no JUnit test written yet
+    public static Event getObjectFromTitle(String title) {
+        //don't know if this can throw an exception
+        return DatabaseUtilFactory.getDbClient().getObject(s ->
+                s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\';", Event.class)
+                        .uniqueResultOptional().orElseThrow(NullPointerException::new));
     }
 }
