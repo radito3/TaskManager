@@ -2,20 +2,19 @@ package com.sap.exercise.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Eventt")
 public class Event extends BaseEvent implements Serializable {
 
-    private enum EventType {
+    public enum EventType {
         TASK, REMINDER, GOAL
     }
 
-    private enum RepeatableType {
-        DAILY, WEEKLY, MONTHLY, YEARLY
+    public enum RepeatableType {
+        NONE, DAILY, WEEKLY, MONTHLY, YEARLY
     }
 
     @Id
@@ -26,14 +25,16 @@ public class Event extends BaseEvent implements Serializable {
     @Column(columnDefinition = "mysql->varchar(64)", name = "Title", nullable = false)
     private String title;
 
-    @Column(columnDefinition = "mysql->enum('Task', 'Reminder', 'Goal')", name = "TypeOf", nullable = false)
+    @Column(columnDefinition = "mysql->enum('TASK', 'REMINDER', 'GOAL')", name = "TypeOf", nullable = false)
+    @Enumerated(EnumType.STRING)
     private EventType typeOf;
 
     @Column(columnDefinition = "mysql->text", name = "Location")
     private String location;
 
     @Column(columnDefinition = "mysql->timestamp", name = "TimeOf")
-    private Timestamp timeOf;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Calendar timeOf;
 
     @Column(columnDefinition = "mysql->text", name = "Description")
     private String description;
@@ -41,33 +42,47 @@ public class Event extends BaseEvent implements Serializable {
     @Column(columnDefinition = "mysql->tinyint(1)", name = "AllDay", nullable = false)
     private Boolean allDay;
 
-    @Column(columnDefinition = "mysql->time", name = "Duration", nullable = false)
-    private Time duration;
+    //will input an integer and convert it to time remaining to the end
+    @Column(columnDefinition = "mysql->timestamp", name = "Duration", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Calendar duration; //this will be set to the end time
 
+    //task only
     @Column(columnDefinition = "mysql->int(11)", name = "Reminder", nullable = false)
-    private Integer reminder;
+    private Integer reminder; //minutes before appointed time to remind
 
-    @Column(columnDefinition = "mysql->enum('Daily', 'Weekly', 'Monthly', 'Yearly')", name = "ToRepeat")
+    @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RepeatableType toRepeat;
 
     public Event() {
-//        this("task title", "task body");
+        this("default title");
     }
-//
-//    public Event(String title) {
-//        this(title, "task body");
-//    }
-//
-//    public Event(String title, String body) {
-//        this(title, body, false, Time.valueOf(LocalTime.MIN));
-//    }
-//
-//    public Event(String title, String body, Boolean allDay, Time duration) {
-//        setTitle(title);
-//        setBody(body);
-//        setAllDay(allDay);
-//        setDuration(duration);
-//    }
+
+    public Event(String title) {
+        this(title, EventType.TASK);
+    }
+
+    public Event(String title, EventType type) {
+        this(title, type, Calendar.getInstance(), RepeatableType.NONE);
+    }
+
+    public Event(String title, EventType type, Calendar timeOf, RepeatableType repeat) {
+        this(title, type, "", timeOf, "", false, Calendar.getInstance(), 0, repeat);
+    }
+
+    public Event(String title, EventType typeOf, String location, Calendar timeOf, String description,
+                 Boolean allDay, Calendar duration, Integer reminder, RepeatableType toRepeat) {
+        this.title = title;
+        this.typeOf = typeOf;
+        this.location = location;
+        this.timeOf = timeOf;
+        this.description = description;
+        this.allDay = allDay;
+        this.duration = duration;
+        this.reminder = reminder;
+        this.toRepeat = toRepeat;
+    }
 
     @Override
     public Integer getId() {
@@ -102,11 +117,11 @@ public class Event extends BaseEvent implements Serializable {
         this.location = location;
     }
 
-    public Timestamp getTimeOf() {
+    public Calendar getTimeOf() {
         return timeOf;
     }
 
-    public void setTimeOf(Timestamp timeOf) {
+    public void setTimeOf(Calendar timeOf) {
         this.timeOf = timeOf;
     }
 
@@ -126,11 +141,11 @@ public class Event extends BaseEvent implements Serializable {
         this.allDay = allDay;
     }
 
-    public Time getDuration() {
+    public Calendar getDuration() {
         return duration;
     }
 
-    public void setDuration(Time duration) {
+    public void setDuration(Calendar duration) {
         this.duration = duration;
     }
 
@@ -157,10 +172,10 @@ public class Event extends BaseEvent implements Serializable {
                 ", title='" + title + '\'' +
                 ", typeOf=" + typeOf +
                 ", location='" + location + '\'' +
-                ", timeOf=" + timeOf +
+                ", timeOf=" + timeOf.getTime().toString() +
                 ", description='" + description + '\'' +
                 ", allDay=" + allDay +
-                ", duration=" + duration +
+                ", duration=" + duration.getTime().toString() +
                 ", reminder=" + reminder +
                 ", toRepeat=" + toRepeat +
                 "}";
@@ -187,8 +202,4 @@ public class Event extends BaseEvent implements Serializable {
     public int hashCode() {
         return Objects.hash(id, title, typeOf, location, timeOf, description, allDay, duration, reminder, toRepeat);
     }
-
-//        filter(duration, time -> time.toLocalTime().isAfter(LocalTime.MAX)
-//                || time.toLocalTime().isBefore(LocalTime.MIN), IllegalArgumentException::new);
-
 }

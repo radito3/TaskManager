@@ -25,8 +25,8 @@ public class EventsHandler {
         try {
             DatabaseUtilFactory.getDbClient().processObject(consumer);
         } catch (HibernateException e) {
-            System.out.println(e.getMessage());
             System.setProperty("db-instance", "false");
+            throw e;
         }
     }
 
@@ -34,9 +34,8 @@ public class EventsHandler {
         try {
             return DatabaseUtilFactory.getDbClient().getObject(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
         } catch (HibernateException e) {
-            System.out.println(e.getMessage());
             System.setProperty("db-instance", "false");
+            throw e;
         }
-        return null;
     }
 }
