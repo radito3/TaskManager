@@ -1,5 +1,6 @@
 package com.sap.exercise.db;
 
+import com.sap.exercise.AbstractTest;
 import com.sap.exercise.model.BaseEvent;
 import com.sap.exercise.model.User;
 import org.hibernate.Session;
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DatabaseUtilTest {
+public class DatabaseUtilTest extends AbstractTest {
 
     @Test
     @DisplayName("Db modification test")

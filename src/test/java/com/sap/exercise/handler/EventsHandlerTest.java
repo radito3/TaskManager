@@ -1,5 +1,6 @@
 package com.sap.exercise.handler;
 
+import com.sap.exercise.AbstractTest;
 import com.sap.exercise.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CRUD operations test class")
-public class EventsHandlerTest {
+public class EventsHandlerTest extends AbstractTest {
 
     @Test
     @DisplayName("Creation and reading test")

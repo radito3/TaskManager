@@ -1,11 +1,19 @@
 package com.sap.exercise.db;
 
+import com.sap.exercise.AbstractTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.OS;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DatabaseUtilFactoryTest {
+@EnabledOnJre({JRE.JAVA_8, JRE.JAVA_9})
+@EnabledOnOs({OS.LINUX, OS.WINDOWS})
+public class DatabaseUtilFactoryTest extends AbstractTest {
 
     @Test
     @DisplayName("Database client creation test")
@@ -19,24 +27,24 @@ public class DatabaseUtilFactoryTest {
 
     @Test
     @DisplayName("Running database client test")
+    @EnabledIfSystemProperty(matches = "true|false", named = "db-instance")
     public void getDbClientTest() {
         DatabaseUtil client = DatabaseUtilFactory.getDbClient();
         assertAll("DB client integrity & System property assertions",
                 () -> assertNotNull(client, "Database client is null"),
-                () -> assertNotNull(System.getProperty("db-instance"), "System property for db instances is null"),
                 () -> assertEquals("true", System.getProperty("db-instance"), "System property for db instances is false")
         );
     }
 
     @Test
     @DisplayName("Db client restarting test")
+    @EnabledIfSystemProperty(matches = "true|false", named = "db-instance")
     public void restartDbClientTest() {
         DatabaseUtil client1 = DatabaseUtilFactory.getDbClient();
         System.setProperty("db-instance", "false");
         DatabaseUtil client2 = DatabaseUtilFactory.getDbClient();
         assertAll("DB clients equality & System property assertions",
                 () -> assertNotEquals(client1, client2, "New client is equal to old one"),
-                () -> assertNotNull(System.getProperty("db-instance"), "System property for db instances is null"),
                 () -> assertEquals("true", System.getProperty("db-instance"), "System property for db instances is false")
         );
     }
