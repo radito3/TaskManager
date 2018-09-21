@@ -1,12 +1,13 @@
 package com.sap.exercise.parser.commands;
 
+import com.sap.exercise.builder.AbstractBuilder;
+import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import static com.sap.exercise.Main.INPUT;
 
@@ -25,8 +26,6 @@ public class Edit implements Command {
 
             edit(event);
 
-            printer.println("end of execute method");
-
 //            EventsHandler.update(event);
 //            printer.println("Event updated");
         } catch (NullPointerException npe) {
@@ -44,46 +43,28 @@ public class Edit implements Command {
     }
 
     private void edit(Event event) {
-        //need to filter them based on type of event
-        Set<String> fields = getFields();
+        try {
+            //not closing the input stream so the application can continue running
+            BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
 
-        try (Scanner scanner = new Scanner(INPUT)) {
-            for (String field : fields) {
+            EventBuilder builder = AbstractBuilder.getEventBuilder(event.getTypeOf());
+
+            for (String field : builder.getFields()) {
                 printer.print(field + ": ");
-                String input = scanner.nextLine();
+                String input = reader.readLine();
 
-                if (input.equals("")) continue;
+                if (input.equals("")) {
+                    //get old value of event and set it in event builder
+                    continue;
+                }
 
-                printer.println(input);
-//                Method method = Event.class.getDeclaredMethod("set" + field, Boolean.class);
-//                method.invoke(event, Boolean.valueOf(input));
-
-                printer.println(event.toString());
+                //add input to builder
+                //at the end .build() to get the Event object
+                //then save it to the database
             }
-        }/* catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-            printer.println(ex.getLocalizedMessage());
-        }*/
-
-        printer.println("end of edit method");
-    }
-
-    private Set<String> getFields() {
-        return Arrays.stream(Event.class.getDeclaredFields())
-                .map(Field::getName)
-                .filter(name -> !name.equals("id"))
-                .map(name -> {
-                    char[] chars = name.toCharArray();
-                    chars[0] = Character.toUpperCase(chars[0]);
-                    return new String(chars);
-                })
-                .collect(Collectors.toSet());
-    }
-
-    private Map<String, Method> getMethods() {
-        //need to make it interactive ->
-        //for it to know what type of input to expect for what type of method
-
-        return new HashMap<>();
+        } catch (IOException e) {
+            printer.error(e.getMessage());
+        }
     }
 
 }

@@ -18,6 +18,7 @@ public class Main {
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         InputParser.run(INPUT);
+        System.exit(0); //this should not be needed
     }
 
     //TODO:

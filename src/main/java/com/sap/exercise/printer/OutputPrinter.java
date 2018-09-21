@@ -117,4 +117,8 @@ public class OutputPrinter {
         writer.print(val);
     }
 
+    public void error(String val) {
+        writer.println(ANSI_RED + val + ANSI_RESET);
+    }
+
 }
