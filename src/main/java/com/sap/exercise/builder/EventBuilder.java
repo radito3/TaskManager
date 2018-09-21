@@ -8,5 +8,7 @@ public interface EventBuilder {
 
     List<String> getFields();
 
+    EventBuilder append(String val);
+
     Event build();
 }

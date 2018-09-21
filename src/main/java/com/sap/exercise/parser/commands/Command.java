@@ -16,6 +16,7 @@ public interface Command {
 
     void execute(String... args);
 
+    //this will be moved to AbstractBuilder (need to move JUnit tests as well)
     static <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {
         return Optional.ofNullable(obj).filter(condition).orElseThrow(supplier);
     }
