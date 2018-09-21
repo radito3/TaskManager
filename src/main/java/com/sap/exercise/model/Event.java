@@ -44,7 +44,7 @@ public class Event extends BaseEvent implements Serializable {
     private String description;
 
     @Column(columnDefinition = "mysql->tinyint(1)", name = "AllDay", nullable = false)
-    @Alias("all day")
+    @Alias("all day? [Y]es [N]o")
     private Boolean allDay;
 
     //will input an integer and convert it to time remaining to the end
@@ -58,7 +58,7 @@ public class Event extends BaseEvent implements Serializable {
 
     @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Alias("repeat")
+    @Alias("repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early")
     private RepeatableType toRepeat;
 
     public Event() {

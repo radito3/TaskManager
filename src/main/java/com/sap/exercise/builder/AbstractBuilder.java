@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractBuilder {
 
+    protected Event event;
+    protected List<String> fields;
+
     public static EventBuilder getEventBuilder(Event.EventType type) {
         if (type == Event.EventType.TASK) {
             return new TaskBuilder();
