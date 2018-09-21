@@ -40,7 +40,6 @@ public class EventsHandler {
         }
     }
 
-    //tested but no JUnit test written yet
     public static Event getObjectFromTitle(String title) {
         //don't know if this can throw an exception
         return DatabaseUtilFactory.getDbClient().getObject(s ->

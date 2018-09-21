@@ -1,6 +1,7 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.AbstractTest;
+import com.sap.exercise.model.Event;
 import com.sap.exercise.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,25 @@ public class EventsHandlerTest extends AbstractTest {
         assertThrows(NullPointerException.class,
                 () -> EventsHandler.getObject(user),
                 "Returning null from db doesn't throw exception");
+    }
+
+    @Test
+    @DisplayName("Getting object identified by title test")
+    public void getObjectByTitleTest() {
+        Event event = new Event("test");
+        EventsHandler.create(event);
+
+        Event event1 = EventsHandler.getObjectFromTitle("test");
+        assertNotNull(event1);
+        assertEquals(event, event1);
+    }
+
+    @Test
+    @DisplayName("Invalid name for title test")
+    public void invalidNameTest() {
+        assertThrows(NullPointerException.class,
+                () -> EventsHandler.getObjectFromTitle(""),
+                "Incorrect or no exception thrown with invalid title");
     }
 
 }
