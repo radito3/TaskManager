@@ -1,5 +1,7 @@
 package com.sap.exercise.parser.commands;
 
+import javax.swing.*;
+
 public class Help implements Command {
 
     @Override
@@ -9,6 +11,9 @@ public class Help implements Command {
 
     @Override
     public void execute(String... args) {
+        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sample message", "Sample title",
+                JOptionPane.PLAIN_MESSAGE);
+
         /*
         if no arguments are present -> display pseudo man page for application
         if an argument is present -> display helper for that argument

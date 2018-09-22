@@ -5,6 +5,7 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -14,11 +15,16 @@ public abstract class AbstractBuilder {
 
     protected Event event;
     protected List<String> fields;
-    protected Map<String, Class<?>> fieldParams;
     static Map<String, String> aliases = new HashMap<>();
+
+    protected Map<String, Map<Method, Class<?>>> methods = new HashMap<>();
 
     AbstractBuilder(Event event) {
         this.event = event;
+        try {
+            methods.put("setTitle", Collections.singletonMap(Event.class.getDeclaredMethod("setTitle", String.class), String.class));
+
+        } catch (NoSuchMethodException ignored) {}
     }
 
     public static EventBuilder getEventBuilder(Event event) {

@@ -2,7 +2,6 @@ package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class GoalBuilder extends AbstractBuilder implements EventBuilder {
@@ -10,7 +9,6 @@ public class GoalBuilder extends AbstractBuilder implements EventBuilder {
     GoalBuilder(Event event) {
         super(event);
         fields = getFields(name -> name.matches("title")); //...
-        fieldParams = new HashMap<>();
     }
 
 

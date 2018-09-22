@@ -12,6 +12,9 @@ import static com.sap.exercise.Main.OUTPUT;
 
 public class InputParser {
 
+    //Scanner variable (will remake it to Buffered reader because it is thread safe) may be a private variable
+    //and the two methods will open a new reader when they are called
+
     private static List<Command> commands = Arrays.asList(
             new Exit(), new Add(), new Edit(), new Delete(), new Help());
 

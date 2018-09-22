@@ -1,7 +1,14 @@
 package com.sap.exercise.parser.commands;
 
+import com.sap.exercise.builder.AbstractBuilder;
+import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import static com.sap.exercise.Main.INPUT;
 
 public class Add implements Command {
 
@@ -15,11 +22,16 @@ public class Add implements Command {
         //if AllDay is true -> Duration will be in number of days
         //if AllDay is false -> Duration is number of minutes
 
-        /* temporary implementation */
-        String name = buildEventName(args);
-        Event event = new Event(name);
-        EventsHandler.create(event);
+        Event event = new Event("-", args.length == 1 ? Event.EventType.TASK :
+                Event.EventType.valueOf(flagHandler(args[1])));
 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
+
+        EventBuilder builder = AbstractBuilder.getEventBuilder(event);
+
+        CommandUtils.interactiveInput(reader, printer, builder, event);
+
+        EventsHandler.create(event);
         printer.println("Event created");
     }
 
@@ -29,20 +41,10 @@ public class Add implements Command {
         -r[--reminder] for a reminder;
         -g[--goal] for a goal.
     default event created is task
-
-    after typing the command the respective fields of the event created will appear and input for them will prompt user
-
-    method will be the same as in edit with the difference that no prior data will be in the Event object
      */
 
     private String flagHandler(String input) {
         return input.startsWith("--") ? input.replace(input.charAt(1), input.charAt(2)).substring(0, 2) : input;
     }
 
-    //temporary
-    private String buildEventName(String[] input) {
-        StringBuilder sb = new StringBuilder(input[1]);
-        for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
-        return sb.toString();
-    }
 }

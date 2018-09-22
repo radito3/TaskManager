@@ -25,7 +25,7 @@ public class Delete implements Command {
     @Override
     public void execute(String... args) {
         try {
-            String name = buildEventName(args);
+            String name = CommandUtils.buildEventName(args);
             Event event = EventsHandler.getObjectFromTitle(name);
 
             EventsHandler.delete(event);
@@ -37,12 +37,4 @@ public class Delete implements Command {
         }
     }
 
-    //this method is used in Edit as well
-    //should remove redundancy
-    private String buildEventName(String[] input) {
-        if (input.length == 1) throw new IllegalArgumentException();
-        StringBuilder sb = new StringBuilder(input[1]);
-        for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
-        return sb.toString();
-    }
 }
