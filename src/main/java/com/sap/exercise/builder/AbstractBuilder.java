@@ -17,13 +17,16 @@ public abstract class AbstractBuilder {
     protected List<String> fields;
     static Map<String, String> aliases = new HashMap<>();
 
-    protected Map<String, Map<Method, Class<?>>> methods = new HashMap<>();
+    protected Map<String, Map<Method, TypeWrapper>> methods = new HashMap<>();
 
     AbstractBuilder(Event event) {
         this.event = event;
         try {
-            methods.put("setTitle", Collections.singletonMap(Event.class.getDeclaredMethod("setTitle", String.class), String.class));
-
+            methods.put("Title", Collections.singletonMap(Event.class.getDeclaredMethod("setTitle", String.class), new TypeWrapper("string")));
+            methods.put("Location", Collections.singletonMap(Event.class.getDeclaredMethod("setLocation", String.class), new TypeWrapper("string")));
+            methods.put("TimeOf", Collections.singletonMap(Event.class.getDeclaredMethod("setTimeOf", Calendar.class), new TypeWrapper("calendar")));
+            methods.put("Description", Collections.singletonMap(Event.class.getDeclaredMethod("setDescription", String.class), new TypeWrapper("string")));
+            //TODO add rest of event class variables
         } catch (NoSuchMethodException ignored) {}
     }
 
@@ -37,7 +40,7 @@ public abstract class AbstractBuilder {
         }
     }
 
-    protected <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {
+    protected static <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {
         return Optional.ofNullable(obj).filter(condition).orElseThrow(supplier);
     }
 

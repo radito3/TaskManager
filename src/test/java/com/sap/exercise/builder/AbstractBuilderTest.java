@@ -18,7 +18,7 @@ public class AbstractBuilderTest {
     @DisplayName("Filter test with valid argument")
     public void filterValidArgTest() {
         String str = "test";
-        String str1 = new TaskBuilder(new Event()).filterInput("test", string -> string.matches("[-_.a-zA-Z0-9]+"),
+        String str1 = AbstractBuilder.filterInput("test", string -> string.matches("[-_.a-zA-Z0-9]+"),
                 IllegalArgumentException::new);
         assertEquals(str, str1, "Filtered string doesn't match");
     }
@@ -27,7 +27,7 @@ public class AbstractBuilderTest {
     @DisplayName("Filter test with invalid argument")
     public void filterInvalidArgTest() {
         assertThrows(IllegalArgumentException.class,
-                () -> new TaskBuilder(new Event()).filterInput("!@#%", string -> string.matches("[-_.a-zA-Z0-9]+"),
+                () -> AbstractBuilder.filterInput("!@#%", string -> string.matches("[-_.a-zA-Z0-9]+"),
                         IllegalArgumentException::new),
                 "Exception is not thrown with invalid argument");
     }
@@ -36,7 +36,7 @@ public class AbstractBuilderTest {
     @DisplayName("Filter test with null argument")
     public void filterNullArgTest() {
         assertThrows(IllegalArgumentException.class,
-                () -> new TaskBuilder(new Event()).filterInput("", string -> string.matches("[-_.a-zA-Z0-9]+"),
+                () -> AbstractBuilder.filterInput("", string -> string.matches("[-_.a-zA-Z0-9]+"),
                         IllegalArgumentException::new),
                 "Exception is not thrown with null argument");
     }

@@ -29,10 +29,14 @@ public class Add implements Command {
 
         EventBuilder builder = AbstractBuilder.getEventBuilder(event);
 
-        CommandUtils.interactiveInput(reader, printer, builder, event);
+        try {
+            CommandUtils.interactiveInput(reader, printer, builder, event);
 
-        EventsHandler.create(event);
-        printer.println("Event created");
+            EventsHandler.create(event);
+            printer.println("Event created");
+        } catch (IllegalArgumentException e) {
+            printer.println(e.getMessage());
+        }
     }
 
     /*
@@ -43,7 +47,7 @@ public class Add implements Command {
     default event created is task
      */
 
-    private String flagHandler(String input) {
+    private String flagHandler(String input) { //need to test this
         return input.startsWith("--") ? input.replace(input.charAt(1), input.charAt(2)).substring(0, 2) : input;
     }
 

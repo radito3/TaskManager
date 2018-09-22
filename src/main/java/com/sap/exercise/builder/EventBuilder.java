@@ -3,6 +3,7 @@ package com.sap.exercise.builder;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public interface EventBuilder {
         return StringUtils.capitalize(alias);
     }
 
-    EventBuilder append(String field, String val);
+    EventBuilder append(String field, String val) throws InvocationTargetException, IllegalAccessException;
 
     Event build();
 }

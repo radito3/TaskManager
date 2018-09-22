@@ -2,7 +2,10 @@ package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 public class TaskBuilder extends AbstractBuilder implements EventBuilder {
 
@@ -17,10 +20,11 @@ public class TaskBuilder extends AbstractBuilder implements EventBuilder {
         return fields;
     }
 
-    //if param type is boolean -> need to map input (yes -> true & no -> false)
-    public TaskBuilder append(String field, String value) {
-        //filter input data based on field it needs to fill
-
+    public TaskBuilder append(String field, String value) throws InvocationTargetException, IllegalAccessException {
+        Map<Method, TypeWrapper> method = methods.get(getOrigFieldName(field));
+        Method m = method.keySet().iterator().next(); //should get the only method in the singleton map
+        TypeWrapper wrapper = method.get(m);
+        m.invoke(event, wrapper.valueOf(wrapper.filter(value)));
         return this;
     }
 

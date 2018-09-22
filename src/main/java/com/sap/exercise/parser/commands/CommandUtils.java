@@ -31,7 +31,7 @@ public class CommandUtils {
     }
 
     public static String buildEventName(String[] input) {
-        if (input.length == 1) throw new IllegalArgumentException();
+        if (input.length == 1) throw new IllegalArgumentException("Event name not specified");
         StringBuilder sb = new StringBuilder(input[1]);
         for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
         return sb.toString();

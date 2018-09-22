@@ -34,7 +34,7 @@ public class Edit implements Command {
         } catch (NullPointerException npe) {
             printer.println("Invalid event name"); //these static strings could be set methods in OutputPrinter
         } catch (IllegalArgumentException iae) {
-            printer.println("Event name not specified");
+            printer.println(iae.getMessage());
         }
     }
 

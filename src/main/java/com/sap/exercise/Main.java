@@ -16,6 +16,7 @@ public class Main {
     //may have configurable colour palette for every coloured output
 
     public static void main(String[] args) {
+        //need to test String.valueOf(Calendar)
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         InputParser.run(INPUT);
         System.exit(0); //this should not be needed

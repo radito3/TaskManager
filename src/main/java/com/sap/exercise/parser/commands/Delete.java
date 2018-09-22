@@ -33,7 +33,7 @@ public class Delete implements Command {
         } catch (NullPointerException npe) {
             printer.println("Invalid event name");
         } catch (IllegalArgumentException iae) {
-            printer.println("Event name not specified");
+            printer.println(iae.getMessage());
         }
     }
 

@@ -45,10 +45,8 @@ public class Event extends BaseEvent implements Serializable {
     @Alias("all day? [Y]es [N]o")
     private Boolean allDay;
 
-    //will input an integer and convert it to time remaining to the end
-    @Column(columnDefinition = "mysql->timestamp", name = "Duration", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Calendar duration; //this will be set to the end time
+    @Column(columnDefinition = "mysql->int(11)", name = "Duration", nullable = false)
+    private Integer duration;
 
     //task only
     @Column(columnDefinition = "mysql->int(11)", name = "Reminder", nullable = false)
@@ -72,11 +70,11 @@ public class Event extends BaseEvent implements Serializable {
     }
 
     public Event(String title, EventType type, Calendar timeOf, RepeatableType repeat) {
-        this(title, type, "", timeOf, "", false, Calendar.getInstance(), 0, repeat);
+        this(title, type, "", timeOf, "", false, 0, 0, repeat);
     }
 
     public Event(String title, EventType typeOf, String location, Calendar timeOf, String description,
-                 Boolean allDay, Calendar duration, Integer reminder, RepeatableType toRepeat) {
+                 Boolean allDay, Integer duration, Integer reminder, RepeatableType toRepeat) {
         this.title = title;
         this.typeOf = typeOf;
         this.location = location;
@@ -145,11 +143,11 @@ public class Event extends BaseEvent implements Serializable {
         this.allDay = allDay;
     }
 
-    public Calendar getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(Calendar duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
@@ -176,10 +174,10 @@ public class Event extends BaseEvent implements Serializable {
                 ", title='" + title + '\'' +
                 ", typeOf=" + typeOf +
                 ", location='" + location + '\'' +
-                ", timeOf=" + timeOf.getTime().toString() +
+                ", timeOf=" + timeOf.toInstant().toString() +
                 ", description='" + description + '\'' +
                 ", allDay=" + allDay +
-                ", duration=" + duration.getTime().toString() +
+                ", duration=" + duration +
                 ", reminder=" + reminder +
                 ", toRepeat=" + toRepeat +
                 "}";
