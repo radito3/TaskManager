@@ -4,17 +4,16 @@ import com.sap.exercise.model.Alias;
 import com.sap.exercise.model.Event;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class AbstractBuilder {
 
     protected Event event;
     protected List<String> fields;
+    protected Map<String, Class<?>> fieldParams;
 
     public static EventBuilder getEventBuilder(Event.EventType type) {
         if (type == Event.EventType.TASK) {
@@ -24,6 +23,10 @@ public abstract class AbstractBuilder {
         } else {
             return new GoalBuilder();
         }
+    }
+
+    protected <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {
+        return Optional.ofNullable(obj).filter(condition).orElseThrow(supplier);
     }
 
     protected List<String> getFields(Predicate<String> condition) {

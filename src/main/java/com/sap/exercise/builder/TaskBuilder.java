@@ -2,17 +2,16 @@ package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TaskBuilder extends AbstractBuilder implements EventBuilder {
-
-    private Map<String, Class<?>> fieldParams;
 
     TaskBuilder() {
         event = new Event("", Event.EventType.TASK);
         fields = getFields(name ->
                 name.matches("title|location|description|reminder|when|repeat|all day"));
+        fieldParams = new HashMap<>();
     }
 
 
