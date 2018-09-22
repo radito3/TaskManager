@@ -1,7 +1,5 @@
 package com.sap.exercise.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -192,20 +190,7 @@ public class Event extends BaseEvent implements Serializable {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Event event = (Event) object;
-        return new EqualsBuilder().append(id, event.id)
-                .append(title, event.title)
-//                .append(typeOf, event.typeOf)
-                .append(location, event.location)
-                .append(timeOf, event.timeOf)
-                .append(description, event.description)
-                .append(allDay, event.allDay)
-                .append(duration, event.duration)
-                .append(reminder, event.reminder)
-//                .append(toRepeat, event.toRepeat)
-                .build() &&
-                typeOf == event.typeOf &&
-                toRepeat == event.toRepeat;
-        /*Objects.equals(id, event.id) &&
+        return Objects.equals(id, event.id) &&
                 Objects.equals(title, event.title) &&
                 typeOf == event.typeOf &&
                 Objects.equals(location, event.location) &&
@@ -214,7 +199,7 @@ public class Event extends BaseEvent implements Serializable {
                 Objects.equals(allDay, event.allDay) &&
                 Objects.equals(duration, event.duration) &&
                 Objects.equals(reminder, event.reminder) &&
-                toRepeat == event.toRepeat;*/
+                toRepeat == event.toRepeat;
     }
 
     @Override

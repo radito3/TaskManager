@@ -2,6 +2,7 @@ package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Alias;
 import com.sap.exercise.model.Event;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -14,14 +15,19 @@ public abstract class AbstractBuilder {
     protected Event event;
     protected List<String> fields;
     protected Map<String, Class<?>> fieldParams;
+    static Map<String, String> aliases = new HashMap<>();
 
-    public static EventBuilder getEventBuilder(Event.EventType type) {
-        if (type == Event.EventType.TASK) {
-            return new TaskBuilder();
-        } else if (type == Event.EventType.REMINDER) {
-            return new ReminderBuilder();
+    AbstractBuilder(Event event) {
+        this.event = event;
+    }
+
+    public static EventBuilder getEventBuilder(Event event) {
+        if (event.getTypeOf() == Event.EventType.TASK) {
+            return new TaskBuilder(event);
+        } else if (event.getTypeOf() == Event.EventType.REMINDER) {
+            return new ReminderBuilder(event);
         } else {
-            return new GoalBuilder();
+            return new GoalBuilder(event);
         }
     }
 
@@ -30,7 +36,6 @@ public abstract class AbstractBuilder {
     }
 
     protected List<String> getFields(Predicate<String> condition) {
-        Map<String, String> aliases = new HashMap<>();
         return Arrays.stream(Event.class.getDeclaredFields())
                 .peek(field -> {
                     if (field.isAnnotationPresent(Alias.class)) {
@@ -48,11 +53,7 @@ public abstract class AbstractBuilder {
                     return name;
                 })
                 .filter(condition)
-                .map(name -> {
-                    char[] chars = name.toCharArray();
-                    chars[0] = Character.toUpperCase(chars[0]);
-                    return new String(chars);
-                })
+                .map(StringUtils::capitalize)
                 .collect(Collectors.toList());
     }
 }

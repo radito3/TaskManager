@@ -8,6 +8,7 @@ import com.sap.exercise.model.Event;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 
 import static com.sap.exercise.Main.INPUT;
 
@@ -25,9 +26,6 @@ public class Edit implements Command {
             Event event = EventsHandler.getObjectFromTitle(name);
 
             edit(event);
-
-//            EventsHandler.update(event);
-//            printer.println("Event updated");
         } catch (NullPointerException npe) {
             printer.println("Invalid event name"); //these static strings could be set methods in OutputPrinter
         } catch (IllegalArgumentException iae) {
@@ -43,27 +41,31 @@ public class Edit implements Command {
     }
 
     private void edit(Event event) {
-        try {
+        try { //this body of code could be in InputParser
             //not closing the input stream so the application can continue running
             BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
 
-            EventBuilder builder = AbstractBuilder.getEventBuilder(event.getTypeOf());
+            EventBuilder builder = AbstractBuilder.getEventBuilder(event);
 
             for (String field : builder.getFields()) {
                 printer.print(field + ": ");
                 String input = reader.readLine();
 
                 if (input.equals("")) {
-                    //get old value of event and set it in event builder
+                    Object val = Event.class.getDeclaredMethod("get" + builder.getOrigFieldName(field)).invoke(event);
+                    builder.append(field, String.valueOf(val));
                     continue;
                 }
 
-                //add input to builder
-                //at the end .build() to get the Event object
-                //then save it to the database
+                builder.append(field, input);
             }
+
+            EventsHandler.update(builder.build());
+            printer.println("Event updated");
         } catch (IOException e) {
             printer.error(e.getMessage());
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            printer.error("whoops");
         }
     }
 

@@ -32,20 +32,7 @@ public class Add implements Command {
 
     after typing the command the respective fields of the event created will appear and input for them will prompt user
 
-    method:
-        <event_type> event = new Object();
-        list<event_field> fields = event.getFields();
-
-        try (Scanner s = new Scanner(inputStream)) {
-            for (field f : fields) {
-                printer.println(f.name() + ": ");
-                String input = s.nextLine().filter(<criteria>);
-                event.setField(input);
-            }
-        }
-
-        <db_client> db = dbFactory.getDbClient();
-        db.processObject(s -> s.save(event));
+    method will be the same as in edit with the difference that no prior data will be in the Event object
      */
 
     private String flagHandler(String input) {

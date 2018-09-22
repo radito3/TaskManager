@@ -7,17 +7,18 @@ import java.util.List;
 
 public class GoalBuilder extends AbstractBuilder implements EventBuilder {
 
-    GoalBuilder() {
-        event = new Event("", Event.EventType.GOAL);
+    GoalBuilder(Event event) {
+        super(event);
         fields = getFields(name -> name.matches("title")); //...
         fieldParams = new HashMap<>();
     }
+
 
     public List<String> getFields() {
         return fields;
     }
 
-    public EventBuilder append(String val) {
+    public EventBuilder append(String field, String val) {
         //filter input
         return this;
     }

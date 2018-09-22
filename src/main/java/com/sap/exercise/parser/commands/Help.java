@@ -17,6 +17,8 @@ public class Help implements Command {
     }
 
     /*
+    with add and edit will write time format for 'when' field
+
     add ->
         add [[-t|--task]|[-r|--reminder]|[-g|--goal]]
             event fields for event: input
