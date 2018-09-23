@@ -26,7 +26,10 @@ public abstract class AbstractBuilder {
             methods.put("Location", Collections.singletonMap(Event.class.getDeclaredMethod("setLocation", String.class), new TypeWrapper("string")));
             methods.put("TimeOf", Collections.singletonMap(Event.class.getDeclaredMethod("setTimeOf", Calendar.class), new TypeWrapper("calendar")));
             methods.put("Description", Collections.singletonMap(Event.class.getDeclaredMethod("setDescription", String.class), new TypeWrapper("string")));
-            //TODO add rest of event class variables
+            methods.put("AllDay", Collections.singletonMap(Event.class.getDeclaredMethod("setAllDay", Boolean.class), new TypeWrapper("bool")));
+            methods.put("Duration", Collections.singletonMap(Event.class.getDeclaredMethod("setDuration", Integer.class), new TypeWrapper("integer")));
+            methods.put("Reminder", Collections.singletonMap(Event.class.getDeclaredMethod("setReminder", Integer.class), new TypeWrapper("integer")));
+            methods.put("ToRepeat", Collections.singletonMap(Event.class.getDeclaredMethod("setToRepeat", Event.RepeatableType.class), new TypeWrapper("repeat")));
         } catch (NoSuchMethodException ignored) {}
     }
 

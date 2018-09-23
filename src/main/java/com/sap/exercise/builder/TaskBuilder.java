@@ -12,7 +12,7 @@ public class TaskBuilder extends AbstractBuilder implements EventBuilder {
     TaskBuilder(Event event) {
         super(event);
         fields = getFields(name ->
-                name.matches("title|location|description|reminder|when|repeat.+|all day.+"));
+                name.matches("title|location|description|reminder|when|repeat.+|all day.+|duration"));
     }
 
 

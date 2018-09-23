@@ -19,7 +19,9 @@ public class TypeWrapper {
     String filter(String val) {
         switch (name) {
             case "calendar":
-                if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3}\\s*$")) {
+                if (val.matches("2\\d\\d.+")) {
+                    return val;
+                } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3}\\s*$")) {
                     return val + " 00:00:00";
                 } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3} \\d{2}:\\d{2}:\\d{2}\\s*$")) {
                     return val;
@@ -82,7 +84,7 @@ public class TypeWrapper {
             case "repeat":
                 return Event.RepeatableType.valueOf(val.toUpperCase());
             default:
-                return AbstractBuilder.filterInput(val, string -> string.matches("[-_.a-zA-Z0-9 ]+"),
+                return AbstractBuilder.filterInput(val, string -> string.matches("[-_.a-zA-Z0-9 ]*"),
                         () -> new IllegalArgumentException("Illegal characters in input"));
         }
     }
