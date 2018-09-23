@@ -22,7 +22,7 @@ public class TypeWrapper {
                 if (val.matches("2\\d\\d.+")) {
                     return val;
                 } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3}\\s*$")) {
-                    return val + " 00:00:00";
+                    return val + " 12:00:00";
                 } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3} \\d{2}:\\d{2}:\\d{2}\\s*$")) {
                     return val;
                 } else {
