@@ -22,7 +22,7 @@ public class Help implements Command {
     }
 
     /*
-    with add and edit will write time format for 'when' field
+    with add and edit will write time format for 'when' field  <dd-mm-yyyy hh:mm:ss>
 
     add ->
         add [[-t|--task]|[-r|--reminder]|[-g|--goal]]

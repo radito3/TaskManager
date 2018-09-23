@@ -2,8 +2,10 @@ package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 
 public class TypeWrapper {
@@ -51,6 +53,11 @@ public class TypeWrapper {
                 } else {
                     throw new IllegalArgumentException("Invalid input");
                 }
+            case "integer":
+                if (!val.matches("^\\s*\\d{1,3}\\s*$")) {
+                    throw new IllegalArgumentException("Invalid number");
+                }
+                return val;
             default:
                 return val;
         }
@@ -60,8 +67,13 @@ public class TypeWrapper {
         switch (name) {
             case "calendar":
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                try { cal.setTime(sdf.parse(val)); } catch (ParseException ignored) {}
+                if (val.matches("2\\d\\d.+")) {
+                    cal.setTime(Date.from(Instant.parse(val)));
+                } else {
+                    //may add more date formats in future implementation
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+                    try { cal.setTime(sdf.parse(val)); } catch (ParseException ignored) {}
+                }
                 return cal;
             case "bool":
                 return Boolean.valueOf(val);

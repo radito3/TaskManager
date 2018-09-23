@@ -6,6 +6,7 @@ import com.sap.exercise.printer.OutputPrinter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Calendar;
 
 public class CommandUtils {
 
@@ -19,7 +20,11 @@ public class CommandUtils {
                 if (input.equals("")) {
                     Object val = Event.class.getDeclaredMethod("get" +
                             builder.getOrigFieldName(field)).invoke(event);
-                    builder.append(field, String.valueOf(val));
+                    if (val instanceof Calendar) {
+                        builder.append(field, ((Calendar) val).toInstant().toString());
+                    } else {
+                        builder.append(field, String.valueOf(val));
+                    }
                     continue;
                 }
 
