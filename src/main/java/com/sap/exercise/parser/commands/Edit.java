@@ -30,7 +30,7 @@ public class Edit implements Command {
             CommandUtils.interactiveInput(reader, printer, builder, event);
 
             EventsHandler.update(builder.build());
-            printer.println("Event updated");
+            printer.println("\nEvent updated");
         } catch (NullPointerException npe) {
             printer.println("Invalid event name"); //these static strings could be set methods in OutputPrinter
         } catch (IllegalArgumentException iae) {

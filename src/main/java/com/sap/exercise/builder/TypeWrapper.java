@@ -21,9 +21,9 @@ public class TypeWrapper {
             case "calendar":
                 if (val.matches("2\\d\\d.+")) {
                     return val;
-                } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3}\\s*$")) {
+                } else if (val.matches("^\\s*[0-3][0-9]-[01][0-9]-2\\d{3}\\s*$")) {
                     return val + " 12:00:00";
-                } else if (val.matches("^\\s*\\d{2}-\\d{2}-2\\d{3} \\d{2}:\\d{2}:\\d{2}\\s*$")) {
+                } else if (val.matches("^\\s*[0-3][0-9]-[01][0-9]-2\\d{3} [0-5][0-9]:[0-5][0-9]:[0-5][0-9]\\s*$")) {
                     return val;
                 } else {
                     throw new IllegalArgumentException("Invalid time format");
@@ -74,7 +74,9 @@ public class TypeWrapper {
                 } else {
                     //may add more date formats in future implementation
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                    try { cal.setTime(sdf.parse(val)); } catch (ParseException ignored) {}
+                    try { cal.setTime(sdf.parse(val)); } catch (ParseException e) {
+                        throw new IllegalArgumentException("Invalid date value");
+                    }
                 }
                 return cal;
             case "bool":

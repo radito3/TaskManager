@@ -24,8 +24,10 @@ public class InputParser {
         try (Scanner scanner = new Scanner(in)) {
             outside:
             while (scanner.hasNext()) {
-                //doesn't work when a command is written after a series of \s characters (works with \r|\n)
-                String[] inputArgs = scanner.nextLine().split("\\s+");
+                String input = scanner.nextLine();
+                if (input.matches("\\s*|\\r|\\t|\\n")) continue;
+
+                String[] inputArgs = input.split("\\s+");
 
                 for (Command command : commands) {
                     if (inputArgs[0].equals(command.getName())) {

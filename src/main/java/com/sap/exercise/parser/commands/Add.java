@@ -33,7 +33,7 @@ public class Add implements Command {
             CommandUtils.interactiveInput(reader, printer, builder, event);
 
             EventsHandler.create(event);
-            printer.println("Event created");
+            printer.println("\nEvent created");
         } catch (IllegalArgumentException e) {
             printer.println(e.getMessage());
         }

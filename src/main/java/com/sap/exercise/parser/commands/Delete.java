@@ -29,7 +29,7 @@ public class Delete implements Command {
             Event event = EventsHandler.getObjectFromTitle(name);
 
             EventsHandler.delete(event);
-            printer.println("Event deleted");
+            printer.println("\nEvent deleted");
         } catch (NullPointerException npe) {
             printer.println("Invalid event name");
         } catch (IllegalArgumentException iae) {
