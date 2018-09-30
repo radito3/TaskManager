@@ -39,8 +39,7 @@ public class CommandUtils {
         }
     }
 
-    private static String checkMandatoryField(String input, BufferedReader reader,
-                                       OutputPrinter printer, String field,
+    private static String checkMandatoryField(String input, BufferedReader reader, OutputPrinter printer, String field,
                                        EventBuilder builder) throws ReflectiveOperationException, IOException {
         if (Event.class.getDeclaredField(StringUtils.uncapitalize(builder.getOrigFieldName(field)))
                 .isAnnotationPresent(Mandatory.class) && input.equals("")) {
@@ -55,9 +54,9 @@ public class CommandUtils {
     }
 
     public static String buildEventName(String[] input) {
-        if (input.length == 1) throw new IllegalArgumentException("Event name not specified");
-        StringBuilder sb = new StringBuilder(input[1]);
-        for (int i = 2; i < input.length; i++) sb.append(' ').append(input[i]);
+        if (input.length == 0) throw new IllegalArgumentException("Event name not specified");
+        StringBuilder sb = new StringBuilder(input[0]);
+        for (int i = 1; i < input.length; i++) sb.append(' ').append(input[i]);
         return sb.toString();
     }
 }

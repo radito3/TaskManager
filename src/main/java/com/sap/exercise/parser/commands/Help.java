@@ -1,6 +1,13 @@
 package com.sap.exercise.parser.commands;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+
 import javax.swing.*;
+
+import java.io.PrintWriter;
+
+import static com.sap.exercise.Main.OUTPUT;
 
 public class Help implements Command {
 
@@ -19,13 +26,10 @@ public class Help implements Command {
         if an argument is present -> display helper for that argument
          */
         printer.println("in help class");
+
+        //with add and edit will write time format for 'when' field  <dd-mm-yyyy hh:mm:ss>
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "test", "header", new Options(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
     }
 
-    /*
-    with add and edit will write time format for 'when' field  <dd-mm-yyyy hh:mm:ss>
-
-    add ->
-        add [[-t|--task]|[-r|--reminder]|[-g|--goal]]
-            event fields for event: input
-     */
 }

@@ -54,7 +54,7 @@ public class AbstractBuilderTest {
     public void getFieldsTest() {
         List<String> expected = Arrays.asList("Title", "When", "All day? [Y]es [N]o",
                 "Repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early");
-        List<String> result = new ReminderBuilder(new Event()).getFields();
-        assertTrue(Stream.concat(expected.stream(), result.stream()).distinct().count() == 4);
+        List<String> result = AbstractBuilder.getEventBuilder(new Event("", Event.EventType.REMINDER)).getFields();
+        assertEquals(4, Stream.concat(expected.stream(), result.stream()).distinct().count());
     }
 }

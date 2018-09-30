@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static com.sap.exercise.Main.OUTPUT;
 
@@ -31,7 +32,7 @@ public class InputParser {
 
                 for (Command command : commands) {
                     if (inputArgs[0].equals(command.getName())) {
-                        command.execute(inputArgs);
+                        command.execute(Stream.of(inputArgs).skip(1).toArray(String[]::new));
                         continue outside;
                     }
                 }

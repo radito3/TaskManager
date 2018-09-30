@@ -4,6 +4,7 @@ import com.sap.exercise.builder.AbstractBuilder;
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
+import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,34 +22,52 @@ public class Add implements Command {
     public void execute(String... args) {
         //if AllDay is true -> Duration will be in number of days
         //if AllDay is false -> Duration is number of minutes
-
-        Event event = new Event("-", args.length == 1 ? Event.EventType.TASK :
-                Event.EventType.valueOf(flagHandler(args[1])));
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
-
-        EventBuilder builder = AbstractBuilder.getEventBuilder(event);
-
         try {
+            Event event = flagHandler(args);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
+
+            EventBuilder builder = AbstractBuilder.getEventBuilder(event);
+
             CommandUtils.interactiveInput(reader, printer, builder, event);
 
             EventsHandler.create(event);
             printer.println("\nEvent created");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
         }
     }
 
-    /*
-    when starting this command the optional flags will be:
-        -t[--task] for a task;
-        -r[--reminder] for a reminder;
-        -g[--goal] for a goal.
-    default event created is task
-     */
+    //may move this to command utils
+    private Event flagHandler(String[] args) throws ParseException {
+        Option task = Option.builder("t")
+                .required(false)
+                .longOpt("task")
+                .desc("Specify the event created to be a Task")
+                .build();
+        Option reminder = Option.builder("r")
+                .required(false)
+                .longOpt("reminder")
+                .desc("Specify the event created to be a Reminder")
+                .build();
+        Option goal = Option.builder("g")
+                .required(false)
+                .longOpt("goal")
+                .desc("Specify the event created to be a Goal")
+                .build();
+        Options options = new Options().addOption(task).addOption(reminder).addOption(goal);
 
-    private String flagHandler(String input) { //need to test this
-        return input.startsWith("--") ? input.replace(input.charAt(1), input.charAt(2)).substring(0, 2) : input;
+        CommandLine cmd = new DefaultParser().parse(options, args);
+        if (cmd.getOptions().length > 1) {
+            throw new IllegalArgumentException("Invalid number of flags");
+        }
+
+        if (cmd.hasOption('r')) {
+            return new Event("", Event.EventType.REMINDER);
+        } else if (cmd.hasOption('g')) {
+            return new Event("", Event.EventType.GOAL);
+        } else {
+            return new Event("", Event.EventType.TASK);
+        }
     }
-
 }

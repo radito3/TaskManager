@@ -15,14 +15,13 @@ public class TaskBuilder extends AbstractBuilder implements EventBuilder {
                 name.matches("title|location|description|reminder|when|repeat.+|all day.+|duration"));
     }
 
-
     public List<String> getFields() {
         return fields;
     }
 
     public TaskBuilder append(String field, String value) throws InvocationTargetException, IllegalAccessException {
         Map<Method, TypeWrapper> method = methods.get(getOrigFieldName(field));
-        Method m = method.keySet().iterator().next(); //should get the only method in the singleton map
+        Method m = method.keySet().iterator().next();
         TypeWrapper wrapper = method.get(m);
         m.invoke(event, wrapper.valueOf(wrapper.filter(value)));
         return this;
