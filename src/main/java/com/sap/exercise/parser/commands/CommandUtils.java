@@ -4,6 +4,7 @@ import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.model.Mandatory;
 import com.sap.exercise.printer.OutputPrinter;
+import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -58,5 +59,27 @@ public class CommandUtils {
         StringBuilder sb = new StringBuilder(input[0]);
         for (int i = 1; i < input.length; i++) sb.append(' ').append(input[i]);
         return sb.toString();
+    }
+
+    //will need to make this intuitive for the different commands
+    //for now it only handles Add
+    public static CommandLine getParsedCmd(String[] args) throws ParseException {
+        Option task = Option.builder("t")
+                .required(false)
+                .longOpt("task")
+                .desc("Specify the event created to be a Task")
+                .build();
+        Option reminder = Option.builder("r")
+                .required(false)
+                .longOpt("reminder")
+                .desc("Specify the event created to be a Reminder")
+                .build();
+        Option goal = Option.builder("g")
+                .required(false)
+                .longOpt("goal")
+                .desc("Specify the event created to be a Goal")
+                .build();
+        Options options = new Options().addOption(task).addOption(reminder).addOption(goal);
+        return new DefaultParser().parse(options, args, false);
     }
 }
