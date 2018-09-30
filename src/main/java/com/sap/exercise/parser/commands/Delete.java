@@ -62,7 +62,8 @@ public class Delete implements Command {
         String eventName = CommandUtils.buildEventName(cmd.getArgs());
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');
-        } else if (cmd.hasOption('e')) {
+        }
+        if (cmd.hasOption('e')) {
             endTime = cmd.getOptionValue('e');
         }
     }

@@ -15,7 +15,7 @@ public abstract class AbstractBuilder {
 
     protected Event event;
     protected List<String> fields;
-    static Map<String, String> aliases = new HashMap<>();
+    protected Map<String, String> aliases = new HashMap<>();
 
     protected Map<String, Map<Method, TypeWrapper>> methods = new HashMap<>();
 
@@ -34,13 +34,7 @@ public abstract class AbstractBuilder {
     }
 
     public static EventBuilder getEventBuilder(Event event) {
-        if (event.getTypeOf() == Event.EventType.TASK) {
-            return new TaskBuilder(event);
-        } else if (event.getTypeOf() == Event.EventType.REMINDER) {
-            return new ReminderBuilder(event);
-        } else {
-            return new GoalBuilder(event);
-        }
+        return new EventBuilderImpl(event);
     }
 
     protected static <T, X extends RuntimeException> T filterInput(T obj, Predicate<T> condition, Supplier<X> supplier) {

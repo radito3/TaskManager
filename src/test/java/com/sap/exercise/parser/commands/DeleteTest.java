@@ -5,7 +5,9 @@ import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.condition.EnabledIf;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,20 +26,35 @@ public class DeleteTest extends AbstractTest {
         Event event = new Event("test title");
         EventsHandler.create(event);
 
-        new Delete().execute("delete", "test", "title");
+        new Delete().execute("test", "title");
         assertThrows(NullPointerException.class, () -> EventsHandler.getObject(event), "Event has not been deleted");
     }
 
-//    @Test
-//    @DisplayName("Delete test with null name")
-//    @EnabledIf({"com.sap.exercise.Main.OUTPUT == System.out"}) //incorrect script
-//    public void deleteNullNameTest() {
-//
-//    }
-//
-//    @Test
-//    @DisplayName("Delete test with incorrect event name")
-//    public void deleteIncorrectNameTest() {
-//
-//    }
+    @Test
+    @DisplayName("Delete test with null name")
+    public void deleteNullNameTest() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream defaultOut = System.out;
+        System.setOut(new PrintStream(out));
+        Delete delete = new Delete();
+
+        delete.execute();
+        System.out.flush();
+        assertEquals("Event name not specified\n", out.toString());
+        System.setOut(defaultOut);
+    }
+
+    @Test
+    @DisplayName("Delete test with incorrect event name")
+    public void deleteIncorrectNameTest() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PrintStream defaultOut = System.out;
+        System.setOut(new PrintStream(out));
+        Delete delete = new Delete();
+
+        delete.execute("!!@$");
+        System.out.flush();
+        assertEquals("Invalid event name\n", out.toString());
+        System.setOut(defaultOut);
+    }
 }

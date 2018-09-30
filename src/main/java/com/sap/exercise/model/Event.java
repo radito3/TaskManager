@@ -48,9 +48,8 @@ public class Event extends BaseEvent implements Serializable {
     private Boolean allDay;
 
     @Column(columnDefinition = "mysql->int(11)", name = "Duration", nullable = false)
-    private Integer duration;
+    private Integer duration; //if allDay is true -> number of days; else -> number of minutes per day
 
-    //task only
     @Column(columnDefinition = "mysql->int(11)", name = "Reminder", nullable = false)
     private Integer reminder; //minutes before appointed time to remind
 
@@ -89,7 +88,6 @@ public class Event extends BaseEvent implements Serializable {
         this.toRepeat = toRepeat;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }

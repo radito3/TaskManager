@@ -4,10 +4,6 @@ import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,17 +40,6 @@ public class AbstractBuilderTest {
     @Test
     @DisplayName("Event handler instance test")
     public void getEventHandlerTest() {
-        assertTrue(AbstractBuilder.getEventBuilder(new Event("", Event.EventType.GOAL)) instanceof GoalBuilder);
-        assertTrue(AbstractBuilder.getEventBuilder(new Event("", Event.EventType.REMINDER)) instanceof ReminderBuilder);
-        assertTrue(AbstractBuilder.getEventBuilder(new Event("", Event.EventType.TASK)) instanceof TaskBuilder);
-    }
-
-    @Test
-    @DisplayName("Get fields test")
-    public void getFieldsTest() {
-        List<String> expected = Arrays.asList("Title", "When", "All day? [Y]es [N]o",
-                "Repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early");
-        List<String> result = AbstractBuilder.getEventBuilder(new Event("", Event.EventType.REMINDER)).getFields();
-        assertEquals(4, Stream.concat(expected.stream(), result.stream()).distinct().count());
+        assertTrue(AbstractBuilder.getEventBuilder(new Event()) instanceof EventBuilderImpl);
     }
 }
