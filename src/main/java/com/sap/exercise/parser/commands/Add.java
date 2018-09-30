@@ -59,7 +59,7 @@ public class Add implements Command {
 
         CommandLine cmd = new DefaultParser().parse(options, args);
         if (cmd.getOptions().length > 1) {
-            throw new IllegalArgumentException("Invalid number of flags");
+            throw new IllegalArgumentException("Invalid number of arguments");
         }
 
         if (cmd.hasOption('r')) {
