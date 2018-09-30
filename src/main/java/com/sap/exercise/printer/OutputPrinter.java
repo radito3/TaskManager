@@ -121,4 +121,46 @@ public class OutputPrinter {
         writer.println(ANSI_RED + val + ANSI_RESET);
     }
 
+    public void printSimpleMonthCalendar() {
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+
+        String[] months = {
+                "",
+                "January", "February", "March",
+                "April", "May", "June",
+                "July", "August", "September",
+                "October", "November", "December"
+        };
+
+        int[] days = {
+                0, 31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+        };
+
+        writer.println("   " + months[month] + " " + year);
+        writer.println(" S  M Tu  W Th  F  S");
+
+        int startingDay = day(month, year);
+
+        for (int i = 0; i < startingDay; i++)
+            writer.print("   ");
+
+        for (int i = 1; i <= days[month]; i++) {
+            writer.printf("%2d ", i);
+            if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
+        }
+    }
+
+    private int day(int month, int year) {
+        int y = year - (14 - month) / 12;
+        int x = y + y / 4 - y / 100 + y / 400;
+        int m = month + 12 * ((14 - month) / 12) - 2;
+        return (1 + x + (31 * m) / 12) % 7;
+    }
+
+    private boolean isLeapYear(int year) {
+        if  ((year % 4 == 0) && (year % 100 != 0)) return true;
+        return year % 400 == 0;
+    }
+
 }
