@@ -1,12 +1,13 @@
 package com.sap.exercise.builder;
 
-import com.sap.exercise.model.Event;
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.sap.exercise.model.Event;
 
 public class EventBuilderImpl extends AbstractBuilder implements EventBuilder {
 
@@ -34,6 +35,11 @@ public class EventBuilderImpl extends AbstractBuilder implements EventBuilder {
         return StringUtils.capitalize(alias);
     }
 
+    // As generic as this code seems to be - the idea of navigating to setter methods based on field names, I have strong doubts of it's
+    // resilience to regressions when the event entity evolves
+    // But if you solve this without reflection, the java compiler and IDE might just help you avoid a NoSuchMethodException.
+    // And overall - it may not be a good idea to share field names in the ui - this is a separate kind of metadata, which deserves a decent
+    // depiction in your code
     public EventBuilder append(String field, String value) throws InvocationTargetException, IllegalAccessException {
         Map<Method, TypeWrapper> method = methods.get(getOrigFieldName(field));
         Method m = method.keySet().iterator().next();
