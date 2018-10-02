@@ -20,7 +20,7 @@ public abstract class BaseEvent {
      * @param <X> The Exception type
      * @return The input data if it fulfills the filter condition
      */
-    @Deprecated
+    @Deprecated // why deprecated and not deleted?
     protected <T, X extends RuntimeException> T filter(T obj, Predicate<T> condition, Supplier<X> supplier) {
         return Optional.of(obj).filter(condition).orElseThrow(supplier);
     }

@@ -1,12 +1,12 @@
 package com.sap.exercise.builder;
 
-import com.sap.exercise.model.Event;
-
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
+
+import com.sap.exercise.model.Event;
 
 public class TypeWrapper {
 
@@ -16,6 +16,9 @@ public class TypeWrapper {
         this.name = name;
     }
 
+    // Why not make such a class for each 'name' (or value type as these seem to be)?
+    // From the naming alone, I can't really think what a TypeWrapper is supposed to filter and from what.
+    // please extract some methods with meaningful names
     String filter(String val) {
         switch (name) {
             case "calendar":
