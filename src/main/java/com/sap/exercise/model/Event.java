@@ -1,9 +1,19 @@
 package com.sap.exercise.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "Eventt")
@@ -75,6 +85,7 @@ public class Event extends BaseEvent implements Serializable {
         this(title, type, "", timeOf, "", false, 0, 0, repeat);
     }
 
+    // Nice reuse of constructor. See Builder & Factory design patterns - would spare the pain of giving *9* arguments to a constructor
     public Event(String title, EventType typeOf, String location, Calendar timeOf, String description,
                  Boolean allDay, Integer duration, Integer reminder, RepeatableType toRepeat) {
         this.title = title;
@@ -168,6 +179,7 @@ public class Event extends BaseEvent implements Serializable {
         this.toRepeat = toRepeat;
     }
 
+    // cool - spill your guts in a structured way :D
     @Override
     public String toString() {
         return "Event{" +
@@ -184,6 +196,7 @@ public class Event extends BaseEvent implements Serializable {
                 "}";
     }
 
+    // Nice implementation :) You can also check out org.apache.commons...EqualsBuilder - sorry for misleading you on the phone for the name
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -201,6 +214,7 @@ public class Event extends BaseEvent implements Serializable {
                 toRepeat == event.toRepeat;
     }
 
+    // btw - this implementation is nice, you can also check-out apache.commons HashCodeBuilder - it's API is interesting (method chaining)
     @Override
     public int hashCode() {
         return Objects.hash(id, title, typeOf, location, timeOf, description, allDay, duration, reminder, toRepeat);
