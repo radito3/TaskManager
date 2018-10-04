@@ -17,27 +17,19 @@ public class InputParser {
     //and the two methods will open a new reader when they are called
 
     private static List<Command> commands = Arrays.asList(
-            new Exit(), new Add(), new Edit(), new Delete(), new Help());
+            new Exit(), new Add(), new Edit(), new Delete(), new Help(), new Agenda());
 
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void run(InputStream in) {
         try (Scanner scanner = new Scanner(in)) {
-            outside:
             while (scanner.hasNext()) {
                 String input = scanner.nextLine();
                 if (input.matches("\\s*|\\r|\\t|\\n")) continue;
 
                 String[] inputArgs = input.split("\\s+");
 
-                for (Command command : commands) {
-                    if (inputArgs[0].equals(command.getName())) {
-                        command.execute(Stream.of(inputArgs).skip(1).toArray(String[]::new));
-                        continue outside;
-                    }
-                }
-
-                printer.println("Invalid command");
+                iterateCommands(inputArgs);
             }
         } catch (Exception e) {
             //this should not be reached
@@ -45,4 +37,15 @@ public class InputParser {
         }
     }
 
+    private static void iterateCommands(String[] arguments) {
+        for (Command command : commands) {
+            if (arguments[0].equals(command.getName())) {
+                command.execute(Stream.of(arguments)
+                        .skip(1)
+                        .toArray(String[]::new));
+                return;
+            }
+        }
+        printer.println("Invalid command");
+    }
 }

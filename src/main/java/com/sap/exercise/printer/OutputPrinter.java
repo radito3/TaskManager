@@ -146,7 +146,10 @@ public class OutputPrinter {
             writer.print("   ");
 
         for (int i = 1; i <= days[month]; i++) {
-            writer.printf("%2d ", i);
+            if (i == calendar.get(Calendar.DAY_OF_MONTH))
+                writer.printf(ANSI_WHITE_BACKGROUND + ANSI_BLACK + "%2d " + ANSI_RESET, i);
+            else
+                writer.printf("%2d ", i);
             if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
         }
     }
