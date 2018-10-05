@@ -1,57 +1,57 @@
 package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.builder.FieldInfo;
+import com.sap.exercise.builder.InputValueTypes;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.model.Mandatory;
 import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Calendar;
 
 public class CommandUtils {
 
-    public static void interactiveInput(BufferedReader reader, OutputPrinter printer,
-                                        EventBuilder builder, Event event) {
+    public static void interactiveInput(BufferedReader reader, OutputPrinter printer, EventBuilder builder, Event event) {
         try {
-            for (String field : builder.getFields()) {
-                printer.print(field + ": ");
+            for (FieldInfo field : builder.getFields()) {
+                printer.print(field.getNameToDisplay() + ": ");
                 String input = reader.readLine();
 
-                input = checkMandatoryField(input, reader, printer, field, builder);
+                input = checkMandatoryField(input, reader, printer, field);
 
                 if (input.equals("")) {
-                    Object val = Event.class.getDeclaredMethod("get" +
-                            builder.getOrigFieldName(field)).invoke(event);
-                    if (val instanceof Calendar) {
-                        builder.append(field, ((Calendar) val).toInstant().toString());
-                    } else {
-                        builder.append(field, String.valueOf(val));
-                    }
+                    if (field.getValueType() == InputValueTypes.CALENDAR)
+                        builder.append(event.getTimeOf());
+                    else
+                        builder.append(field.getName(), String.valueOf(input));
                     continue;
                 }
 
-                builder.append(field, input);
+                builder.append(field.getName(), input);
             }
-        } catch (ReflectiveOperationException | IOException e) {
+        } catch (IOException e) {
             printer.error("Error: " + e.getMessage());
         }
     }
 
-    private static String checkMandatoryField(String input, BufferedReader reader, OutputPrinter printer, String field,
-                                       EventBuilder builder) throws ReflectiveOperationException, IOException {
-        if (Event.class.getDeclaredField(StringUtils.uncapitalize(builder.getOrigFieldName(field)))
-                .isAnnotationPresent(Mandatory.class) && input.equals("")) {
+    private static String checkMandatoryField(String input, BufferedReader reader, OutputPrinter printer, FieldInfo fInfo) throws IOException {
+        if (fInfo.isMandatory() && input.equals("")) {
             do {
                 printer.println("Field is mandatory!");
-                printer.print(field + ": ");
+                printer.print(fInfo.getNameToDisplay() + ": ");
                 input = reader.readLine();
             } while (input.equals(""));
             return input;
         }
         return input;
+    }
+
+    private static void handleNullInput() {
+        //here will be the cases of null input
+
+        //if (field.getValueType() == InputValueTypes.CALENDAR)
+        //                        builder.append(event.getTimeOf());
     }
 
     public static String buildEventName(String[] input) {

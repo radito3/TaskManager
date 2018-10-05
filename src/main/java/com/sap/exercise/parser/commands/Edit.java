@@ -1,6 +1,6 @@
 package com.sap.exercise.parser.commands;
 
-import com.sap.exercise.builder.AbstractBuilder;
+import com.sap.exercise.builder.AbstractEventBuilder;
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
@@ -25,7 +25,7 @@ public class Edit implements Command {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
 
-            EventBuilder builder = AbstractBuilder.getEventBuilder(event);
+            EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
             CommandUtils.interactiveInput(reader, printer, builder, event);
 

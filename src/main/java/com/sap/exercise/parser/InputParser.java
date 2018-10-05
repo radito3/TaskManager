@@ -25,7 +25,7 @@ public class InputParser {
         try (Scanner scanner = new Scanner(in)) {
             while (scanner.hasNext()) {
                 String input = scanner.nextLine();
-                if (input.matches("\\s*|\\r|\\t|\\n")) continue;
+                if (input.matches("\\s*|\\r|\\t*|\\n")) continue;
 
                 String[] inputArgs = input.split("\\s+");
 
