@@ -32,4 +32,12 @@ public abstract class AbstractEventBuilder {
         return Optional.ofNullable(obj).filter(condition).orElseThrow(supplier);
     }
 
+    protected FieldInfo findField(String val) {
+        for (FieldInfo field : fields) {
+            if (field.getName().equals(val))
+                return field;
+        }
+        return fields.get(0);
+    }
+
 }

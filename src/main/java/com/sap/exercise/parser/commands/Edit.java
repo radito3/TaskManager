@@ -27,7 +27,7 @@ public class Edit implements Command {
 
             EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
-            CommandUtils.interactiveInput(reader, printer, builder, event);
+            CommandUtils.interactiveInput(reader, printer, builder);
 
             EventsHandler.update(builder.build());
             printer.println("\nEvent updated");

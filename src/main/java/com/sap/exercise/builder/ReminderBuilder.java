@@ -23,14 +23,6 @@ public class ReminderBuilder extends AbstractEventBuilder implements EventBuilde
         return fields;
     }
 
-    private FieldInfo findField(String val) {
-        for (FieldInfo field : fields) {
-            if (field.getName().equals(val))
-                return field;
-        }
-        return fields.get(0);
-    }
-
     public ReminderBuilder append(String field, String input) {
         FieldInfo fInfo = findField(field);
         InputValueFilter filter = InputFilterFactory.getInputFilter(fInfo.getValueType());
@@ -50,13 +42,6 @@ public class ReminderBuilder extends AbstractEventBuilder implements EventBuilde
         }
         return this;
     }
-
-    public ReminderBuilder append(Calendar calendar) {
-        event.setTimeOf(calendar);
-        return this;
-    }
-
-    //there will be appends for the different types of input values
 
     public Event build() {
         return event;

@@ -30,9 +30,9 @@ public class Add implements Command {
 
             EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
-            CommandUtils.interactiveInput(reader, printer, builder, event);
+            CommandUtils.interactiveInput(reader, printer, builder);
 
-            EventsHandler.create(event);
+            EventsHandler.create(builder.build());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

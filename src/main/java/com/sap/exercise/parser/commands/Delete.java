@@ -57,8 +57,8 @@ public class Delete implements Command {
             printer.error(e.getMessage());
             return;
         }
-        String startTime;
-        String endTime;
+        String startTime = "";
+        String endTime = "";
         String eventName = CommandUtils.buildEventName(cmd.getArgs());
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');

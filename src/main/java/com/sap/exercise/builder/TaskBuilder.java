@@ -3,7 +3,6 @@ package com.sap.exercise.builder;
 import com.sap.exercise.model.Event;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class TaskBuilder extends AbstractEventBuilder implements EventBuilder {
@@ -21,11 +20,6 @@ public class TaskBuilder extends AbstractEventBuilder implements EventBuilder {
 
     @Override
     public EventBuilder append(String field, String val) {
-        return null;
-    }
-
-    @Override
-    public EventBuilder append(Calendar calendar) {
         return null;
     }
 

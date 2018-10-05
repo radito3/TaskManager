@@ -23,12 +23,10 @@ public class Event extends BaseEvent implements Serializable {
     private Integer id;
 
     @Column(columnDefinition = "mysql->varchar(64)", name = "Title", nullable = false)
-    @Mandatory
     private String title;
 
     @Column(columnDefinition = "mysql->enum('TASK', 'REMINDER', 'GOAL')", name = "TypeOf", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Alias("type")
     private EventType typeOf;
 
     @Column(columnDefinition = "mysql->text", name = "Location")
@@ -36,15 +34,12 @@ public class Event extends BaseEvent implements Serializable {
 
     @Column(columnDefinition = "mysql->timestamp", name = "TimeOf")
     @Temporal(TemporalType.TIMESTAMP)
-    @Alias("when")
     private Calendar timeOf;
 
     @Column(columnDefinition = "mysql->text", name = "Description")
     private String description;
 
     @Column(columnDefinition = "mysql->tinyint(1)", name = "AllDay", nullable = false)
-    @Alias("all day? [Y]es [N]o")
-    @Mandatory
     private Boolean allDay;
 
     @Column(columnDefinition = "mysql->int(11)", name = "Duration", nullable = false)
@@ -55,8 +50,6 @@ public class Event extends BaseEvent implements Serializable {
 
     @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Alias("repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early")
-    @Mandatory
     private RepeatableType toRepeat;
 
     public Event() {

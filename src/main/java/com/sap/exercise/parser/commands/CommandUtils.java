@@ -2,8 +2,6 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.builder.FieldInfo;
-import com.sap.exercise.builder.InputValueTypes;
-import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
 
@@ -12,7 +10,7 @@ import java.io.IOException;
 
 public class CommandUtils {
 
-    public static void interactiveInput(BufferedReader reader, OutputPrinter printer, EventBuilder builder, Event event) {
+    public static void interactiveInput(BufferedReader reader, OutputPrinter printer, EventBuilder builder) {
         try {
             for (FieldInfo field : builder.getFields()) {
                 printer.print(field.getNameToDisplay() + ": ");
@@ -20,15 +18,8 @@ public class CommandUtils {
 
                 input = checkMandatoryField(input, reader, printer, field);
 
-                if (input.equals("")) {
-                    if (field.getValueType() == InputValueTypes.CALENDAR)
-                        builder.append(event.getTimeOf());
-                    else
-                        builder.append(field.getName(), String.valueOf(input));
-                    continue;
-                }
-
-                builder.append(field.getName(), input);
+                if (!input.isEmpty())
+                    builder.append(field.getName(), input);
             }
         } catch (IOException e) {
             printer.error("Error: " + e.getMessage());
@@ -45,13 +36,6 @@ public class CommandUtils {
             return input;
         }
         return input;
-    }
-
-    private static void handleNullInput() {
-        //here will be the cases of null input
-
-        //if (field.getValueType() == InputValueTypes.CALENDAR)
-        //                        builder.append(event.getTimeOf());
     }
 
     public static String buildEventName(String[] input) {
