@@ -121,9 +121,9 @@ public class OutputPrinter {
         writer.println(ANSI_RED + val + ANSI_RESET);
     }
 
-    public void printSimpleMonthCalendar() {
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int year = calendar.get(Calendar.YEAR);
+    public void printSimpleMonthCalendar(int arg) {
+        int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
+        int year = arg > 11 ? calendar.get(Calendar.YEAR) + 1 : calendar.get(Calendar.YEAR);
 
         String[] months = {
                 "",
@@ -146,7 +146,7 @@ public class OutputPrinter {
             writer.print("   ");
 
         for (int i = 1; i <= days[month]; i++) {
-            if (i == calendar.get(Calendar.DAY_OF_MONTH))
+            if (isToday(i, month, year))
                 writer.printf(ANSI_WHITE_BACKGROUND + ANSI_BLACK + "%2d " + ANSI_RESET, i);
             else
                 writer.printf("%2d ", i);
@@ -164,6 +164,12 @@ public class OutputPrinter {
     private boolean isLeapYear(int year) {
         if  ((year % 4 == 0) && (year % 100 != 0)) return true;
         return year % 400 == 0;
+    }
+
+    private boolean isToday(int day, int month, int year) {
+        return calendar.get(Calendar.DAY_OF_MONTH) == day &&
+                calendar.get(Calendar.MONTH) + 1 == month &&
+                calendar.get(Calendar.YEAR) == year;
     }
 
 }

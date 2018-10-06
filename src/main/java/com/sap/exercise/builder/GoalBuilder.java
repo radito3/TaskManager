@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.sap.exercise.builder.InputValueTypes.*;
-import static com.sap.exercise.builder.InputValueTypes.INTEGER;
-import static com.sap.exercise.builder.InputValueTypes.STRING;
 
 public class GoalBuilder extends AbstractEventBuilder implements EventBuilder {
 

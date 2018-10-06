@@ -1,10 +1,11 @@
 package com.sap.exercise;
 
 import com.sap.exercise.parser.InputParser;
-//import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +18,7 @@ public class Main {
     //may have configurable colour palette for every coloured output
 
     public static void main(String[] args) {
-//        new OutputPrinter(OUTPUT).printSimpleMonthCalendar();
+        new OutputPrinter(OUTPUT).printSimpleMonthCalendar(Calendar.getInstance().get(Calendar.MONTH) + 3);
 
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         InputParser.run(INPUT);

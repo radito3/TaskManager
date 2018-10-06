@@ -17,7 +17,7 @@ public class InputParser {
     //and the two methods will open a new reader when they are called
 
     private static List<Command> commands = Arrays.asList(
-            new Exit(), new Add(), new Edit(), new Delete(), new Help(), new Agenda());
+            new Exit(), new Add(), new Edit(), new Delete(), new Help(), new Agenda(), new Calendar());
 
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
