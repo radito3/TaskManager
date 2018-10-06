@@ -27,7 +27,7 @@ public class CommandUtils {
     }
 
     private static String checkMandatoryField(String input, BufferedReader reader, OutputPrinter printer, FieldInfo fInfo) throws IOException {
-        if (fInfo.isMandatory() && input.equals("")) {
+        if (fInfo.isMandatory() && input.isEmpty()) {
             do {
                 printer.println("Field is mandatory!");
                 printer.print(fInfo.getNameToDisplay() + ": ");
