@@ -7,17 +7,15 @@ public class FieldInfo {
     private String name;
     private String alias;
     private boolean mandatory;
-    private InputValueTypes valueType;
 
-    FieldInfo(String name, boolean mandatory, InputValueTypes valueType) {
-        this(name, "", mandatory, valueType);
+    FieldInfo(String name, boolean mandatory) {
+        this(name, "", mandatory);
     }
 
-    FieldInfo(String name, String alias, boolean mandatory, InputValueTypes valueType) {
+    FieldInfo(String name, String alias, boolean mandatory) {
         this.name = name;
         this.alias = alias;
         this.mandatory = mandatory;
-        this.valueType = valueType;
     }
 
     public String getName() {
@@ -28,14 +26,11 @@ public class FieldInfo {
         return mandatory;
     }
 
-    public InputValueTypes getValueType() {
-        return valueType;
-    }
-
     public String getNameToDisplay() {
         if (alias.isEmpty())
             return StringUtils.capitalize(name);
         else
             return alias;
     }
+
 }

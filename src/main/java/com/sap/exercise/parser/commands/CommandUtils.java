@@ -32,8 +32,7 @@ public class CommandUtils {
                 printer.println("Field is mandatory!");
                 printer.print(fInfo.getNameToDisplay() + ": ");
                 input = reader.readLine();
-            } while (input.equals(""));
-            return input;
+            } while (input.isEmpty());
         }
         return input;
     }

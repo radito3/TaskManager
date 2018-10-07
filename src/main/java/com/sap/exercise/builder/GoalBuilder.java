@@ -3,21 +3,18 @@ package com.sap.exercise.builder;
 import com.sap.exercise.model.Event;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-
-import static com.sap.exercise.builder.InputValueTypes.*;
 
 public class GoalBuilder extends AbstractEventBuilder implements EventBuilder {
 
     GoalBuilder(Event event) {
         super(event);
         fields = new ArrayList<>(5);
-        fields.add(new FieldInfo("title", true, STRING));
-        fields.add(new FieldInfo("when", false, CALENDAR));
-        fields.add(new FieldInfo("toRepeat", "Repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early", true, REPEAT));
-        fields.add(new FieldInfo("reminder", false, INTEGER));
-        fields.add(new FieldInfo("duration", false, INTEGER));
+        fields.add(new FieldInfo("title", true));
+        fields.add(new FieldInfo("when", false));
+        fields.add(new FieldInfo("toRepeat", "Repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early", true));
+        fields.add(new FieldInfo("reminder", false));
+        fields.add(new FieldInfo("duration", false));
     }
 
     @Override
@@ -28,23 +25,17 @@ public class GoalBuilder extends AbstractEventBuilder implements EventBuilder {
     @Override
     public EventBuilder append(String field, String input) {
         FieldInfo fInfo = findField(field);
-        InputValueFilter filter = InputFilterFactory.getInputFilter(fInfo.getValueType());
         switch (fInfo.getName()) {
             case "title":
-                event.setTitle((String) filter.valueOf(input));
-                break;
+                return super.append(InputArgs.Title.build(input));
             case "when":
-                event.setTimeOf((Calendar) filter.valueOf(input));
-                break;
+                return super.append(InputArgs.When.build(input));
             case "toRepeat":
-                event.setToRepeat((Event.RepeatableType) filter.valueOf(input));
-                break;
+                return super.append(InputArgs.Repeat.build(input));
             case "duration":
-                event.setDuration((Integer) filter.valueOf(input));
-                break;
+                return super.append(InputArgs.Duration.build(input));
             case "reminder":
-                event.setReminder((Integer) filter.valueOf(input));
-                break;
+                return super.append(InputArgs.Reminder.build(input));
         }
         return this;
     }
