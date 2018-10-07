@@ -6,98 +6,50 @@ import java.util.Calendar;
 
 public class OutputPrinter {
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String RESET = "\u001B[0m";
+    public static final String BOLD = "\u001B[1m";
+    public static final String UNDERLINE = "\u001B[4m";
 
-    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
-    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
-    public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
-    public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    public static final String CURSOR_UP = "\u001B[1000A";
+    public static final String CURSOR_DOWN = "\u001B[1000B";
+    public static final String CURSOR_RIGHT = "\u001B[1000C";
+    public static final String CURSOR_LEFT = "\u001B[1000D";
 
-    // Reset
-    public static final String RESET = "\033[0m";  // Text Reset
+    public static final String BLACK = "\u001B[30m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String WHITE = "\u001B[37m";
 
-    // Regular Colors
-    public static final String BLACK = "\033[0;30m";
-    public static final String RED = "\033[0;31m";
-    public static final String GREEN = "\033[0;32m";
-    public static final String YELLOW = "\033[0;33m";
-    public static final String BLUE = "\033[0;34m";
-    public static final String PURPLE = "\033[0;35m";
-    public static final String CYAN = "\033[0;36m";
-    public static final String WHITE = "\033[0;37m";
+    public static final String BLACK_BACKGROUND = "\u001B[40m";
+    public static final String RED_BACKGROUND = "\u001B[41m";
+    public static final String GREEN_BACKGROUND = "\u001B[42m";
+    public static final String YELLOW_BACKGROUND = "\u001B[43m";
+    public static final String BLUE_BACKGROUND = "\u001B[44m";
+    public static final String PURPLE_BACKGROUND = "\u001B[45m";
+    public static final String CYAN_BACKGROUND = "\u001B[46m";
+    public static final String WHITE_BACKGROUND = "\u001B[47m";
 
-    // Bold
-    public static final String BLACK_BOLD = "\033[1;30m";
-    public static final String RED_BOLD = "\033[1;31m";
-    public static final String GREEN_BOLD = "\033[1;32m";
-    public static final String YELLOW_BOLD = "\033[1;33m";
-    public static final String BLUE_BOLD = "\033[1;34m";
-    public static final String PURPLE_BOLD = "\033[1;35m";
-    public static final String CYAN_BOLD = "\033[1;36m";
-    public static final String WHITE_BOLD = "\033[1;37m";
+    public static final String BLACK_BRIGHT = "\u001B[90m";
+    public static final String RED_BRIGHT = "\u001B[91m";
+    public static final String GREEN_BRIGHT = "\u001B[92m";
+    public static final String YELLOW_BRIGHT = "\u001B[93m";
+    public static final String BLUE_BRIGHT = "\u001B[94m";
+    public static final String PURPLE_BRIGHT = "\u001B[95m";
+    public static final String CYAN_BRIGHT = "\u001B[96m";
+    public static final String WHITE_BRIGHT = "\u001B[97m";
 
-    // Underline
-    public static final String BLACK_UNDERLINED = "\033[4;30m";
-    public static final String RED_UNDERLINED = "\033[4;31m";
-    public static final String GREEN_UNDERLINED = "\033[4;32m";
-    public static final String YELLOW_UNDERLINED = "\033[4;33m";
-    public static final String BLUE_UNDERLINED = "\033[4;34m";
-    public static final String PURPLE_UNDERLINED = "\033[4;35m";
-    public static final String CYAN_UNDERLINED = "\033[4;36m";
-    public static final String WHITE_UNDERLINED = "\033[4;37m";
-
-    // Background
-    public static final String BLACK_BACKGROUND = "\033[40m";
-    public static final String RED_BACKGROUND = "\033[41m";
-    public static final String GREEN_BACKGROUND = "\033[42m";
-    public static final String YELLOW_BACKGROUND = "\033[43m";
-    public static final String BLUE_BACKGROUND = "\033[44m";
-    public static final String PURPLE_BACKGROUND = "\033[45m";
-    public static final String CYAN_BACKGROUND = "\033[46m";
-    public static final String WHITE_BACKGROUND = "\033[47m";
-
-    // High Intensity
-    public static final String BLACK_BRIGHT = "\033[0;90m";
-    public static final String RED_BRIGHT = "\033[0;91m";
-    public static final String GREEN_BRIGHT = "\033[0;92m";
-    public static final String YELLOW_BRIGHT = "\033[0;93m";
-    public static final String BLUE_BRIGHT = "\033[0;94m";
-    public static final String PURPLE_BRIGHT = "\033[0;95m";
-    public static final String CYAN_BRIGHT = "\033[0;96m";
-    public static final String WHITE_BRIGHT = "\033[0;97m";
-
-    // Bold High Intensity
-    public static final String BLACK_BOLD_BRIGHT = "\033[1;90m";
-    public static final String RED_BOLD_BRIGHT = "\033[1;91m";
-    public static final String GREEN_BOLD_BRIGHT = "\033[1;92m";
-    public static final String YELLOW_BOLD_BRIGHT = "\033[1;93m";
-    public static final String BLUE_BOLD_BRIGHT = "\033[1;94m";
-    public static final String PURPLE_BOLD_BRIGHT = "\033[1;95m";
-    public static final String CYAN_BOLD_BRIGHT = "\033[1;96m";
-    public static final String WHITE_BOLD_BRIGHT = "\033[1;97m";
-
-    // High Intensity backgrounds
-    public static final String BLACK_BACKGROUND_BRIGHT = "\033[0;100m";
-    public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m";
-    public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m";
-    public static final String YELLOW_BACKGROUND_BRIGHT = "\033[0;103m";
-    public static final String BLUE_BACKGROUND_BRIGHT = "\033[0;104m";
-    public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m";
-    public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";
-    public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";
-
+    public static final String BLACK_BACKGROUND_BRIGHT = "\u001B[100m";
+    public static final String RED_BACKGROUND_BRIGHT = "\u001B[101m";
+    public static final String GREEN_BACKGROUND_BRIGHT = "\u001B[102m";
+    public static final String YELLOW_BACKGROUND_BRIGHT = "\u001B[103m";
+    public static final String BLUE_BACKGROUND_BRIGHT = "\u001B[104m";
+    public static final String PURPLE_BACKGROUND_BRIGHT = "\u001B[105m";
+    public static final String CYAN_BACKGROUND_BRIGHT = "\u001B[106m";
+    public static final String WHITE_BACKGROUND_BRIGHT = "\u001B[107m";
 
     private Calendar calendar = Calendar.getInstance();
 
@@ -117,11 +69,19 @@ public class OutputPrinter {
         writer.print(val);
     }
 
-    public void error(String val) {
-        writer.println(ANSI_RED + val + ANSI_RESET);
+    public void moveCursorRight() {
+        writer.print(CURSOR_RIGHT);
     }
 
-    public void printSimpleMonthCalendar(int arg) {
+    public void error(String val) {
+        writer.println(RED + val + RESET);
+    }
+
+    public void monthCalendar(int arg) {
+        this.monthCalendar(arg, false);
+    }
+
+    public void monthCalendar(int arg, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
         int year = arg > 11 ? calendar.get(Calendar.YEAR) + 1 : calendar.get(Calendar.YEAR);
 
@@ -147,9 +107,10 @@ public class OutputPrinter {
 
         for (int i = 1; i <= days[month]; i++) {
             if (isToday(i, month, year))
-                writer.printf(ANSI_WHITE_BACKGROUND + ANSI_BLACK + "%2d " + ANSI_RESET, i);
+                writer.printf(WHITE_BACKGROUND + BLACK + "%2d " + RESET, i);
             else
-                writer.printf("%2d ", i);
+                printWithEvents(i, withEvents);
+
             if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
         }
     }
@@ -170,6 +131,13 @@ public class OutputPrinter {
         return calendar.get(Calendar.DAY_OF_MONTH) == day &&
                 calendar.get(Calendar.MONTH) + 1 == month &&
                 calendar.get(Calendar.YEAR) == year;
+    }
+
+    private void printWithEvents(int day, boolean events) {
+        if (events)
+            writer.print("Not implemented");
+        else
+            writer.printf("%2d ", day);
     }
 
 }

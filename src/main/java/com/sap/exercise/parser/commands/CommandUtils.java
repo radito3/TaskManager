@@ -14,6 +14,7 @@ public class CommandUtils {
         try {
             for (FieldInfo field : builder.getFields()) {
                 printer.print(field.getNameToDisplay() + ": ");
+                printer.moveCursorRight();
                 String input = reader.readLine();
 
                 input = checkMandatoryField(input, reader, printer, field);
@@ -31,6 +32,7 @@ public class CommandUtils {
             do {
                 printer.println("Field is mandatory!");
                 printer.print(fInfo.getNameToDisplay() + ": ");
+                printer.moveCursorRight();
                 input = reader.readLine();
             } while (input.isEmpty());
         }

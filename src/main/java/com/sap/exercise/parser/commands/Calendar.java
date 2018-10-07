@@ -1,7 +1,6 @@
 package com.sap.exercise.parser.commands;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 
 public class Calendar implements Command {
 
@@ -29,8 +28,22 @@ public class Calendar implements Command {
         Option year = Option.builder("y")
                 .required(false)
                 .longOpt("year")
+                .hasArg()
+                .optionalArg(true)
                 .desc("Display the whole year")
                 .build();
-        Options options = new Options().addOption(one).addOption(three).addOption(year);
+        Option withEvents = Option.builder("e")
+                .required(false)
+                .longOpt("events")
+                .desc("Display calendar with events highlighted")
+                .build();
+        Options options = new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
+        CommandLine cmd;
+        try {
+            cmd = new DefaultParser().parse(options, args, false);
+        } catch (ParseException e) {
+            printer.error(e.getMessage());
+        }
+
     }
 }

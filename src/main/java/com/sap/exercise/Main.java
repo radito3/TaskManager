@@ -5,7 +5,6 @@ import com.sap.exercise.printer.OutputPrinter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,11 +13,9 @@ public class Main {
     //system config
     public static final InputStream INPUT = System.in;
     public static final OutputStream OUTPUT = System.out;
-//    public static final boolean COLOUR = false; //for output formatter
-    //may have configurable colour palette for every coloured output
 
     public static void main(String[] args) {
-        new OutputPrinter(OUTPUT).printSimpleMonthCalendar(Calendar.getInstance().get(Calendar.MONTH) + 3);
+        new OutputPrinter(OUTPUT).println("\u001B[7mTest\u001B[0m");
 
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         InputParser.run(INPUT);
