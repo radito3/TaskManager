@@ -1,5 +1,7 @@
 package com.sap.exercise.printer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Calendar;
@@ -9,6 +11,7 @@ public class OutputPrinter {
     public static final String RESET = "\u001B[0m";
     public static final String BOLD = "\u001B[1m";
     public static final String UNDERLINE = "\u001B[4m";
+    public static final String INVERT = "\u001B[7m";
 
     public static final String CURSOR_UP = "\u001B[1000A";
     public static final String CURSOR_DOWN = "\u001B[1000B";
@@ -55,14 +58,16 @@ public class OutputPrinter {
 
     private PrintStream writer;
 
-    //TODO create calendar output formatter and printer
-
     public OutputPrinter(OutputStream out) {
         writer = new PrintStream(out);
     }
 
     public void println(String val) {
         writer.println(val);
+    }
+
+    public void println() {
+        writer.println();
     }
 
     public void print(String val) {
@@ -77,37 +82,43 @@ public class OutputPrinter {
         writer.println(RED + val + RESET);
     }
 
-    public void monthCalendar(int arg) {
-        this.monthCalendar(arg, false);
+    public void monthCalendar(int month) {
+        this.monthCalendar(month, calendar.get(Calendar.YEAR), false, false);
     }
 
-    public void monthCalendar(int arg, boolean withEvents) {
-        int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
-        int year = arg > 11 ? calendar.get(Calendar.YEAR) + 1 : calendar.get(Calendar.YEAR);
+    public void yearCalendar(int year) {
+        writer.println(StringUtils.leftPad(String.valueOf(year), 12));
+        writer.println();
+        for (int i = 0; i < 12; i++) {
+            this.monthCalendar(i, year, true, false);
+            writer.println();
+        }
+    }
 
-        String[] months = {
-                "",
+    public void monthCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
+        int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
+        int year = arg > 11 ? arg1 + 1 : arg1;
+
+        String[] months = { "",
                 "January", "February", "March",
                 "April", "May", "June",
                 "July", "August", "September",
-                "October", "November", "December"
-        };
+                "October", "November", "December" };
 
-        int[] days = {
-                0, 31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-        };
+        int[] days = { 0, 31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-        writer.println("   " + months[month] + " " + year);
+        String text = StringUtils.leftPad(months[month], months[month].length() + (wholeYear ? 6 : 4));
+        writer.println(text + " " + (wholeYear ? "" : year));
         writer.println(" S  M Tu  W Th  F  S");
 
-        int startingDay = day(month, year);
+        int startingDay = calendar.getFirstDayOfWeek() - 1;
 
         for (int i = 0; i < startingDay; i++)
             writer.print("   ");
 
         for (int i = 1; i <= days[month]; i++) {
             if (isToday(i, month, year))
-                writer.printf(WHITE_BACKGROUND + BLACK + "%2d " + RESET, i);
+                writer.printf(INVERT + "%2d " + RESET, i);
             else
                 printWithEvents(i, withEvents);
 
@@ -115,15 +126,8 @@ public class OutputPrinter {
         }
     }
 
-    private int day(int month, int year) {
-        int y = year - (14 - month) / 12;
-        int x = y + y / 4 - y / 100 + y / 400;
-        int m = month + 12 * ((14 - month) / 12) - 2;
-        return (1 + x + (31 * m) / 12) % 7;
-    }
-
     private boolean isLeapYear(int year) {
-        if  ((year % 4 == 0) && (year % 100 != 0)) return true;
+        if  (year % 4 == 0 && year % 100 != 0) return true;
         return year % 400 == 0;
     }
 

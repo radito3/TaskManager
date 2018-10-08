@@ -7,6 +7,7 @@ import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.stream.Stream;
 
 public class CommandUtils {
 
@@ -15,6 +16,7 @@ public class CommandUtils {
             for (FieldInfo field : builder.getFields()) {
                 printer.print(field.getNameToDisplay() + ": ");
                 printer.moveCursorRight();
+
                 String input = reader.readLine();
 
                 input = checkMandatoryField(input, reader, printer, field);
@@ -33,6 +35,7 @@ public class CommandUtils {
                 printer.println("Field is mandatory!");
                 printer.print(fInfo.getNameToDisplay() + ": ");
                 printer.moveCursorRight();
+
                 input = reader.readLine();
             } while (input.isEmpty());
         }
@@ -40,10 +43,9 @@ public class CommandUtils {
     }
 
     public static String buildEventName(String[] input) {
-        if (input.length == 0) throw new IllegalArgumentException("Event name not specified");
-        StringBuilder sb = new StringBuilder(input[0]);
-        for (int i = 1; i < input.length; i++) sb.append(' ').append(input[i]);
-        return sb.toString();
+        return Stream.of(input)
+                .reduce((a, b) -> a.concat(" ").concat(b))
+                .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
 
     //will need to make this intuitive for the different commands
