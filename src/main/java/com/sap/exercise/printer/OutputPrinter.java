@@ -83,19 +83,19 @@ public class OutputPrinter {
     }
 
     public void monthCalendar(int month) {
-        this.monthCalendar(month, calendar.get(Calendar.YEAR), false, false);
+        this.printCalendar(month, calendar.get(Calendar.YEAR), false, false);
     }
 
     public void yearCalendar(int year) {
         writer.println(StringUtils.leftPad(String.valueOf(year), 12));
         writer.println();
         for (int i = 0; i < 12; i++) {
-            this.monthCalendar(i, year, true, false);
+            this.printCalendar(i, year, true, false);
             writer.println();
         }
     }
 
-    public void monthCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
+    private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg1;
 

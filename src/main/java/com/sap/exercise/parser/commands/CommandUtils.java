@@ -2,39 +2,39 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.builder.FieldInfo;
-import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class CommandUtils {
+class CommandUtils {
 
-    public static void interactiveInput(BufferedReader reader, OutputPrinter printer, EventBuilder builder) {
+    static void interactiveInput(BufferedReader reader, EventBuilder builder) {
         try {
             for (FieldInfo field : builder.getFields()) {
-                printer.print(field.getNameToDisplay() + ": ");
-                printer.moveCursorRight();
+                Command.printer.print(field.getNameToDisplay() + ": ");
+                Command.printer.moveCursorRight();
 
                 String input = reader.readLine();
 
-                input = checkMandatoryField(input, reader, printer, field);
+                input = checkMandatoryField(input, reader, field);
 
                 if (!input.isEmpty())
                     builder.append(field.getName(), input);
             }
         } catch (IOException e) {
-            printer.error("Error: " + e.getMessage());
+            Command.printer.error("Error: " + e.getMessage());
         }
     }
 
-    private static String checkMandatoryField(String input, BufferedReader reader, OutputPrinter printer, FieldInfo fInfo) throws IOException {
+    private static String checkMandatoryField(String input, BufferedReader reader, FieldInfo fInfo) throws IOException {
         if (fInfo.isMandatory() && input.isEmpty()) {
             do {
-                printer.println("Field is mandatory!");
-                printer.print(fInfo.getNameToDisplay() + ": ");
-                printer.moveCursorRight();
+                Command.printer.println("Field is mandatory!");
+                Command.printer.print(fInfo.getNameToDisplay() + ": ");
+                Command.printer.moveCursorRight();
 
                 input = reader.readLine();
             } while (input.isEmpty());
@@ -42,15 +42,17 @@ public class CommandUtils {
         return input;
     }
 
-    public static String buildEventName(String[] input) {
+    static String buildEventName(String[] input) {
         return Stream.of(input)
                 .reduce((a, b) -> a.concat(" ").concat(b))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
 
-    //will need to make this intuitive for the different commands
-    //for now it only handles Add
-    public static CommandLine getParsedCmd(String[] args) throws ParseException {
+    static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
+        return new DefaultParser().parse(options, args, false);
+    }
+
+    static Options addOptions() {
         Option task = Option.builder("t")
                 .required(false)
                 .longOpt("task")
@@ -66,7 +68,56 @@ public class CommandUtils {
                 .longOpt("goal")
                 .desc("Specify the event created to be a Goal")
                 .build();
-        Options options = new Options().addOption(task).addOption(reminder).addOption(goal);
-        return new DefaultParser().parse(options, args, false);
+        return new Options().addOption(task).addOption(reminder).addOption(goal);
+    }
+
+    static Options calendarOptions() {
+        Option one = Option.builder("1")
+                .required(false)
+                .longOpt("one")
+                .desc("Display one month")
+                .build();
+        Option three = Option.builder("3")
+                .required(false)
+                .longOpt("three")
+                .desc("Display three months")
+                .build();
+        Option year = Option.builder("y")
+                .required(false)
+                .longOpt("year")
+                .hasArg()
+                .optionalArg(true)
+                .desc("Display the whole year")
+                .build();
+        Option withEvents = Option.builder("e")
+                .required(false)
+                .longOpt("events")
+                .desc("Display calendar with events highlighted")
+                .build();
+        return new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
+    }
+
+    static Options deleteOptions() {
+        Option start = Option.builder("s")
+                .required(false)
+                .longOpt("start")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the start time from when to delete entries")
+                .build();
+        Option end = Option.builder("e")
+                .required(false)
+                .longOpt("end")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the end time to when to delete entries")
+                .build();
+        return new Options().addOption(start).addOption(end);
+    }
+
+    static long optionsSizeWithoutEvents(CommandLine cmd) {
+        return Arrays.stream(cmd.getOptions()).filter(o -> !o.equals(calendarOptions().getOption("e"))).count();
     }
 }

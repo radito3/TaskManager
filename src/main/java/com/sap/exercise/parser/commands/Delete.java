@@ -2,7 +2,8 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.ParseException;
 
 public class Delete implements Command {
 
@@ -32,31 +33,15 @@ public class Delete implements Command {
 
     delete [start] [end] <event name>
      */
-    private void buildFlagHandler(String[] args) {
-        Option start = Option.builder("s")
-                .required(false)
-                .longOpt("start")
-                .hasArg(true)
-                .numberOfArgs(1)
-                .optionalArg(false)
-                .desc("Specify the start time from when to delete entries")
-                .build();
-        Option end = Option.builder("e")
-                .required(false)
-                .longOpt("end")
-                .hasArg(true)
-                .numberOfArgs(1)
-                .optionalArg(false)
-                .desc("Specify the end time to when to delete entries")
-                .build();
-        Options options = new Options().addOption(start).addOption(end);
+    private void flagHandler(String[] args) {
         CommandLine cmd;
         try {
-            cmd = new DefaultParser().parse(options, args);
+            cmd = CommandUtils.getParsedCmd(CommandUtils.deleteOptions(), args);
         } catch (ParseException e) {
             printer.error(e.getMessage());
             return;
         }
+
         String startTime = "";
         String endTime = "";
         String eventName = CommandUtils.buildEventName(cmd.getArgs());
@@ -66,5 +51,6 @@ public class Delete implements Command {
         if (cmd.hasOption('e')) {
             endTime = cmd.getOptionValue('e');
         }
+        //deleteInTimeFrame(startTime, endTime);
     }
 }

@@ -27,12 +27,12 @@ public class Edit implements Command {
 
             EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
-            CommandUtils.interactiveInput(reader, printer, builder);
+            CommandUtils.interactiveInput(reader, builder);
 
             EventsHandler.update(builder.build());
             printer.println("\nEvent updated");
         } catch (NullPointerException npe) {
-            printer.println("Invalid event name"); //these static strings could be set methods in OutputPrinter
+            printer.println("Invalid event name");
         } catch (IllegalArgumentException iae) {
             printer.println(iae.getMessage());
         }

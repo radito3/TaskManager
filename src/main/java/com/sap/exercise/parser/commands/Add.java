@@ -30,7 +30,7 @@ public class Add implements Command {
 
             EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
-            CommandUtils.interactiveInput(reader, printer, builder);
+            CommandUtils.interactiveInput(reader, builder);
 
             EventsHandler.create(builder.build());
             printer.println("\nEvent created");
@@ -39,9 +39,8 @@ public class Add implements Command {
         }
     }
 
-    //may move this to command utils
     private Event flagHandler(String[] args) throws ParseException {
-        CommandLine cmd = CommandUtils.getParsedCmd(args);
+        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.addOptions(), args);
         if (cmd.getOptions().length > 1) {
             throw new IllegalArgumentException("Invalid number of arguments");
         }

@@ -2,7 +2,6 @@ package com.sap.exercise.parser.commands;
 
 public class Agenda implements Command {
 
-
     @Override
     public String getName() {
         return "agenda";
