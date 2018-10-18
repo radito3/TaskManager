@@ -10,9 +10,9 @@ public class RepeatableFilter implements InputValueFilter<Event.RepeatableType> 
     }
 
     private String filter(String val) {
-        if (val.matches("^\\s*[nN]one|[dD]aily|[wW]eekly|[mM]onthly|[yY]early\\s*$")) {
+        if (val.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
             return val;
-        } else if (val.matches("^\\s*[nN]|[dD]|[wW]|[mM]|[yY]\\s*$")) {
+        } else if (val.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
             switch (val.toLowerCase()) {
                 case "d":
                     return "daily";
