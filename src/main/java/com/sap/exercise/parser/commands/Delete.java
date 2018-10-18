@@ -33,14 +33,8 @@ public class Delete implements Command {
 
     delete [start] [end] <event name>
      */
-    private void flagHandler(String[] args) {
-        CommandLine cmd;
-        try {
-            cmd = CommandUtils.getParsedCmd(CommandUtils.deleteOptions(), args);
-        } catch (ParseException e) {
-            printer.error(e.getMessage());
-            return;
-        }
+    private void flagHandler(String[] args) throws ParseException {
+        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.deleteOptions(), args);
 
         String startTime = "";
         String endTime = "";
