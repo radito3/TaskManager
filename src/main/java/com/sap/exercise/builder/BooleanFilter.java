@@ -8,9 +8,9 @@ public class BooleanFilter implements InputValueFilter<Boolean> {
     }
 
     private String filter(String val) {
-        if (val.matches("^\\s*[yY]|[yY]es\\s*$")) {
+        if (val.toLowerCase().matches("^\\s*y|yes\\s*$")) {
             return "true";
-        } else if (val.matches("^\\s*[nN]|[nN]o\\s*$")) {
+        } else if (val.toLowerCase().matches("^\\s*n|no\\s*$")) {
             return "false";
         } else {
             throw new IllegalArgumentException("Invalid input");
