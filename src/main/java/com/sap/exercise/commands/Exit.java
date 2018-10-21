@@ -1,4 +1,4 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import com.sap.exercise.parser.InputParser;
 

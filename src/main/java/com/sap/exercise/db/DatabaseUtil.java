@@ -44,7 +44,7 @@ public class DatabaseUtil {
         }
     }
 
-    public <T extends AbstractModel> T getObject(Function<Session, T> function) {
+    public <T> T getObject(Function<Session, T> function) {
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {
@@ -53,25 +53,6 @@ public class DatabaseUtil {
             T obj = function.apply(session);
             transaction.commit();
             if (obj == null) throw new NullPointerException("Object does not exist");
-
-            return obj;
-        } catch (HibernateException e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        }
-    }
-
-    //will maybe use this if there is an issue with id's
-    public String getLastId() {
-        Transaction transaction = null;
-
-        try (Session session = factory.openSession()) {
-            transaction = session.beginTransaction();
-
-            String obj = session.createNativeQuery("SELECT LAST_INSERT_ID()", String.class).uniqueResult();
-            transaction.commit();
 
             return obj;
         } catch (HibernateException e) {

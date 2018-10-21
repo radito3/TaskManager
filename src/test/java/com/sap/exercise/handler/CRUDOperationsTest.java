@@ -10,17 +10,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CRUD operations test class")
-public class EventsHandlerTest extends AbstractTest {
+public class CRUDOperationsTest extends AbstractTest {
 
     @Test
     @DisplayName("Creation and reading test")
     public void createAndReadTest() {
         User user = new User();
-        EventsHandler.create(user);
+        CRUDOperations.create(user);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(EventsHandler.getObject(user), "Object retrieved from db is null"),
-                () -> assertEquals(user, EventsHandler.getObject(user), "Object retrieved from db doesn't match")
+                () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
+                () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
         );
     }
 
@@ -28,14 +28,14 @@ public class EventsHandlerTest extends AbstractTest {
     @DisplayName("Updating test")
     public void updateTest()  {
         User user = new User();
-        EventsHandler.create(user);
+        CRUDOperations.create(user);
 
         user.setName("new name");
-        EventsHandler.update(user);
+        CRUDOperations.update(user);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(EventsHandler.getObject(user), "Object retrieved from db is null"),
-                () -> assertEquals(user, EventsHandler.getObject(user), "Object retrieved from db doesn't match")
+                () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
+                () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
         );
     }
 
@@ -43,11 +43,11 @@ public class EventsHandlerTest extends AbstractTest {
     @DisplayName("Deletion test")
     public void deleteTest() {
         User user = new User();
-        EventsHandler.create(user);
+        CRUDOperations.create(user);
 
-        EventsHandler.delete(user);
+        CRUDOperations.delete(user);
         assertThrows(NullPointerException.class,
-                () -> EventsHandler.getObject(user),
+                () -> CRUDOperations.getObject(user),
                 "Returning null from db doesn't throw exception");
     }
 
@@ -56,9 +56,9 @@ public class EventsHandlerTest extends AbstractTest {
     @Disabled("Event model 'equals' method doesn't work")
     public void getObjectByTitleTest() {
         Event event = new Event("test");
-        EventsHandler.create(event);
+        CRUDOperations.create(event);
 
-        Event event1 = EventsHandler.getObjectFromTitle("test");
+        Event event1 = CRUDOperations.getObjectFromTitle("test");
         assertNotNull(event1);
         assertEquals(event, event1);
     }
@@ -67,7 +67,7 @@ public class EventsHandlerTest extends AbstractTest {
     @DisplayName("Invalid name for title test")
     public void invalidNameTest() {
         assertThrows(NullPointerException.class,
-                () -> EventsHandler.getObjectFromTitle(""),
+                () -> CRUDOperations.getObjectFromTitle(""),
                 "Incorrect or no exception thrown with invalid title");
     }
 

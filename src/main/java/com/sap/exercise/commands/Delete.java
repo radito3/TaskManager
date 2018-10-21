@@ -1,6 +1,6 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
-import com.sap.exercise.handler.EventsHandler;
+import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
@@ -16,9 +16,9 @@ public class Delete implements Command {
     public void execute(String... args) {
         try {
             String name = CommandUtils.buildEventName(args);
-            Event event = EventsHandler.getObjectFromTitle(name);
+            Event event = CRUDOperations.getObjectFromTitle(name);
 
-            EventsHandler.delete(event);
+            CRUDOperations.delete(event);
             printer.println("\nEvent deleted");
         } catch (NullPointerException | IllegalArgumentException e) {
             printer.println(e.getMessage());
@@ -32,7 +32,7 @@ public class Delete implements Command {
     delete [start] [end] <event name>
      */
     private void flagHandler(String[] args) throws ParseException {
-        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.deleteOptions(), args);
+        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.timeFrameOptions(), args);
 
         String startTime = "", endTime = "";
         String eventName = CommandUtils.buildEventName(cmd.getArgs());

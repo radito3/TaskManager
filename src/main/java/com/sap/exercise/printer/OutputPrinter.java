@@ -1,5 +1,6 @@
 package com.sap.exercise.printer;
 
+import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.OutputStream;
@@ -88,6 +89,61 @@ public class OutputPrinter {
         for (int i = 0; i < 12; i++) {
             this.printCalendar(i, year, true, false);
             writer.println();
+        }
+    }
+
+    public void printEvent(Event event) {
+        Calendar cal = event.getTimeOf();
+        //need to format it properly
+        writer.println(cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + " " +
+                getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + " " + event.getTitle());
+    }
+
+    private String getMonth(int month) {
+        switch (month + 1) {
+            case 1:
+                return "January";
+            case 2:
+                return "February";
+            case 3:
+                return "March";
+            case 4:
+                return "April";
+            case 5:
+                return "May";
+            case 6:
+                return "June";
+            case 7:
+                return "July";
+            case 8:
+                return "August";
+            case 9:
+                return "September";
+            case 10:
+                return "October";
+            case 11:
+                return "November";
+            default:
+                return "December";
+        }
+    }
+
+    private String getDayOfWeek(int day) {
+        switch (day) {
+            case 1:
+                return "Monday";
+            case 2:
+                return "Tuesday";
+            case 3:
+                return "Wednesday";
+            case 4:
+                return "Thursday";
+            case 5:
+                return "Friday";
+            case 6:
+                return "Saturday";
+            default:
+                return "Sunday";
         }
     }
 

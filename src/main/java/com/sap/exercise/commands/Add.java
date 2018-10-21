@@ -1,8 +1,8 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import com.sap.exercise.builder.AbstractEventBuilder;
 import com.sap.exercise.builder.EventBuilder;
-import com.sap.exercise.handler.EventsHandler;
+import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;
 import org.apache.commons.cli.CommandLine;
@@ -28,7 +28,7 @@ public class Add implements Command {
 
             CommandUtils.interactiveInput(reader, builder);
 
-            EventsHandler.create(builder.build());
+            CRUDOperations.create(builder.build());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

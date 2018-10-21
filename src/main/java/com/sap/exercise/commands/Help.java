@@ -1,4 +1,4 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;

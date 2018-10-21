@@ -1,6 +1,6 @@
 package com.sap.exercise.parser;
 
-import com.sap.exercise.parser.commands.*;
+import com.sap.exercise.commands.*;
 import com.sap.exercise.printer.OutputPrinter;
 
 import java.io.BufferedReader;

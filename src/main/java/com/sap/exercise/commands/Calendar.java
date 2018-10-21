@@ -1,4 +1,4 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;

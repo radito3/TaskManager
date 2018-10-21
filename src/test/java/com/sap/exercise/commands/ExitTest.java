@@ -1,4 +1,4 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;

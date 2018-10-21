@@ -1,7 +1,7 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import com.sap.exercise.AbstractTest;
-import com.sap.exercise.handler.EventsHandler;
+import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -25,10 +25,10 @@ public class DeleteTest extends AbstractTest {
     @DisplayName("Delete command functionality test")
     public void deleteCommandTest() {
         Event event = new Event("test title");
-        EventsHandler.create(event);
+        CRUDOperations.create(event);
 
         new Delete().execute("test", "title");
-        assertThrows(NullPointerException.class, () -> EventsHandler.getObject(event), "Event has not been deleted");
+        assertThrows(NullPointerException.class, () -> CRUDOperations.getObject(event), "Event has not been deleted");
     }
 
     @Test

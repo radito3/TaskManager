@@ -1,4 +1,4 @@
-package com.sap.exercise.parser.commands;
+package com.sap.exercise.commands;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.builder.FieldInfo;
@@ -96,14 +96,14 @@ class CommandUtils {
         return new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
     }
 
-    static Options deleteOptions() {
+    static Options timeFrameOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")
                 .hasArg(true)
                 .numberOfArgs(1)
                 .optionalArg(false)
-                .desc("Specify the start time from when to delete entries")
+                .desc("Specify the start time from when to get/delete entries")
                 .build();
         Option end = Option.builder("e")
                 .required(false)
@@ -111,7 +111,7 @@ class CommandUtils {
                 .hasArg(true)
                 .numberOfArgs(1)
                 .optionalArg(false)
-                .desc("Specify the end time to when to delete entries")
+                .desc("Specify the end time to when to get/delete entries")
                 .build();
         return new Options().addOption(start).addOption(end);
     }

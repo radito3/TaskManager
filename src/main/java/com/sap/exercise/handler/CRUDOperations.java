@@ -6,9 +6,10 @@ import com.sap.exercise.model.Event;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
+import java.util.List;
 import java.util.function.Consumer;
 
-public class EventsHandler {
+public class CRUDOperations {
 
     public static <T extends AbstractModel> void create(T obj) {
         process(s -> s.save(obj));
@@ -45,5 +46,12 @@ public class EventsHandler {
                 s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\';", Event.class)
                         .uniqueResultOptional()
                         .orElseThrow(() -> new NullPointerException("Invalid event name")));
+    }
+
+    //may not be needed after additional models are completed
+    public static List<Event> getEventsInTimeFrame(String start, String end) {
+        return DatabaseUtilFactory.getDbClient().getObject(s ->
+                s.createNativeQuery("SELECT * FROM Eventt WHERE TimeOf >= \'" + start + "\' AND TimeOf <= \'" + end + "\';", Event.class)
+                    .getResultList());
     }
 }
