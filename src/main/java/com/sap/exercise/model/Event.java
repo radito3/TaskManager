@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Eventt")
-public class Event extends BaseEvent implements Serializable {
+public class Event extends AbstractModel implements Serializable {
 
     public enum EventType {
         TASK, REMINDER, GOAL

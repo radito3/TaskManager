@@ -4,13 +4,11 @@ import com.sap.exercise.builder.AbstractEventBuilder;
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.parser.InputParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import static com.sap.exercise.Main.INPUT;
 
 public class Add implements Command {
 
@@ -25,9 +23,7 @@ public class Add implements Command {
         //if AllDay is false -> Duration is number of minutes
         try {
             Event event = flagHandler(args);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(INPUT));
-
+            BufferedReader reader = InputParser.getReader();
             EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
 
             CommandUtils.interactiveInput(reader, builder);

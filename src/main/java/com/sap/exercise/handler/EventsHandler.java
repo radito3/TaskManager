@@ -1,7 +1,7 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
-import com.sap.exercise.model.BaseEvent;
+import com.sap.exercise.model.AbstractModel;
 import com.sap.exercise.model.Event;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -10,15 +10,15 @@ import java.util.function.Consumer;
 
 public class EventsHandler {
 
-    public static <T extends BaseEvent> void create(T obj) {
+    public static <T extends AbstractModel> void create(T obj) {
         process(s -> s.save(obj));
     }
 
-    public static <T extends BaseEvent> void update(T obj) {
+    public static <T extends AbstractModel> void update(T obj) {
         process(s -> s.update(obj));
     }
 
-    public static <T extends BaseEvent> void delete(T obj) {
+    public static <T extends AbstractModel> void delete(T obj) {
         process(s -> s.delete(obj));
     }
 
@@ -31,7 +31,7 @@ public class EventsHandler {
         }
     }
 
-    public static <R extends BaseEvent> R getObject(R obj) {
+    public static <R extends AbstractModel> R getObject(R obj) {
         try {
             return DatabaseUtilFactory.getDbClient().getObject(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
         } catch (HibernateException e) {
@@ -41,9 +41,9 @@ public class EventsHandler {
     }
 
     public static Event getObjectFromTitle(String title) {
-        //don't know if this can throw an exception
         return DatabaseUtilFactory.getDbClient().getObject(s ->
                 s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\';", Event.class)
-                        .uniqueResultOptional().orElseThrow(NullPointerException::new));
+                        .uniqueResultOptional()
+                        .orElseThrow(() -> new NullPointerException("Invalid event name")));
     }
 }

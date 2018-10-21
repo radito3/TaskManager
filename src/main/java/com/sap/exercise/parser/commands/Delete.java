@@ -20,10 +20,8 @@ public class Delete implements Command {
 
             EventsHandler.delete(event);
             printer.println("\nEvent deleted");
-        } catch (NullPointerException npe) {
-            printer.println("Invalid event name");
-        } catch (IllegalArgumentException iae) {
-            printer.println(iae.getMessage());
+        } catch (NullPointerException | IllegalArgumentException e) {
+            printer.println(e.getMessage());
         }
     }
 
@@ -36,8 +34,7 @@ public class Delete implements Command {
     private void flagHandler(String[] args) throws ParseException {
         CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.deleteOptions(), args);
 
-        String startTime = "";
-        String endTime = "";
+        String startTime = "", endTime = "";
         String eventName = CommandUtils.buildEventName(cmd.getArgs());
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');

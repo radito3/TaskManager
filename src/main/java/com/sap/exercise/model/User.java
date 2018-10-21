@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "User")
-public class User extends BaseEvent implements Serializable {
+public class User extends AbstractModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

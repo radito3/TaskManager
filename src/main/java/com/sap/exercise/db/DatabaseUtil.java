@@ -44,7 +44,7 @@ public class DatabaseUtil {
         }
     }
 
-    public <T extends BaseEvent> T getObject(Function<Session, T> function) {
+    public <T extends AbstractModel> T getObject(Function<Session, T> function) {
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {
@@ -80,10 +80,6 @@ public class DatabaseUtil {
             }
             throw e;
         }
-    }
-
-    public void closeConnection() {
-        factory.close();
     }
 
 }

@@ -2,6 +2,7 @@ package com.sap.exercise.parser.commands;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.builder.FieldInfo;
+import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
 
 import java.io.BufferedReader;
@@ -14,8 +15,7 @@ class CommandUtils {
     static void interactiveInput(BufferedReader reader, EventBuilder builder) {
         try {
             for (FieldInfo field : builder.getFields()) {
-                Command.printer.print(field.getNameToDisplay() + ": ");
-                Command.printer.moveCursorRight();
+                Command.printer.print(field.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
 
                 String input = reader.readLine();
 
@@ -33,8 +33,7 @@ class CommandUtils {
         if (fInfo.isMandatory() && input.isEmpty()) {
             do {
                 Command.printer.println("Field is mandatory!");
-                Command.printer.print(fInfo.getNameToDisplay() + ": ");
-                Command.printer.moveCursorRight();
+                Command.printer.print(fInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
 
                 input = reader.readLine();
             } while (input.isEmpty());
