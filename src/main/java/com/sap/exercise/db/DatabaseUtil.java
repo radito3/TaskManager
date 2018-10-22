@@ -28,7 +28,7 @@ public class DatabaseUtil {
         factory = configuration.buildSessionFactory(registry);
     }
 
-    public void processObject(Consumer<Session> consumer) {
+    public synchronized void processObject(Consumer<Session> consumer) {
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {
@@ -44,7 +44,7 @@ public class DatabaseUtil {
         }
     }
 
-    public <T> T getObject(Function<Session, T> function) {
+    public synchronized <T> T getObject(Function<Session, T> function) {
         Transaction transaction = null;
 
         try (Session session = factory.openSession()) {

@@ -4,7 +4,7 @@ public class DatabaseUtilFactory {
     //temporary solution
     private static DatabaseUtil db;
 
-    public static void createDbClient() {
+    static void createDbClient() {
         db = new DatabaseUtil();
         System.setProperty("db-instance", "true");
     }

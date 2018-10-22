@@ -27,11 +27,11 @@ public class Main {
         for (int i = 1; i <= 20; i++) {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-            String day = i < 10 ? "0"+i : ""+ i;
+            String day = i < 10 ? "0" + i : "" + i;
             try { cal.setTime(sdf.parse(day + "-10-2018" +" 12:00:00")); } catch (ParseException e) {
                 throw new IllegalArgumentException("Invalid date value");
             }
-            CRUDOperations.create(new Event("title" + i, Event.EventType.TASK, cal, Event.RepeatableType.NONE));
+            CRUDOperations.create(new Event("title-" + i, Event.EventType.TASK, cal, Event.RepeatableType.NONE));
         }
     }
 

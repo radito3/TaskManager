@@ -23,6 +23,20 @@ public class CRUDOperations {
         process(s -> s.delete(obj));
     }
 
+    /**
+     * this solution if for when there are many objects to commit in one transaction to the DB
+     * however, if the amount of object to commit is above the threshold, the job should be split between worker threads
+     * current threshold - 30
+     **/
+    public static <T extends AbstractModel> void create(T... arr) {
+        process(s -> {
+            for (T obj : arr) {
+                s.save(obj);
+            }
+        });
+    }
+    //rest of crud operations with array argument
+
     private static void process(Consumer<Session> consumer) {
         try {
             DatabaseUtilFactory.getDbClient().processObject(consumer);
@@ -48,7 +62,7 @@ public class CRUDOperations {
                         .orElseThrow(() -> new NullPointerException("Invalid event name")));
     }
 
-    //may not be needed after additional models are completed
+    //may not be needed after additional models are implemented
     public static List<Event> getEventsInTimeFrame(String start, String end) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
                 s.createNativeQuery("SELECT * FROM Eventt WHERE TimeOf >= \'" + start + "\' AND TimeOf <= \'" + end + "\';", Event.class)
