@@ -1,8 +1,8 @@
 package com.sap.exercise.db;
 
 public class DatabaseUtilFactory {
-    //temporary solution
-    private static DatabaseUtil db;
+
+    private static volatile DatabaseUtil db;
 
     static void createDbClient() {
         db = new DatabaseUtil();
@@ -10,7 +10,8 @@ public class DatabaseUtilFactory {
     }
 
     public static DatabaseUtil getDbClient() {
-        boolean set = System.getProperty("db-instance") != null && System.getProperty("db-instance").equals("true");
+        boolean set = System.getProperty("db-instance") != null &&
+                System.getProperty("db-instance").equals("true");
 
         if (set) {
             return db;

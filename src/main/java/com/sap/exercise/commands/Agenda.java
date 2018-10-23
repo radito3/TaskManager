@@ -5,7 +5,9 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 public class Agenda implements Command {
 
@@ -22,9 +24,22 @@ public class Agenda implements Command {
     @Override
     public void execute(String... args) {
         try {
-            flagHandler(args);
+            String[] times = flagHandler(args);
+            String start = times[0], end = times[1];
 
-            for (Event event : getEventsInTimeFrame()) {
+            //temporary solution
+            List<Event> events;
+            if (start.isEmpty() && end.isEmpty()) {
+                events = getEventsInTimeFrame();
+            } else if (start.isEmpty()) {
+                events = getEventsInTimeFrameE(end);
+            } else if (end.isEmpty()) {
+                events = getEventsInTimeFrameS(start);
+            } else {
+                events = getEventsInTimeFrame(start, end);
+            }
+
+            for (Event event : Objects.requireNonNull(events)) {
                 printer.printEvent(event);
             }
         } catch (ParseException e) {
@@ -32,11 +47,31 @@ public class Agenda implements Command {
         }
     }
 
+    //very inefficient implementation
     private List<Event> getEventsInTimeFrame() {
-        return CRUDOperations.getEventsInTimeFrame("2018-10-01 00:00:00", "2018-10-27 23:59:59");
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
+        return getEventsInTimeFrame(String.valueOf(year + "-" + month + "-" + day),
+                String.valueOf(year + "-" + month + "-" + (day + 7)));
     }
 
-    private void flagHandler(String[] args) throws ParseException {
+    private List<Event> getEventsInTimeFrameS(String val) {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
+        return getEventsInTimeFrame(val, String.valueOf(year + "-" + month + "-" + (day + 7)));
+    }
+
+    private List<Event> getEventsInTimeFrameE(String val) {
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
+        return getEventsInTimeFrame(String.valueOf(year + "-" + month + "-" + day), val);
+    }
+
+    private List<Event> getEventsInTimeFrame(String start, String end) {
+        return CRUDOperations.getEventsInTimeFrame(start + " 00:00:00", end + " 23:59:59");
+    }
+
+    private String[] flagHandler(String[] args) throws ParseException {
         CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.timeFrameOptions(), args);
 
         String startTime = "", endTime = "";
@@ -46,5 +81,7 @@ public class Agenda implements Command {
         if (cmd.hasOption('e')) {
             endTime = cmd.getOptionValue('e');
         }
+
+        return new String[] { startTime, endTime };
     }
 }

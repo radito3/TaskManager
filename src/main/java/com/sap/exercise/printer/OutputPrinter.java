@@ -95,8 +95,8 @@ public class OutputPrinter {
     public void printEvent(Event event) {
         Calendar cal = event.getTimeOf();
         //need to format it properly
-        writer.println(cal.get(Calendar.DATE) + " " + getMonth(cal.get(Calendar.MONTH)) + " " +
-                getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + " " + event.getTitle());
+        writer.println(cal.get(Calendar.DATE) + "   " + getMonth(cal.get(Calendar.MONTH)) + "   " +
+                getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + "   " + event.getTitle());
     }
 
     private String getMonth(int month) {

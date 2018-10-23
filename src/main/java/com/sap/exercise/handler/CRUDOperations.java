@@ -28,6 +28,7 @@ public class CRUDOperations {
      * however, if the amount of object to commit is above the threshold, the job should be split between worker threads
      * current threshold - 30
      **/
+    @SafeVarargs
     public static <T extends AbstractModel> void create(T... arr) {
         process(s -> {
             for (T obj : arr) {
