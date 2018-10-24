@@ -1,7 +1,8 @@
-package com.sap.exercise.commands;
+package com.sap.exercise.commands.util;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.builder.FieldInfo;
+import com.sap.exercise.commands.Command;
 import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
 
@@ -10,9 +11,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-class CommandUtils {
+public class CommandUtils {
 
-    static void interactiveInput(BufferedReader reader, EventBuilder builder) {
+    public static void interactiveInput(BufferedReader reader, EventBuilder builder) {
         try {
             for (FieldInfo field : builder.getFields()) {
                 Command.printer.print(field.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
@@ -41,17 +42,17 @@ class CommandUtils {
         return input;
     }
 
-    static String buildEventName(String[] input) {
+    public static String buildEventName(String[] input) {
         return Stream.of(input)
                 .reduce((a, b) -> a.concat(" ").concat(b))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
 
-    static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
+    public static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
         return new DefaultParser().parse(options, args, false);
     }
 
-    static Options addOptions() {
+    public static Options addOptions() {
         Option task = Option.builder("t")
                 .required(false)
                 .longOpt("task")
@@ -70,7 +71,7 @@ class CommandUtils {
         return new Options().addOption(task).addOption(reminder).addOption(goal);
     }
 
-    static Options calendarOptions() {
+    public static Options calendarOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")
@@ -96,7 +97,7 @@ class CommandUtils {
         return new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
     }
 
-    static Options timeFrameOptions() {
+    public static Options timeFrameOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")
@@ -116,7 +117,7 @@ class CommandUtils {
         return new Options().addOption(start).addOption(end);
     }
 
-    static long optionsSizeWithoutEvents(CommandLine cmd) {
+    public static long optionsSizeWithoutEvents(CommandLine cmd) {
         return Arrays.stream(cmd.getOptions()).filter(o -> !o.equals(calendarOptions().getOption("e"))).count();
     }
 }

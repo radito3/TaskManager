@@ -1,5 +1,6 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.commands.util.CommandUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.NotImplementedException;

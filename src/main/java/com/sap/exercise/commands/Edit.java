@@ -2,6 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.builder.AbstractEventBuilder;
 import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;

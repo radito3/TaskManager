@@ -1,13 +1,13 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.commands.util.ArgumentEvaluator;
+import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 public class Agenda implements Command {
 
@@ -25,46 +25,17 @@ public class Agenda implements Command {
     public void execute(String... args) {
         try {
             String[] times = flagHandler(args);
-            String start = times[0], end = times[1];
+            String start = times[0], end = times[1] + "-";
 
-            //temporary solution
-            List<Event> events;
-            if (start.isEmpty() && end.isEmpty()) {
-                events = getEventsInTimeFrame();
-            } else if (start.isEmpty()) {
-                events = getEventsInTimeFrameE(end);
-            } else if (end.isEmpty()) {
-                events = getEventsInTimeFrameS(start);
-            } else {
-                events = getEventsInTimeFrame(start, end);
-            }
+            ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
+            List<Event> events = evaluator.eval(this::getEventsInTimeFrame);
 
-            for (Event event : Objects.requireNonNull(events)) {
+            for (Event event : events) {
                 printer.printEvent(event);
             }
         } catch (ParseException e) {
             printer.println(e.getMessage());
         }
-    }
-
-    //very inefficient implementation
-    private List<Event> getEventsInTimeFrame() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
-        return getEventsInTimeFrame(String.valueOf(year + "-" + month + "-" + day),
-                String.valueOf(year + "-" + month + "-" + (day + 7)));
-    }
-
-    private List<Event> getEventsInTimeFrameS(String val) {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
-        return getEventsInTimeFrame(val, String.valueOf(year + "-" + month + "-" + (day + 7)));
-    }
-
-    private List<Event> getEventsInTimeFrameE(String val) {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR), month = cal.get(Calendar.MONTH), day = cal.get(Calendar.DAY_OF_MONTH);
-        return getEventsInTimeFrame(String.valueOf(year + "-" + month + "-" + day), val);
     }
 
     private List<Event> getEventsInTimeFrame(String start, String end) {

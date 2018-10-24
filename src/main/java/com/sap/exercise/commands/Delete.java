@@ -1,5 +1,7 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.commands.util.ArgumentEvaluator;
+import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;
@@ -40,8 +42,15 @@ public class Delete implements Command {
             startTime = cmd.getOptionValue('s');
         }
         if (cmd.hasOption('e')) {
-            endTime = cmd.getOptionValue('e');
+            endTime = cmd.getOptionValue('e') + "-";
         }
-        //deleteInTimeFrame(startTime, endTime);
+
+        ArgumentEvaluator evaluator = new ArgumentEvaluator(startTime, endTime);
+        int result = evaluator.eval(this::deleteInTimeFrame);
+    }
+
+    private int deleteInTimeFrame(String start, String end) {
+        //TODO implement
+        return 0;
     }
 }
