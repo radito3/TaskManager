@@ -25,7 +25,7 @@ public class Agenda implements Command {
     public void execute(String... args) {
         try {
             String[] times = flagHandler(args);
-            String start = times[0], end = times[1] + "-";
+            String start = times[0], end = times[1].isEmpty() ? "" : times[1] + "-";
 
             ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
             List<Event> events = evaluator.eval(this::getEventsInTimeFrame);
