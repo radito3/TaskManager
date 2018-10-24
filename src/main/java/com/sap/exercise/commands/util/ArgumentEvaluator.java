@@ -8,7 +8,10 @@ public class ArgumentEvaluator {
     private Evaluator evaluator;
 
     public ArgumentEvaluator(String... args) {
-        switch (Stream.of(args).filter(s -> !s.isEmpty()).toArray().length) {
+        switch (Stream.of(args)
+                .filter(s -> !s.isEmpty())
+                .filter(s -> s.matches("2\\d{3}-[01]\\d-[0-3]\\d"))
+                .toArray().length) {
             case 0:
                 evaluator = new ZeroArgEvaluator();
             case 1:
