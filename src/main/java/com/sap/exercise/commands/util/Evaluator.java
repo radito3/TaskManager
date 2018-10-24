@@ -12,6 +12,7 @@ public interface Evaluator {
         int year = cal.get(Calendar.YEAR),
                 month = cal.get(Calendar.MONTH),
                 day = cal.get(Calendar.DAY_OF_MONTH);
+        //TODO add support for next month arg
         return new String[] { String.valueOf(year + "-" + month + "-" + day),
                 String.valueOf(year + "-" + month + "-" + (day + 7)) };
     }
