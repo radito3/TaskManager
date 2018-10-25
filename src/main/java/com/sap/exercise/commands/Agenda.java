@@ -30,8 +30,10 @@ public class Agenda implements Command {
             ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
             List<Event> events = evaluator.eval(this::getEventsInTimeFrame);
 
-            for (Event event : events) {
-                printer.printEvent(event);
+            if (events.isEmpty()) {
+                printer.println("\nNo upcoming events");
+            } else {
+                events.forEach(printer::printEvent);
             }
         } catch (ParseException e) {
             printer.println(e.getMessage());

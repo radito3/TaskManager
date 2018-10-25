@@ -35,6 +35,8 @@ public class Main {
         }
     }
 
+    //TODO move database from localhost to online service
+
     //Implement User system - every user has their own calendar
     //Users may be able to share calendars/some parts of their calendars
     //The app may run on multiple JVMs while connected to one database

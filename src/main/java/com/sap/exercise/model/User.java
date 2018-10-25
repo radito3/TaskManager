@@ -13,23 +13,27 @@ public class User extends AbstractModel implements Serializable {
     @Column(columnDefinition = "mysql->int(11)", name = "Id", nullable = false, unique = true)
     private Integer id;
 
-    @Column(columnDefinition = "mysql->varchar(128)", name = "Name", nullable = false)
-    private String name;
+    @Column(columnDefinition = "mysql->varchar(128)", name = "UserName", nullable = false)
+    private String userName;
 
     @Column(columnDefinition = "mysql->varchar(64)", name = "Email")
     private String email;
+
+    @Column(columnDefinition = "mysql->text", name = "Password", nullable = false)
+    private String password;
 
     public User() {
         this("default");
     }
 
     public User(String name) {
-        this(name, "");
+        this(name, "", "");
     }
 
-    public User(String name, String email) {
-        this.name = name;
+    public User(String userName, String email, String password) {
+        this.userName = userName;
         this.email = email;
+        this.password = password;
     }
 
     @Override
@@ -41,12 +45,12 @@ public class User extends AbstractModel implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
@@ -57,27 +61,37 @@ public class User extends AbstractModel implements Serializable {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        User user = (User) object;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
         return Objects.equals(id, user.id) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(email, user.email);
+                Objects.equals(userName, user.userName) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email);
+        return Objects.hash(id, userName, email, password);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
                 "}";
     }
 }

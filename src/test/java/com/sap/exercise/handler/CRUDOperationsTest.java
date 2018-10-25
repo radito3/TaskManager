@@ -3,7 +3,6 @@ package com.sap.exercise.handler;
 import com.sap.exercise.AbstractTest;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.model.User;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +21,7 @@ public class CRUDOperationsTest extends AbstractTest {
                 () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
                 () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
         );
+        CRUDOperations.delete(user);
     }
 
     @Test
@@ -30,13 +30,14 @@ public class CRUDOperationsTest extends AbstractTest {
         User user = new User();
         CRUDOperations.create(user);
 
-        user.setName("new name");
+        user.setUserName("new name");
         CRUDOperations.update(user);
 
         assertAll("Object integrity assertions",
                 () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
                 () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
         );
+        CRUDOperations.delete(user);
     }
 
     @Test
@@ -53,7 +54,6 @@ public class CRUDOperationsTest extends AbstractTest {
 
     @Test
     @DisplayName("Getting object identified by title test")
-    @Disabled("Event model 'equals' method doesn't work")
     public void getObjectByTitleTest() {
         Event event = new Event("test");
         CRUDOperations.create(event);
@@ -61,6 +61,7 @@ public class CRUDOperationsTest extends AbstractTest {
         Event event1 = CRUDOperations.getObjectFromTitle("test");
         assertNotNull(event1);
         assertEquals(event, event1);
+        CRUDOperations.delete(event);
     }
 
     @Test
@@ -70,5 +71,7 @@ public class CRUDOperationsTest extends AbstractTest {
                 () -> CRUDOperations.getObjectFromTitle(""),
                 "Incorrect or no exception thrown with invalid title");
     }
+
+    //TODO add tests for remaining methods
 
 }

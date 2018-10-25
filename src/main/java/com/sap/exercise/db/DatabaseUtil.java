@@ -20,6 +20,7 @@ public class DatabaseUtil {
         Configuration configuration = new Configuration()
                 .configure("hibernate.cfg.xml")
                 .addAnnotatedClass(Event.class)
+                .addAnnotatedClass(Calendar.class)
                 .addAnnotatedClass(User.class);
 
         ServiceRegistry registry = new StandardServiceRegistryBuilder()

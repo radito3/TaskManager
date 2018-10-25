@@ -3,6 +3,7 @@ package com.sap.exercise.handler;
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.AbstractModel;
 import com.sap.exercise.model.Event;
+import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -58,7 +59,7 @@ public class CRUDOperations {
 
     public static Event getObjectFromTitle(String title) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\';", Event.class)
+                s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\' LIMIT 1;", Event.class)
                         .uniqueResultOptional()
                         .orElseThrow(() -> new NullPointerException("Invalid event name")));
     }
@@ -68,5 +69,10 @@ public class CRUDOperations {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
                 s.createNativeQuery("SELECT * FROM Eventt WHERE TimeOf >= \'" + start + "\' AND TimeOf <= \'" + end + "\';", Event.class)
                     .getResultList());
+    }
+
+    public static Event getEventAt(String time) {
+        //TODO implement
+        throw new NotImplementedException("Functionality not implemented");
     }
 }
