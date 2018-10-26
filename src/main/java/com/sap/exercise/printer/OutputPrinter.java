@@ -1,11 +1,13 @@
 package com.sap.exercise.printer;
 
+import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Calendar;
+import java.util.List;
 
 public class OutputPrinter {
 
@@ -92,59 +94,15 @@ public class OutputPrinter {
         }
     }
 
+    public void printEvents(List<Event> events) {
+        //TODO add support for all types of events
+    }
+
     public void printEvent(Event event) {
         Calendar cal = event.getTimeOf();
         //need to format it properly
-        writer.println(cal.get(Calendar.DATE) + "   " + getMonth(cal.get(Calendar.MONTH)) + "   " +
-                getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + "   " + event.getTitle());
-    }
-
-    private String getMonth(int month) {
-        switch (month + 1) {
-            case 1:
-                return "January";
-            case 2:
-                return "February";
-            case 3:
-                return "March";
-            case 4:
-                return "April";
-            case 5:
-                return "May";
-            case 6:
-                return "June";
-            case 7:
-                return "July";
-            case 8:
-                return "August";
-            case 9:
-                return "September";
-            case 10:
-                return "October";
-            case 11:
-                return "November";
-            default:
-                return "December";
-        }
-    }
-
-    private String getDayOfWeek(int day) {
-        switch (day) {
-            case 1:
-                return "Monday";
-            case 2:
-                return "Tuesday";
-            case 3:
-                return "Wednesday";
-            case 4:
-                return "Thursday";
-            case 5:
-                return "Friday";
-            case 6:
-                return "Saturday";
-            default:
-                return "Sunday";
-        }
+        writer.println(cal.get(Calendar.DATE) + "   " + PrinterUtils.getMonth(cal.get(Calendar.MONTH)) + "   " +
+                PrinterUtils.getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + "   " + event.getTitle());
     }
 
     private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
@@ -157,7 +115,7 @@ public class OutputPrinter {
                 "July", "August", "September",
                 "October", "November", "December" };
 
-        int[] days = { 0, 31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        int[] days = CommandUtils.getMonthDays();
 
         String text = StringUtils.leftPad(months[month], months[month].length() + (wholeYear ? 6 : 4));
         writer.println(text + " " + (wholeYear ? "" : year));
@@ -178,15 +136,9 @@ public class OutputPrinter {
         }
     }
 
-    private boolean isLeapYear(int year) {
-        if (year % 4 == 0 && year % 100 != 0) return true;
-        return year % 400 == 0;
-    }
-
     private boolean isToday(int day, int month, int year) {
-        return calendar.get(Calendar.DAY_OF_MONTH) == day &&
-                calendar.get(Calendar.MONTH) + 1 == month &&
-                calendar.get(Calendar.YEAR) == year;
+        int[] today = CommandUtils.getToday();
+        return day == today[0] && month == today[1] && year == today[2];
     }
 
     private void printWithEvents(int day, boolean events) {

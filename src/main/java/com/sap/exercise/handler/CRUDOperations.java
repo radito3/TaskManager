@@ -64,6 +64,8 @@ public class CRUDOperations {
                         .orElseThrow(() -> new NullPointerException("Invalid event name")));
     }
 
+    /*development stage methods*/
+
     //may not be needed after additional models are implemented
     public static List<Event> getEventsInTimeFrame(String start, String end) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->

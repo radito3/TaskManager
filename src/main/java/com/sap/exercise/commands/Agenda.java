@@ -15,15 +15,10 @@ public class Agenda implements Command {
     public String getName() {
         return "agenda";
     }
-    /*this will print the events for a specified time period as :
-        <day>  <hour>  <event>
-        ...
 
-    (text has configurable color)
-     */
     @Override
     public void execute(String... args) {
-        try {
+        try {  //TODO add configurable colour to output text
             String[] times = flagHandler(args);
             String start = times[0], end = times[1].isEmpty() ? "" : times[1] + "-";
 
@@ -31,9 +26,9 @@ public class Agenda implements Command {
             List<Event> events = evaluator.eval(this::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
-                printer.println("\nNo upcoming events");
+                printer.println("\nNo upcoming events"); //may be coloured text
             } else {
-                events.forEach(printer::printEvent);
+                events.forEach(printer::printEvent);  //will change it with printEvents method
             }
         } catch (ParseException e) {
             printer.println(e.getMessage());
