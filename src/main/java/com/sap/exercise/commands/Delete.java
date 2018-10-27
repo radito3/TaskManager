@@ -4,7 +4,6 @@ import com.sap.exercise.commands.util.ArgumentEvaluator;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.model.Event;
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
 public class Delete implements Command {
@@ -17,40 +16,26 @@ public class Delete implements Command {
     @Override
     public void execute(String... args) {
         try {
-            String name = CommandUtils.buildEventName(args);
-            Event event = CRUDOperations.getObjectFromTitle(name);
+            String[] vars = CommandUtils.flagHandlerForTimeFrame(args, cmd -> CommandUtils.buildEventName(cmd.getArgs()));
+            String start = vars[0], end = vars[1], eventName = vars[2];
+            Event event = CRUDOperations.getObjectFromTitle(eventName);
+            //need to figure out a way to pass the event name as argument
+
+            ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
+            evaluator.eval(this::deleteInTimeFrame);
 
             CRUDOperations.delete(event);
             printer.println("\nEvent deleted");
-        } catch (NullPointerException | IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
         }
     }
 
-    /*
-    Optional flags will be for whether to delete a repeatable event in a time frame or every repetition of the event
-    If these flags are present for a non-repeatable event, nothing will happen
-
-    delete [start] [end] <event name>
-     */
-    private void flagHandler(String[] args) throws ParseException {
-        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.timeFrameOptions(), args);
-
-        String startTime = "", endTime = "";
-        String eventName = CommandUtils.buildEventName(cmd.getArgs());
-        if (cmd.hasOption('s')) {
-            startTime = cmd.getOptionValue('s');
-        }
-        if (cmd.hasOption('e')) {
-            endTime = cmd.getOptionValue('e') + "-";
-        }
-
-        ArgumentEvaluator evaluator = new ArgumentEvaluator(startTime, endTime);
-        int result = evaluator.eval(this::deleteInTimeFrame);
-    }
-
     private int deleteInTimeFrame(String start, String end) {
-        //TODO implement
+        //perform check if event is repeatable
+        //if not -> delete event
+        //if yes -> delete in time frame
+        CRUDOperations.deleteEventsInTimeFrame(start, end);
         return 0;
     }
 }

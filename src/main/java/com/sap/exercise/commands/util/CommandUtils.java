@@ -10,7 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
 public class CommandUtils {
 
@@ -44,7 +44,7 @@ public class CommandUtils {
     }
 
     public static String buildEventName(String[] input) {
-        return Stream.of(input)
+        return Arrays.stream(input)
                 .reduce((a, b) -> a.concat(" ").concat(b))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
@@ -122,6 +122,24 @@ public class CommandUtils {
         return Arrays.stream(cmd.getOptions())
                 .filter(o -> !o.equals(calendarOptions().getOption("e")))
                 .count();
+    }
+
+    public static String[] flagHandlerForTimeFrame(String[] args, Function<CommandLine, String> func) throws ParseException {
+        CommandLine cmd = getParsedCmd(timeFrameOptions(), args);
+
+        String startTime = "", endTime = "", eventName = func.apply(cmd);
+        if (cmd.hasOption('s')) {
+            startTime = cmd.getOptionValue('s');
+        }
+        if (cmd.hasOption('e')) {
+            endTime = cmd.getOptionValue('e') + "-";
+        }
+
+        return new String[] { startTime, endTime, eventName };
+    }
+
+    public static String[] flagHandlerForTimeFrame(String[] args) throws ParseException {
+        return flagHandlerForTimeFrame(args, cmd -> "");
     }
 
     public static int[] getToday() {

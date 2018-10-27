@@ -7,13 +7,16 @@ public class OneArgEvaluator implements Evaluator {
     private String arg1, arg2;
 
     OneArgEvaluator(String arg) {
-        String[] args = getArgs();
         if (arg.endsWith("-")) {
-            arg1 = args[0];
+            arg1 = getWeekTimeFrame()[0];
             arg2 = arg.substring(0, arg.length() - 1);
         } else {
             arg1 = arg;
-            arg2 = args[1];
+
+            String[] date = arg.split("-");
+            int[] inOneWeek = CommandUtils.getTime(Integer.valueOf(date[2]) + 6, Integer.valueOf(date[1]), Integer.valueOf(date[0]));
+
+            arg2 = Evaluator.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
         }
     }
 

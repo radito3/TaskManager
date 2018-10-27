@@ -7,7 +7,7 @@ public class ZeroArgEvaluator implements Evaluator {
     private String arg1, arg2;
 
     ZeroArgEvaluator() {
-        String[] args = getArgs();
+        String[] args = getWeekTimeFrame();
         arg1 = args[0];
         arg2 = args[1];
     }
