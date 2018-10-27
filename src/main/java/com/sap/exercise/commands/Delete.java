@@ -8,6 +8,8 @@ import org.apache.commons.cli.ParseException;
 
 public class Delete implements Command {
 
+    private Event event;
+    
     @Override
     public String getName() {
         return "delete";
@@ -18,8 +20,8 @@ public class Delete implements Command {
         try {
             String[] vars = CommandUtils.flagHandlerForTimeFrame(args, cmd -> CommandUtils.buildEventName(cmd.getArgs()));
             String start = vars[0], end = vars[1], eventName = vars[2];
-            Event event = CRUDOperations.getObjectFromTitle(eventName);
-            //need to figure out a way to pass the event name as argument
+            event = CRUDOperations.getObjectFromTitle(eventName);
+            
 
             ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
             evaluator.eval(this::deleteInTimeFrame);
@@ -35,7 +37,7 @@ public class Delete implements Command {
         //perform check if event is repeatable
         //if not -> delete event
         //if yes -> delete in time frame
-        CRUDOperations.deleteEventsInTimeFrame(start, end);
+        CRUDOperations.deleteEventsInTimeFrame(event, start, end);
         return 0;
     }
 }
