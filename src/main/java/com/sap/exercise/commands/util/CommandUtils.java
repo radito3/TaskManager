@@ -9,7 +9,6 @@ import org.apache.commons.cli.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.function.Function;
 
 public class CommandUtils {
@@ -140,33 +139,5 @@ public class CommandUtils {
 
     public static String[] flagHandlerForTimeFrame(String[] args) throws ParseException {
         return flagHandlerForTimeFrame(args, cmd -> "");
-    }
-
-    public static int[] getToday() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR),
-                month = cal.get(Calendar.MONTH) + 1,
-                day = cal.get(Calendar.DAY_OF_MONTH);
-        return new int[] { day, month, year };
-    }
-
-    public static int[] getTime(int day, int month, int year) {
-        if (month > 12) {
-            return getTime(day, 1, year + 1);
-        }
-        if (day > getMonthDays()[month]) {
-            return getTime(day - getMonthDays()[month], month + 1, year);
-        }
-        return new int[] { day, month, year };
-    }
-
-    public static int[] getMonthDays() {
-        return new int[] { 0, 31, isLeapYear() ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-    }
-
-    private static boolean isLeapYear(/*int year*/) {
-        Calendar cal = Calendar.getInstance();
-        /*cal.set(Calendar.YEAR, year);  --- for argument function */
-        return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
     }
 }

@@ -1,5 +1,7 @@
 package com.sap.exercise.commands.util;
 
+import com.sap.exercise.handler.DateHandler;
+
 import java.util.function.BiFunction;
 
 public class OneArgEvaluator implements Evaluator {
@@ -14,7 +16,7 @@ public class OneArgEvaluator implements Evaluator {
             arg1 = arg;
 
             String[] date = arg.split("-");
-            int[] inOneWeek = CommandUtils.getTime(Integer.valueOf(date[2]) + 6, Integer.valueOf(date[1]), Integer.valueOf(date[0]));
+            int[] inOneWeek = DateHandler.inOneWeek(date[2], date[1], date[0]);
 
             arg2 = Evaluator.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
         }

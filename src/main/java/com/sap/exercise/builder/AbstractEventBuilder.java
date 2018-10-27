@@ -1,5 +1,6 @@
 package com.sap.exercise.builder;
 
+import com.sap.exercise.filters.*;
 import com.sap.exercise.model.Event;
 
 import java.util.Calendar;

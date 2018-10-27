@@ -1,5 +1,7 @@
 package com.sap.exercise.commands.util;
 
+import com.sap.exercise.handler.DateHandler;
+
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -8,10 +10,10 @@ public interface Evaluator {
     <T> T evaluate(BiFunction<String, String, T> func);
 
     default String[] getWeekTimeFrame() {
-        int[] today = CommandUtils.getToday();
+        int[] today = DateHandler.getToday();
         int year = today[2], month = today[1], day = today[0];
 
-        int[] inOneWeek = CommandUtils.getTime(day + 6, month, year);
+        int[] inOneWeek = DateHandler.getTime(day + 6, month, year);
 
         return new String[] { stringifyDate(year, month, day), stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]) };
     }

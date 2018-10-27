@@ -1,6 +1,6 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.commands.util.CommandUtils;
+import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
@@ -115,7 +115,7 @@ public class OutputPrinter {
                 "July", "August", "September",
                 "October", "November", "December" };
 
-        int[] days = CommandUtils.getMonthDays();
+        int[] days = DateHandler.getMonthDays();
 
         String text = StringUtils.leftPad(months[month], months[month].length() + (wholeYear ? 6 : 4));
         writer.println(text + " " + (wholeYear ? "" : year));
@@ -137,7 +137,7 @@ public class OutputPrinter {
     }
 
     private boolean isToday(int day, int month, int year) {
-        int[] today = CommandUtils.getToday();
+        int[] today = DateHandler.getToday();
         return day == today[0] && month == today[1] && year == today[2];
     }
 

@@ -1,4 +1,4 @@
-package com.sap.exercise.builder;
+package com.sap.exercise.filters;
 
 public interface InputValueFilter<T> {
 

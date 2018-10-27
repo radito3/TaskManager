@@ -1,4 +1,4 @@
-package com.sap.exercise.builder;
+package com.sap.exercise.filters;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
