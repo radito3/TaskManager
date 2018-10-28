@@ -1,9 +1,9 @@
 package com.sap.exercise.model;
 
+import com.sap.exercise.handler.DateHandler;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -68,12 +68,9 @@ public class Event extends AbstractModel implements Serializable {
     }
 
     private Calendar getDefaultCalendar() {
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR),
-                month = cal.get(Calendar.MONTH) + 1;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-        try { cal.setTime(sdf.parse("01-" + month + "-" + year + " 00:00:01")); } catch (ParseException ignored) {}
-        return cal;
+        int[] today = DateHandler.getToday();
+        DateHandler handler = new DateHandler("1-" + today[1] + "-" + today[2] + " 00:00:01");
+        return handler.asCalendar();
     }
 
     public Event(String title, EventType type, Calendar timeOf, RepeatableType repeat) {

@@ -6,52 +6,60 @@ import java.util.List;
 
 class PrinterUtils {
 
-    static String getMonth(int month) {
+    static String getMonth(int month, boolean flag) {
         switch (month + 1) {
             case 1:
-                return "January";
+                return flag ? "Jan" : "January";
             case 2:
-                return "February";
+                return flag ? "Feb" : "February";
             case 3:
-                return "March";
+                return flag ? "Mar" : "March";
             case 4:
-                return "April";
+                return flag ? "Apr" : "April";
             case 5:
                 return "May";
             case 6:
-                return "June";
+                return flag ? "Jun" : "June";
             case 7:
-                return "July";
+                return flag ? "Jul" : "July";
             case 8:
-                return "August";
+                return flag ? "Aug" : "August";
             case 9:
-                return "September";
+                return flag ? "Sep" : "September";
             case 10:
-                return "October";
+                return flag ? "Oct" : "October";
             case 11:
-                return "November";
+                return flag ? "Nov" : "November";
             default:
-                return "December";
+                return flag ? "Dec" : "December";
+        }
+    }
+
+    static String getMonth(int month) {
+        return getMonth(month, false);
+    }
+
+    static String getDayOfWeek(int day, boolean flag) {
+        switch (day) {
+            case 1:
+                return flag ? "Mon" : "Monday";
+            case 2:
+                return flag ? "Tue" : "Tuesday";
+            case 3:
+                return flag ? "Wed" : "Wednesday";
+            case 4:
+                return flag ? "Thu" : "Thursday";
+            case 5:
+                return flag ? "Fri" : "Friday";
+            case 6:
+                return flag ? "Sat" : "Saturday";
+            default:
+                return flag ? "Sun" : "Sunday";
         }
     }
 
     static String getDayOfWeek(int day) {
-        switch (day) {
-            case 1:
-                return "Monday";
-            case 2:
-                return "Tuesday";
-            case 3:
-                return "Wednesday";
-            case 4:
-                return "Thursday";
-            case 5:
-                return "Friday";
-            case 6:
-                return "Saturday";
-            default:
-                return "Sunday";
-        }
+        return getDayOfWeek(day, false);
     }
 
     static String format(List<Event> args) {
