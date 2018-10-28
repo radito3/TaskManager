@@ -78,7 +78,8 @@ public class CRUDOperations {
         throw new NotImplementedException("Functionality not implemented");
     }
 
-    public static void deleteEventsInTimeFrame(String start, String end) {
+    public static void deleteEventsInTimeFrame(Event event, String start, String end) {
         //TODO implement
+        throw new NotImplementedException("Deleting repeatable events not implemented");
     }
 }

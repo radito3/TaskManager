@@ -16,4 +16,9 @@ public class ZeroArgEvaluator implements Evaluator {
     public <T> T evaluate(BiFunction<String, String, T> func) {
         return func.apply(arg1, arg2);
     }
+
+    @Override
+    public short getNumOfArgs() {
+        return 0;
+    }
 }

@@ -9,6 +9,7 @@ import org.apache.commons.cli.ParseException;
 public class Delete implements Command {
 
     private Event event;
+    private ArgumentEvaluator evaluator;
     
     @Override
     public String getName() {
@@ -19,25 +20,29 @@ public class Delete implements Command {
     public void execute(String... args) {
         try {
             String[] vars = CommandUtils.flagHandlerForTimeFrame(args, cmd -> CommandUtils.buildEventName(cmd.getArgs()));
-            String start = vars[0], end = vars[1], eventName = vars[2];
+            String start = vars[0],
+                    end = vars[1],
+                    eventName = vars[2];
             event = CRUDOperations.getObjectFromTitle(eventName);
-            
 
-            ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
-            evaluator.eval(this::deleteInTimeFrame);
+            evaluator = new ArgumentEvaluator(start, end);
+            int result = evaluator.eval(this::deleteEvents);
 
-            CRUDOperations.delete(event);
-            printer.println("\nEvent deleted");
+            printer.println(result == 0 ? "\nEvent deleted" : "\nEvent entries deleted");
         } catch (NullPointerException | IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
+        } finally {
+            event = null;
+            evaluator = null;
         }
     }
 
-    private int deleteInTimeFrame(String start, String end) {
-        //perform check if event is repeatable
-        //if not -> delete event
-        //if yes -> delete in time frame
+    private int deleteEvents(String start, String end) {
+        if (event.getToRepeat() == Event.RepeatableType.NONE || evaluator.numOfArgs() == 0) {
+            CRUDOperations.delete(event);
+            return 0;
+        }
         CRUDOperations.deleteEventsInTimeFrame(event, start, end);
-        return 0;
+        return 1;
     }
 }

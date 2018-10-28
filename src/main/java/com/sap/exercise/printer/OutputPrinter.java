@@ -96,6 +96,7 @@ public class OutputPrinter {
 
     public void printEvents(List<Event> events) {
         //TODO add support for all types of events
+        //sort events by date
     }
 
     public void printEvent(Event event) {

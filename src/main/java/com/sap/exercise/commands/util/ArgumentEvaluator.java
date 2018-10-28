@@ -1,5 +1,7 @@
 package com.sap.exercise.commands.util;
 
+import com.sap.exercise.handler.DateHandler;
+
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -9,28 +11,31 @@ public class ArgumentEvaluator {
     private Evaluator evaluator;
 
     public ArgumentEvaluator(String... args) {
-        Supplier<Stream<String>> argStream = () -> Stream.of(args)
-                .filter(s -> !s.isEmpty());
-
-        if (argStream.get().count() != argStream.get()
-                .filter(s -> s.matches("2\\d{3}-[01]\\d-[0-3]\\d-?")).count()) {
-            throw new IllegalArgumentException("Invalid date format");
-        }
+        Supplier<Stream<String>> argStream = () -> Stream.of(args).filter(s -> !s.isEmpty());
 
         switch (Math.toIntExact(argStream.get().count())) {
             case 0:
                 evaluator = new ZeroArgEvaluator();
                 break;
             case 1:
-                evaluator = new OneArgEvaluator(argStream.get().findFirst().orElse(""));
+                String arg = argStream.get().findFirst().orElse("");
+                boolean end = arg.endsWith("-");
+                DateHandler handler = new DateHandler(arg);
+                evaluator = new OneArgEvaluator(handler.asString(!end) + (end ? "-" : ""));
                 break;
             case 2:
-                evaluator = new TwoArgEvaluator(args[0], args[1]);
+                DateHandler handler1 = new DateHandler(args[0]);
+                DateHandler handler2 = new DateHandler(args[1]);
+                evaluator = new TwoArgEvaluator(handler1.asString(true), handler2.asString(false));
                 break;
         }
     }
 
     public <T> T eval(BiFunction<String, String, T> func) {
         return evaluator.evaluate(func);
+    }
+
+    public short numOfArgs() {
+        return evaluator.getNumOfArgs();
     }
 }

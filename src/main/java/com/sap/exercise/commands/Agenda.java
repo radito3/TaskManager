@@ -16,8 +16,8 @@ public class Agenda implements Command {
     }
 
     @Override
-    public void execute(String... args) {
-        try {  //TODO add configurable colour to output text
+    public void execute(String... args) {  //TODO add configurable colour to output text
+        try {
             String[] times = CommandUtils.flagHandlerForTimeFrame(args);
             String start = times[0], end = times[1];
 
@@ -35,6 +35,6 @@ public class Agenda implements Command {
     }
 
     private List<Event> getEventsInTimeFrame(String start, String end) {
-        return CRUDOperations.getEventsInTimeFrame(start + " 00:00:00", end + " 23:59:59");
+        return CRUDOperations.getEventsInTimeFrame(start, end);
     }
 }

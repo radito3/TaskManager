@@ -12,7 +12,7 @@ public class GoalBuilder extends AbstractEventBuilder implements EventBuilder {
         fields = new ArrayList<>(5);
         fields.add(new FieldInfo("title", true));
         fields.add(new FieldInfo("when", false));
-        fields.add(new FieldInfo("toRepeat", "Repeat? [N]o [D]aily [W]eekly [M]onthly [Y]early", true));
+        fields.add(new FieldInfo("toRepeat", "How often? [D]aily [W]eekly [M]onthly [Y]early", true));
         fields.add(new FieldInfo("reminder", false));
         fields.add(new FieldInfo("duration", false));
     }

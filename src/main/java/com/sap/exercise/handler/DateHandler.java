@@ -1,5 +1,7 @@
 package com.sap.exercise.handler;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -9,29 +11,32 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DateHandler {
 
     private static final SimpleDateFormat DEFAULT_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private final Map<String, SimpleDateFormat> dateFormats = new ConcurrentHashMap<>();
-    {
-        dateFormats.put("(\\d{1,2})-\\1-2\\d{3} \\1:\\1:\\1", DEFAULT_FORMAT);
-        dateFormats.put("\\d{1,2}-\\d{1,2}-2\\d{3}", new SimpleDateFormat("dd-MM-yyyy"));
-        dateFormats.put("\\d{1,2}/\\d{1,2}/2\\d{3} \\d{1,2}:\\d{1,2}:\\d{1,2}", new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"));
-        dateFormats.put("\\d{1,2}/\\d{1,2}/2\\d{3}", new SimpleDateFormat("dd/MM/yyyy"));
-        dateFormats.put("\\d{1,2}.\\d{1,2}.2\\d{3} \\d{1,2}:\\d{1,2}:\\d{1,2}", new SimpleDateFormat("dd.MM.yyyy HH:mm:ss"));
-        dateFormats.put("\\d{1,2}.\\d{1,2}.2\\d{3}", new SimpleDateFormat("dd.MM.yyyy"));
-        dateFormats.put("\\d{1,2} (\\d{1,2}|[a-zA-Z]{3}) 2\\d{3}", new SimpleDateFormat("dd MMM yyyy HH:mm:ss"));
-        //TODO add remaining time formats
+    private static final Map<String, SimpleDateFormat> dateFormats = new ConcurrentHashMap<>();
+    static {
+        dateFormats.put("\\s*\\d{1,2}-\\d{1,2}-2\\d{3} \\d{1,2}:\\d{1,2}:\\d{1,2}-?\\s*", DEFAULT_FORMAT);
+        dateFormats.put("\\s*\\d{1,2}-\\d{1,2}-2\\d{3}-?\\s*", new SimpleDateFormat("dd-MM-yyyy"));
+        dateFormats.put("\\s*\\d{1,2}/\\d{1,2}/2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd/MM/yyyy HH:mm"));
+        dateFormats.put("\\s*\\d{1,2}/\\d{1,2}/2\\d{3}-?\\s*", new SimpleDateFormat("dd/MM/yyyy"));
+        dateFormats.put("\\s*\\d{1,2}.\\d{1,2}.2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd.MM.yyyy HH:mm"));
+        dateFormats.put("\\s*\\d{1,2}.\\d{1,2}.2\\d{3}-?\\s*", new SimpleDateFormat("dd.MM.yyyy"));
+        dateFormats.put("\\s*\\d{1,2} (\\d{1,2}|[a-zA-Z]{3}) 2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd MMM yyyy HH:mm"));
+        dateFormats.put("\\s*\\d{1,2} (\\d{1,2}|[a-zA-Z]{3}) 2\\d{3}-?\\s*", new SimpleDateFormat("dd MMM yyyy"));
     }
-    private Calendar current = Calendar.getInstance();
+    private Calendar currentCal = Calendar.getInstance();
     private SimpleDateFormat currentFormat;
-    private String input;
 
     public DateHandler(String text) {
-        this.input = text;
-        this.findFormat();
+        this.findFormat(text);
+        try {
+            currentCal.setTime(currentFormat.parse(StringUtils.removeEnd(text.trim(), "-")));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Unparseable date");  //TODO figure out why only dd.MM.yyyy and dd MMM yyyy work
+        }
     }
 
     private String asString(boolean flag, boolean start, boolean flag2) {
-        Date date = new Date(current);
-        String hours = getPattern().contains("HH") ?
+        Date date = new Date(currentCal);
+        String hours = currentFormat.toPattern().contains("HH") ?
                 date.hour + ":" + date.minute + ":" + date.second :
                 flag ? (start ? "00:00:00" : "23:59:59") : "12:00:00";
 
@@ -48,18 +53,14 @@ public class DateHandler {
         return asString(true, start, false);
     }
 
-    public String getPattern() {
-        return currentFormat.toPattern();
-    }
-
     public Calendar asCalendar() {
         try {
-            current.setTime(currentFormat.parse(input));
+            currentCal.setTime(DEFAULT_FORMAT.parse(this.asString()));
         } catch (ParseException ignored) {}
-        return current;
+        return currentCal;
     }
 
-    private void findFormat() {
+    private void findFormat(String input) {
         for (Map.Entry<String, SimpleDateFormat> entry : dateFormats.entrySet()) {
             if (input.matches(entry.getKey())) {
                 currentFormat = entry.getValue();

@@ -15,7 +15,7 @@ public class OneArgEvaluator implements Evaluator {
         } else {
             arg1 = arg;
 
-            String[] date = arg.split("-");
+            String[] date = arg.split("[-./ ]");
             int[] inOneWeek = DateHandler.inOneWeek(date[2], date[1], date[0]);
 
             arg2 = Evaluator.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
@@ -25,5 +25,10 @@ public class OneArgEvaluator implements Evaluator {
     @Override
     public <T> T evaluate(BiFunction<String, String, T> func) {
         return func.apply(arg1, arg2);
+    }
+
+    @Override
+    public short getNumOfArgs() {
+        return 1;
     }
 }

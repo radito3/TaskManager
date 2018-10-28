@@ -9,6 +9,8 @@ public interface Evaluator {
 
     <T> T evaluate(BiFunction<String, String, T> func);
 
+    short getNumOfArgs();
+
     default String[] getWeekTimeFrame() {
         int[] today = DateHandler.getToday();
         int year = today[2], month = today[1], day = today[0];
