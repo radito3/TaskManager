@@ -7,8 +7,11 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class CRUDOperations {
 
@@ -24,11 +27,6 @@ public class CRUDOperations {
         process(s -> s.delete(obj));
     }
 
-    /**
-     * this solution if for when there are many objects to commit in one transaction to the DB
-     * however, if the amount of object to commit is above the threshold, the job should be split between worker threads
-     * current threshold - 30
-     **/
     @SafeVarargs
     public static <T extends AbstractModel> void create(T... arr) {
         process(s -> {
@@ -37,7 +35,6 @@ public class CRUDOperations {
             }
         });
     }
-    //rest of crud operations with array argument
 
     private static void process(Consumer<Session> consumer) {
         try {
@@ -49,8 +46,24 @@ public class CRUDOperations {
     }
 
     public static <R extends AbstractModel> R getObject(R obj) {
+        return get(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
+    }
+
+    @SafeVarargs
+    public static <R extends AbstractModel> List<R> getObjects(R... arr) {
+        return get(s -> {
+            List<R> result = new ArrayList<>();
+            for (R o : arr) {
+                Optional<R> opt = s.byId((Class<R>)o.getClass()).loadOptional(o.getId());
+                opt.ifPresent(result::add);
+            }
+            return result;
+        });
+    }
+
+    private static <T> T get(Function<Session, T> function) {
         try {
-            return DatabaseUtilFactory.getDbClient().getObject(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
+            return DatabaseUtilFactory.getDbClient().getObject(function);
         } catch (HibernateException e) {
             System.setProperty("db-instance", "false");
             throw e;

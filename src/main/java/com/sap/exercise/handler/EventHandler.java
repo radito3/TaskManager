@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.model.Calendar;
+import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 
 import java.util.Arrays;
@@ -12,13 +12,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 public class EventHandler {
 
-    private ExecutorService service = Executors.newCachedThreadPool();
-    private Map<Calendar, List<Event>> table = new Hashtable<>();
+    private static ExecutorService service = Executors.newCachedThreadPool();
+    private static Map<CalendarEvents, List<Event>> table = new Hashtable<>();
 
-    public void onStartup() {
+    public static void onStartup() {
         Future<List<Event>> future = service.submit(() -> CRUDOperations.getEventsInTimeFrame("today", "today + 5"));
         try {
             List<Event> events = future.get();
@@ -26,14 +27,29 @@ public class EventHandler {
             //when an agenda request is triggered, it first checks the table if the entries are in existing time frame
             //if not, a request to the db is executed
 
-            List<Callable<Calendar>> calls = Arrays.asList(() -> CRUDOperations.getObject(new Calendar()),
-                    () -> CRUDOperations.getObject(new Calendar()));
+            List<Callable<CalendarEvents>> calls = Arrays.asList(() -> CRUDOperations.getObject(new CalendarEvents()),
+                    () -> CRUDOperations.getObject(new CalendarEvents()));
 
             service.invokeAll(calls);
 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void create(Event event) {
+        if (event.getToRepeat() == Event.RepeatableType.NONE) {
+            service.submit(() -> CRUDOperations.create(event));
+        } else {
+            //create CalendarEvents entries for a month
+        }
+    }
+
+    private static Supplier<Runnable> eventSupplier(Integer eventId) {
+        return () -> {
+
+            return null;
+        };
     }
 
     //Threads for checking events for validity in time frame

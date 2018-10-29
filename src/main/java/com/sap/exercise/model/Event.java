@@ -177,7 +177,7 @@ public class Event extends AbstractModel implements Serializable {
                 ", title='" + title + '\'' +
                 ", typeOf=" + typeOf +
                 ", location='" + location + '\'' +
-                ", timeOf=" + timeOf.toInstant().toString() +
+                ", timeOf=" + timeOf.getTime().toString() +
                 ", description='" + description + '\'' +
                 ", allDay=" + allDay +
                 ", duration=" + duration +

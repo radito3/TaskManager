@@ -33,7 +33,8 @@ public class Calendar implements Command {
                     printer.println();
                 }
             } else if (cmd.hasOption('y')) {
-                printer.yearCalendar(cmd.getOptionValues('y') == null ? cal.get(java.util.Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y')));
+                int year = cmd.getOptionValues('y') == null ? cal.get(java.util.Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
+                printer.yearCalendar(year/*, cmd.hasOption('e')*/); //the methods will eventually have a second boolean parameter
             } else {
                 printer.monthCalendar(cal.get(java.util.Calendar.MONTH));
             }
