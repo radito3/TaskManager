@@ -1,4 +1,4 @@
-package com.sap.exercise.filters;
+package com.sap.exercise.builder;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -6,21 +6,21 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class StringFilterTest {
+public class FieldValueUtilsTest {
 
     @Test
-    @DisplayName("Filter test with valid argument")
-    public void filterValidArgTest() {
+    @DisplayName("Filter test with valid string argument")
+    public void valueOfValidStrArgTest() {
         String str = "test";
-        String str1 = new StringFilter().valueOf("test");
+        String str1 = FieldValueUtils.valueOfStr("test");
         assertEquals(str, str1, "Filtered string doesn't match");
     }
 
     @Test
-    @DisplayName("Filter test with invalid argument")
-    public void filterInvalidArgTest() {
+    @DisplayName("Filter test with invalid string argument")
+    public void valueOfInvalidStrArgTest() {
         assertThrows(IllegalArgumentException.class,
-                () -> new StringFilter().valueOf("!@#%"),
+                () -> FieldValueUtils.valueOfStr("!@#%"),
                 "Exception is not thrown with invalid argument");
     }
 }

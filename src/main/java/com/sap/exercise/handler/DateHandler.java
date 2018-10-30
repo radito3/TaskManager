@@ -1,92 +1,38 @@
 package com.sap.exercise.handler;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DateHandler {
 
-    private static final SimpleDateFormat DEFAULT_FORMAT = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private static final Map<String, SimpleDateFormat> dateFormats = new ConcurrentHashMap<>();
-    static {
-        dateFormats.put("\\s*\\d{1,2}-\\d{1,2}-2\\d{3} \\d{1,2}:\\d{1,2}:\\d{1,2}-?\\s*", DEFAULT_FORMAT);
-        dateFormats.put("\\s*\\d{1,2}-\\d{1,2}-2\\d{3}-?\\s*", new SimpleDateFormat("dd-MM-yyyy"));
-        dateFormats.put("\\s*\\d{1,2}/\\d{1,2}/2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd/MM/yyyy HH:mm"));
-        dateFormats.put("\\s*\\d{1,2}/\\d{1,2}/2\\d{3}-?\\s*", new SimpleDateFormat("dd/MM/yyyy"));
-        dateFormats.put("\\s*\\d{1,2}.\\d{1,2}.2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd.MM.yyyy HH:mm"));
-        dateFormats.put("\\s*\\d{1,2}.\\d{1,2}.2\\d{3}-?\\s*", new SimpleDateFormat("dd.MM.yyyy"));
-        dateFormats.put("\\s*\\d{1,2} (\\d{1,2}|[a-zA-Z]{3}) 2\\d{3} \\d{1,2}:\\d{1,2}-?\\s*", new SimpleDateFormat("dd MMM yyyy HH:mm"));
-        dateFormats.put("\\s*\\d{1,2} (\\d{1,2}|[a-zA-Z]{3}) 2\\d{3}-?\\s*", new SimpleDateFormat("dd MMM yyyy"));
-    }
+    private static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
+            "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy" };
+
     private Calendar currentCal = Calendar.getInstance();
-    private SimpleDateFormat currentFormat;
 
     public DateHandler(String text) {
-        this.findFormat(text);
         try {
-            currentCal.setTime(currentFormat.parse(StringUtils.removeEnd(text.trim(), "-")));
+            String argument = StringUtils.removeEnd(text.trim(), "-");
+            currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Unparseable date");  //TODO figure out why only dd.MM.yyyy and dd MMM yyyy work
+            throw new IllegalArgumentException(e);
         }
-    }
-
-    private String asString(boolean flag, boolean start, boolean flag2) {
-        Date date = new Date(currentCal);
-        String hours = currentFormat.toPattern().contains("HH") ?
-                date.hour + ":" + date.minute + ":" + date.second :
-                flag ? (start ? "00:00:00" : "23:59:59") : "12:00:00";
-
-        String format = "%d-" + date.month + "-%d " + hours;
-
-        return flag2 ? String.format(format, date.day, date.year) : String.format(format, date.year, date.day);
-    }
-
-    public String asString() {
-        return asString(false, false, true);
     }
 
     public String asString(boolean start) {
-        return asString(true, start, false);
+        return String.valueOf(currentCal.get(Calendar.YEAR)) +
+                '-' +
+                (currentCal.get(Calendar.MONTH) + 1) +
+                '-' +
+                currentCal.get(Calendar.DAY_OF_MONTH) +
+                (start ? " 00:00" : " 23:59");
     }
 
     public Calendar asCalendar() {
-        try {
-            currentCal.setTime(DEFAULT_FORMAT.parse(this.asString()));
-        } catch (ParseException ignored) {}
         return currentCal;
-    }
-
-    private void findFormat(String input) {
-        for (Map.Entry<String, SimpleDateFormat> entry : dateFormats.entrySet()) {
-            if (input.matches(entry.getKey())) {
-                currentFormat = entry.getValue();
-                return;
-            }
-        }
-        throw new IllegalArgumentException("Invalid date format");
-    }
-
-    private static class Date {
-        private int year;
-        private int month;
-        private int day;
-        private int hour;
-        private int minute;
-        private int second;
-
-        Date(Calendar cal) {
-            this.year = cal.get(Calendar.YEAR);
-            this.month = cal.get(Calendar.MONTH) + 1;
-            this.day = cal.get(Calendar.DAY_OF_MONTH);
-            this.hour = cal.get(Calendar.HOUR_OF_DAY);
-            this.minute = cal.get(Calendar.MINUTE);
-            this.second = cal.get(Calendar.SECOND);
-        }
-
     }
 
     public static int[] inOneWeek(String day, String month, String year) {

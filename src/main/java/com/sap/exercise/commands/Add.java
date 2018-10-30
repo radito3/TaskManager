@@ -1,6 +1,5 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.builder.AbstractEventBuilder;
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.CRUDOperations;
@@ -25,11 +24,11 @@ public class Add implements Command {
         try {
             Event event = flagHandler(args);
             BufferedReader reader = InputParser.getReader();
-            EventBuilder builder = AbstractEventBuilder.getEventBuilder(event);
+            EventBuilder builder = new EventBuilder(event);
 
             CommandUtils.interactiveInput(reader, builder);
 
-            CRUDOperations.create(builder.build());
+            CRUDOperations.create(builder.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

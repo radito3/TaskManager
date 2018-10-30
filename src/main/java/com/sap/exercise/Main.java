@@ -1,14 +1,12 @@
 package com.sap.exercise;
 
 import com.sap.exercise.handler.CRUDOperations;
+import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,12 +23,8 @@ public class Main {
 
     private static void fillDb() {
         for (int i = 0; i <= 31; i++) {
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-            try { cal.setTime(sdf.parse(i + "-10-2018 12:00:00")); } catch (ParseException e) {
-                throw new IllegalArgumentException("Invalid date value");
-            }
-            CRUDOperations.create(new Event("title-" + i, Event.EventType.TASK, cal, Event.RepeatableType.NONE));
+            CRUDOperations.create(new Event("title-" + i, Event.EventType.TASK,
+                    new DateHandler(i + "-10-2018 12:00").asCalendar(), Event.RepeatableType.NONE));
         }
     }
 

@@ -64,12 +64,12 @@ public class Event extends AbstractModel implements Serializable {
 
     public Event(String title, EventType type) {
         this(title, type, null, RepeatableType.NONE);
-        this.setTimeOf(getDefaultCalendar());
+        this.setTimeOf(this.getDefaultCalendar());
     }
 
     private Calendar getDefaultCalendar() {
         int[] today = DateHandler.getToday();
-        DateHandler handler = new DateHandler("1-" + today[1] + "-" + today[2] + " 00:00:01");
+        DateHandler handler = new DateHandler("1-" + today[1] + "-" + today[2] + " 12:00");
         return handler.asCalendar();
     }
 

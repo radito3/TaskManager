@@ -1,30 +1,37 @@
 package com.sap.exercise.builder;
 
+import com.sap.exercise.builder.fields.*;
 import com.sap.exercise.model.Event;
 
+import java.util.Arrays;
 import java.util.List;
 
-public interface EventBuilder {
+public class EventBuilder {
 
-    List<FieldInfo> getFields();
+    private Event event;
 
-    EventBuilder append(String field, String val);
+    public EventBuilder(Event event) {
+        this.event = event;
+    }
 
-    EventBuilder append(InputArgs.Title title);
+    public List<FieldInfo> getFields() {
+        switch (event.getTypeOf())  {
+            case TASK:
+                return Arrays.asList(new TitleFieldInfo(event), new TimeOfFieldInfo(event), new AllDayFieldInfo(event),
+                        new LocationFieldInfo(event), new DescriptionFieldInfo(event), new ToRepeatFieldInfo(event, false),
+                        new ReminderFieldInfo(event), new DurationFieldInfo(event, false));
+            case GOAL:
+                return Arrays.asList(new TitleFieldInfo(event), new TimeOfFieldInfo(event), new ToRepeatFieldInfo(event, true),
+                        new ReminderFieldInfo(event), new DurationFieldInfo(event, true));
+            case REMINDER:
+                return Arrays.asList(new TitleFieldInfo(event), new TimeOfFieldInfo(event), new AllDayFieldInfo(event),
+                        new ToRepeatFieldInfo(event, false));
+        }
+        return null;
+    }
 
-    EventBuilder append(InputArgs.When when);
+    public Event getEvent() {
+        return event;
+    }
 
-    EventBuilder append(InputArgs.AllDay allDay);
-
-    EventBuilder append(InputArgs.Location location);
-
-    EventBuilder append(InputArgs.Description description);
-
-    EventBuilder append(InputArgs.Reminder reminder);
-
-    EventBuilder append(InputArgs.Repeat repeat);
-
-    EventBuilder append(InputArgs.Duration duration);
-
-    Event build();
 }
