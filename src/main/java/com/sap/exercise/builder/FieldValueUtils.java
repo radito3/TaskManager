@@ -6,16 +6,14 @@ import java.util.Optional;
 
 public class FieldValueUtils {
 
-    public static Boolean valueOfBool(String input) {
-        String arg;
+    public static Boolean valueOfBool(String input) {      
         if (input.toLowerCase().matches("^\\s*y|yes\\s*$")) {
-            arg = "true";
+            return Boolean.valueOf("true");
         } else if (input.toLowerCase().matches("^\\s*n|no\\s*$")) {
-            arg = "false";
+            return Boolean.valueOf("false");
         } else {
             throw new IllegalArgumentException("Invalid input");
         }
-        return Boolean.valueOf(arg);
     }
 
     public static Integer valueOfInt(String input) {
