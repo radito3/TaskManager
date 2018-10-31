@@ -8,9 +8,9 @@ public class FieldValueUtils {
 
     public static Boolean valueOfBool(String input) {      
         if (input.toLowerCase().matches("^\\s*y|yes\\s*$")) {
-            return Boolean.valueOf("true");
+            return true;
         } else if (input.toLowerCase().matches("^\\s*n|no\\s*$")) {
-            return Boolean.valueOf("false");
+            return false;
         } else {
             throw new IllegalArgumentException("Invalid input");
         }
