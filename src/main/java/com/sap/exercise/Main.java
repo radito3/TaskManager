@@ -2,6 +2,7 @@ package com.sap.exercise;
 
 import com.sap.exercise.handler.CRUDOperations;
 import com.sap.exercise.handler.DateHandler;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;
 
@@ -17,6 +18,7 @@ public class Main {
 
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        EventHandler.onStartup();
 //        fillDb();
         InputParser.run();
     }

@@ -4,7 +4,7 @@ public class DatabaseUtilFactory {
 
     private static volatile DatabaseUtil db;
 
-    static void createDbClient() {
+    public static void createDbClient() {
         db = new DatabaseUtil();
         System.setProperty("db-instance", "true");
     }

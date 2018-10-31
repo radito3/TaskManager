@@ -1,59 +1,85 @@
+
 package com.sap.exercise.handler;
 
+import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.printer.OutputPrinter;
 
-import java.util.Arrays;
+import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static com.sap.exercise.Main.OUTPUT;
 
 public class EventHandler {
 
     private static ExecutorService service = Executors.newCachedThreadPool();
     private static Map<CalendarEvents, List<Event>> table = new Hashtable<>();
+    private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void onStartup() {
-        Future<List<Event>> future = service.submit(() -> CRUDOperations.getEventsInTimeFrame("today", "today + 5"));
-        try {
-            List<Event> events = future.get();
-            //put events in hashtable
-            //when an agenda request is triggered, it first checks the table if the entries are in existing time frame
-            //if not, a request to the db is executed
-
-            List<Callable<CalendarEvents>> calls = Arrays.asList(() -> CRUDOperations.getObject(new CalendarEvents()),
-                    () -> CRUDOperations.getObject(new CalendarEvents()));
-
-            service.invokeAll(calls);
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        service.submit(DatabaseUtilFactory::createDbClient);
+        //get events for a month
+        //put them in table
     }
 
     public static void create(Event event) {
-        if (event.getToRepeat() == Event.RepeatableType.NONE) {
-            service.submit(() -> CRUDOperations.create(event));
-        } else {
-            //create CalendarEvents entries for a month
+        Future<Serializable> future = service.submit(() -> CRUDOperations.create(event));
+
+        if (event.getToRepeat() != Event.RepeatableType.NONE) {
+            Future<Event> eventFuture = service.submit(() -> CRUDOperations.getEventById(future.get()));
+
+            service.submit(() -> {
+                try {
+                    CRUDOperations.create(createEvents(eventFuture.get().getId(), event.getToRepeat())
+                        .collect(Collectors.toList()));
+                } catch (InterruptedException | ExecutionException e) {
+                    printer.println(e.getMessage());
+                }
+            });
         }
     }
 
-    private static Supplier<Runnable> eventSupplier(Integer eventId) {
-        return () -> {
+    private static Stream<CalendarEvents> createEvents(Integer eventId, Event.RepeatableType type) {
+        final int[] today = DateHandler.getToday();
+        final DateHandler handler = new DateHandler(String.valueOf(today[0]) + '-' + today[1] + '-' + today[2]);
+        final Calendar calendar = handler.asCalendar(); //the date is incorrectly incremented
+        final IntStream stream = IntStream.range(1, 31);
+        switch (type) {
+            case DAILY:
+                return stream
+                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.DAY_OF_MONTH, i));
+            case WEEKLY:
+                return stream
+                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.WEEK_OF_YEAR, i));
+            case MONTHLY:
+                return stream
+                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.MONTH, i));
+            default:
+                return IntStream.range(1, 4)
+                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.YEAR, i));
+        }
+    }
 
-            return null;
-        };
+    private static CalendarEvents eventSupplier(Integer eventId, Calendar calendar, int field, int amount) {
+        calendar.add(field, amount);
+        return new CalendarEvents(eventId, calendar);
+    }
+
+    public static void delete(Event event) {
+        //implement
     }
 
     //Threads for checking events for validity in time frame
     //Threads for reminding user (via email or pop-up) for events
-    //Threads for inserting entries in DB for event creation (and deletion/updating)
-    //Threshold for thread work - 30 entries
 }

@@ -6,6 +6,8 @@ import com.sap.exercise.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CRUD operations test class")
@@ -22,6 +24,16 @@ public class CRUDOperationsTest extends AbstractTest {
                 () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
         );
         CRUDOperations.delete(user);
+    }
+
+    @Test
+    @DisplayName("Creation of no objects test")
+    public void createNoObjTest() {
+        try {
+            CRUDOperations.create(new ArrayList<>());
+        } catch (Exception e) {
+            fail("An exception is thrown");
+        }
     }
 
     @Test
