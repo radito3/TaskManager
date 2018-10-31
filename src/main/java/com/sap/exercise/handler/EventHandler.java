@@ -51,9 +51,9 @@ public class EventHandler {
     }
 
     private static Stream<CalendarEvents> createEvents(Integer eventId, Event.RepeatableType type) {
-        final int[] today = DateHandler.getToday();
-        final DateHandler handler = new DateHandler(String.valueOf(today[0]) + '-' + today[1] + '-' + today[2]);
-        final Calendar calendar = handler.asCalendar(); //the date is incorrectly incremented
+
+
+        final Calendar calendar = Calendar.getInstance(); //the date is incorrectly incremented
         final IntStream stream = IntStream.range(1, 31);
         switch (type) {
             case DAILY:
