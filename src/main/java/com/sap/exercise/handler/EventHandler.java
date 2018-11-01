@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,11 +91,9 @@ public class EventHandler {
 
     public static Event getEventByTitle(String title) {
         try {
-            Future<Event> futureEvent = service.submit(() -> CRUDOperations.getObjectFromTitle(title));
-            if (futureEvent.get().equals(new Event())) { //not the most efficient way
-                throw new NullPointerException("Invalid event name");
-            }
-            return futureEvent.get();
+            Future<Optional<Event>> futureEvent = service.submit(() -> CRUDOperations.getEventByTitle(title));
+            return futureEvent.get()
+                    .orElseThrow(() -> new NullPointerException("Invalid event name"));
         } catch (InterruptedException | ExecutionException e) {
             printer.println(e.getMessage());
         }

@@ -71,11 +71,10 @@ public class CRUDOperations {
         }
     }
 
-    static Event getObjectFromTitle(String title) {
+    static Optional<Event> getEventByTitle(String title) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
                 s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\' LIMIT 1;", Event.class)
-                        .uniqueResultOptional()
-                        .orElse(new Event()));
+                        .uniqueResultOptional());
     }
 
     public static List<Event> getEventsInTimeFrame(String start, String end) {

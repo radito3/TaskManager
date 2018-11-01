@@ -1,9 +1,9 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.commands.util.CommandUtils;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-
-import javax.swing.*;
+import org.apache.commons.cli.ParseException;
 
 import java.io.PrintWriter;
 
@@ -18,18 +18,39 @@ public class Help implements Command {
 
     @Override
     public void execute(String... args) {
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sample message", "Sample title",
-                JOptionPane.PLAIN_MESSAGE);
-
         /*
         if no arguments are present -> display pseudo man page for application
         if an argument is present -> display helper for that argument
          */
-        printer.println("in help class");
+        try {
+            CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.helpOptions(), args);
+            if (cmd.getOptions().length > 1) {
+                throw new IllegalArgumentException("Too many arguments");
+            }
 
-        //with add and edit will write time format for 'when' field  <dd-mm-yyyy hh:mm:ss>
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "test", "header", new Options(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+            HelpFormatter formatter = new HelpFormatter();
+            if (cmd.hasOption("ad")) {
+                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "add", "header",
+                        CommandUtils.addOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+            } else if (cmd.hasOption('e')) {
+                //edit helper
+                printer.println("edit command help");
+            } else if (cmd.hasOption('d')) {
+                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "delete", "header",
+                        CommandUtils.timeFrameOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+            } else if (cmd.hasOption("ag")) {
+                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "agenda", "header",
+                        CommandUtils.timeFrameOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+            } else if (cmd.hasOption('c')) {
+                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "calendar", "header",
+                        CommandUtils.calendarOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+            } else {
+                //print help in general
+                printer.println("general help");
+            }
+        } catch (ParseException e) {
+            printer.println(e.getMessage());
+        }
     }
 
 }

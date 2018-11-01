@@ -70,7 +70,7 @@ public class CRUDOperationsTest extends AbstractTest {
         Event event = new Event("test");
         CRUDOperations.create(event);
 
-        Event event1 = CRUDOperations.getObjectFromTitle("test");
+        Event event1 = CRUDOperations.getEventByTitle("test").get();
         assertNotNull(event1);
         assertEquals(event, event1);
         CRUDOperations.delete(event);
@@ -79,9 +79,8 @@ public class CRUDOperationsTest extends AbstractTest {
     @Test
     @DisplayName("Invalid name for title test")
     public void invalidNameTest() {
-        assertThrows(NullPointerException.class,
-                () -> CRUDOperations.getObjectFromTitle(""),
-                "Incorrect or no exception thrown with invalid title");
+        assertFalse(CRUDOperations.getEventByTitle("").isPresent(),
+                "An event is returned with invalid title");
     }
 
     //TODO add tests for remaining methods

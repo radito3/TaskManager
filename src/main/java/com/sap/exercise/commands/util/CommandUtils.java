@@ -117,6 +117,35 @@ public class CommandUtils {
         return new Options().addOption(start).addOption(end);
     }
 
+    public static Options helpOptions() {
+        Option add = Option.builder("ad")
+                .required(false)
+                .longOpt("add")
+                .desc("Add an event")
+                .build();
+        Option edit = Option.builder("e")
+                .required(false)
+                .longOpt("edit")
+                .desc("Edit an event")
+                .build();
+        Option delete = Option.builder("d")
+                .required(false)
+                .longOpt("delete")
+                .desc("Delete an event")
+                .build();
+        Option agenda = Option.builder("ag")
+                .required(false)
+                .longOpt("agenda")
+                .desc("Display a weekly agenda")
+                .build();
+        Option calendar = Option.builder("c")
+                .required(false)
+                .longOpt("calendar")
+                .desc("Display a given calendar")
+                .build();
+        return new Options().addOption(add).addOption(edit).addOption(delete).addOption(agenda).addOption(calendar);
+    }
+
     public static long optionsSizeWithoutEvents(CommandLine cmd) {
         return Arrays.stream(cmd.getOptions())
                 .filter(o -> !o.equals(calendarOptions().getOption("e")))
