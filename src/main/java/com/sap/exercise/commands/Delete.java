@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.commands.util.ArgumentEvaluator;
 import com.sap.exercise.commands.util.CommandUtils;
-import com.sap.exercise.handler.CRUDOperations;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
 
@@ -19,11 +19,14 @@ public class Delete implements Command {
     @Override
     public void execute(String... args) {
         try {
-            String[] vars = CommandUtils.flagHandlerForTimeFrame(args, cmd -> CommandUtils.buildEventName(cmd.getArgs()));
+            String[] vars = CommandUtils.flagHandlerForTimeFrame(
+                    args,
+                    cmd -> CommandUtils.buildEventName(cmd.getArgs())
+            );
             String start = vars[0],
                     end = vars[1],
                     eventName = vars[2];
-            event = CRUDOperations.getObjectFromTitle(eventName);
+            event = EventHandler.getEventByTitle(eventName);
 
             evaluator = new ArgumentEvaluator(start, end);
             int result = evaluator.eval(this::deleteEvents);
@@ -39,10 +42,10 @@ public class Delete implements Command {
 
     private int deleteEvents(String start, String end) {
         if (event.getToRepeat() == Event.RepeatableType.NONE || evaluator.numOfArgs() == 0) {
-            CRUDOperations.delete(event);
+            EventHandler.delete(event);
             return 0;
         }
-        CRUDOperations.deleteEventsInTimeFrame(event, start, end);
+        EventHandler.deleteInTimeFrame(event, start, end);
         return 1;
     }
 }

@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.commands.util.CommandUtils;
-import com.sap.exercise.handler.CRUDOperations;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;
 
@@ -19,13 +19,13 @@ public class Edit implements Command {
     public void execute(String... args) {
         try {
             String name = CommandUtils.buildEventName(args);
-            Event event = CRUDOperations.getObjectFromTitle(name);
+            Event event = EventHandler.getEventByTitle(name);
             BufferedReader reader = InputParser.getReader();
             EventBuilder builder = new EventBuilder(event);
 
             CommandUtils.interactiveInput(reader, builder);
 
-            CRUDOperations.update(builder.getEvent());
+            EventHandler.update(builder.getEvent());
             printer.println("\nEvent updated");
         } catch (NullPointerException | IllegalArgumentException e) {
             printer.println(e.getMessage());

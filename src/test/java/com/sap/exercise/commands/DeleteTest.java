@@ -28,7 +28,9 @@ public class DeleteTest extends AbstractTest {
         CRUDOperations.create(event);
 
         new Delete().execute("test", "title");
-        assertThrows(NullPointerException.class, () -> CRUDOperations.getObject(event), "Event has not been deleted");
+        assertThrows(NullPointerException.class,
+                () -> CRUDOperations.getObject(event),
+                "Event has not been deleted");
     }
 
     @Test

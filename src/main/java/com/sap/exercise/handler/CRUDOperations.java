@@ -3,12 +3,10 @@ package com.sap.exercise.handler;
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.AbstractModel;
 import com.sap.exercise.model.Event;
-import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,17 +24,12 @@ public class CRUDOperations {
         process(s -> collection.forEach(s::save));
     }
 
-    public static <T extends AbstractModel> void update(T obj) {
+    static <T extends AbstractModel> void update(T obj) {
         process(s -> s.update(obj));
     }
 
-    @SafeVarargs
-    public static <T extends AbstractModel> void delete(T... arr) {
-        delete(Arrays.asList(arr));
-    }
-
-    static <T extends AbstractModel> void delete(final Collection<T> collection) {
-        process(s -> collection.forEach(s::delete));
+    static <T extends AbstractModel> void delete(T obj) {
+        process(s -> s.delete(obj));
     }
 
     public static <R extends AbstractModel> R getObject(R obj) {
@@ -78,26 +71,20 @@ public class CRUDOperations {
         }
     }
 
-    public static Event getObjectFromTitle(String title) {
+    static Event getObjectFromTitle(String title) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
                 s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\' LIMIT 1;", Event.class)
                         .uniqueResultOptional()
-                        .orElseThrow(() -> new NullPointerException("Invalid event name")));
+                        .orElse(new Event()));
     }
 
-    //may not be needed after additional models are implemented
     public static List<Event> getEventsInTimeFrame(String start, String end) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM Eventt WHERE TimeOf >= \'" + start + "\' AND TimeOf <= \'" + end + "\';",
+                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start + "\' AND Date <= \'" + end + "\';",
                         Event.class).getResultList());
     }
 
-    public static Event getEventAt(String time) {
-        //TODO implement
-        throw new NotImplementedException("Functionality not implemented");
-    }
-
-    public static void deleteEventsInTimeFrame(Event event, String start, String end) {
+    static void deleteEventsInTimeFrame(Event event, String start, String end) {
         DatabaseUtilFactory.getDbClient().processObject(s ->
                 s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
                         " AND Date >= " + start + " AND Date <= " + end)

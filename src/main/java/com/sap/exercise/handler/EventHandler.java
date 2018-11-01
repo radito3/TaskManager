@@ -1,4 +1,3 @@
-
 package com.sap.exercise.handler;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
@@ -6,6 +5,7 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -34,15 +34,17 @@ public class EventHandler {
     }
 
     public static void create(Event event) {
-        Future<Serializable> future = service.submit(() -> CRUDOperations.create(event));
+        Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            Future<Event> eventFuture = service.submit(() -> CRUDOperations.getEventById(future.get()));
+            Future<Event> futureEvent = service.submit(() -> CRUDOperations.getEventById(futureId.get()));
 
             service.submit(() -> {
                 try {
-                    CRUDOperations.create(createEvents(eventFuture.get().getId(), event.getToRepeat())
-                        .collect(Collectors.toList()));
+                    CRUDOperations.create(
+                            eventStream(futureEvent.get().getId(), event.getToRepeat())
+                                    .collect(Collectors.toList())
+                    );
                 } catch (InterruptedException | ExecutionException e) {
                     printer.println(e.getMessage());
                 }
@@ -50,9 +52,7 @@ public class EventHandler {
         }
     }
 
-    private static Stream<CalendarEvents> createEvents(Integer eventId, Event.RepeatableType type) {
-
-
+    private static Stream<CalendarEvents> eventStream(Integer eventId, Event.RepeatableType type) {
         final Calendar calendar = Calendar.getInstance(); //the date is incorrectly incremented
         final IntStream stream = IntStream.range(1, 31);
         switch (type) {
@@ -76,8 +76,39 @@ public class EventHandler {
         return new CalendarEvents(eventId, calendar);
     }
 
+    public static void update(Event event) {
+        service.submit(() -> CRUDOperations.update(event));
+    }
+
     public static void delete(Event event) {
-        //implement
+        service.submit(() -> CRUDOperations.delete(event));
+    }
+
+    public static void deleteInTimeFrame(Event event, String start, String end) {
+        service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
+    }
+
+    public static Event getEventByTitle(String title) {
+        try {
+            Future<Event> futureEvent = service.submit(() -> CRUDOperations.getObjectFromTitle(title));
+            if (futureEvent.get().equals(new Event())) { //not the most efficient way
+                throw new NullPointerException("Invalid event name");
+            }
+            return futureEvent.get();
+        } catch (InterruptedException | ExecutionException e) {
+            printer.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public static List<Event> getEventsByDate(String date) {
+        //TODO implement
+        return null;
+    }
+
+    public static void notifyByPopup(Event event) {
+        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sample message", "Sample title",
+                JOptionPane.PLAIN_MESSAGE);
     }
 
     //Threads for checking events for validity in time frame

@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.sap.exercise.Main.INPUT;
 import static com.sap.exercise.Main.OUTPUT;
@@ -42,7 +41,8 @@ public class InputParser {
     private static void iterateCommands(String[] arguments) {
         for (Command command : commands) {
             if (arguments[0].equals(command.getName())) {
-                command.execute(Stream.of(arguments)
+                command.execute(
+                        Arrays.stream(arguments)
                         .skip(1)
                         .toArray(String[]::new));
                 return;
