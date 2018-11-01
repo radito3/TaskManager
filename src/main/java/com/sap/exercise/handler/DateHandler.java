@@ -11,7 +11,7 @@ public class DateHandler {
     private static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy" };
 
-    private Calendar currentCal = new Calendar.Builder().build();
+    private Calendar currentCal = new Calendar.Builder().setCalendarType("gregorian").build();
 
     public DateHandler(String text) {
         try {
