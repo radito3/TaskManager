@@ -12,6 +12,7 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,8 +41,21 @@ public class EventHandler {
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        //thread that constantly checks if an event (or its reminder) is coming up
-        //it calls the notifyBy methods
+        service.submit(() -> {
+            int[] today = DateHandler.getToday();
+            String date = Arrays.stream(today).boxed()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining("-"));
+            String date1 = new DateHandler(date).asString(false); //need to make method that returns only the date
+            Set<Event> events = getEventsInTimeFrame(date1, date1);
+            if (!events.isEmpty()) {
+                //get time to event reminder/timeOf
+//                while (true) {
+                    //check for incoming time to notify
+                    //notifyByPopup will be default
+//                }
+            }
+        });
     }
 
     public static void create(Event event) {

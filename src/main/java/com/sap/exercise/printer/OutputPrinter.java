@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -103,8 +104,9 @@ public class OutputPrinter {
 
     public void printEvents(Set<Event> events) {
         //TODO add support for all types of events
-        Arrays.sort(events.toArray(new Event[0]), Comparator.comparing(Event::getTimeOf));
-        writer.println(PrinterUtils.format(events));
+        Event[] array = events.toArray(new Event[0]);
+        Arrays.sort(array, Comparator.comparing(Event::getTimeOf));
+        writer.println(PrinterUtils.format(new HashSet<>(Arrays.asList(array))));
     }
 
     //this will be deleted
@@ -159,7 +161,7 @@ public class OutputPrinter {
         );
 
         IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
-                .mapToObj(i -> String.valueOf(today[2]) + "-" + month + "-" + i)
+                .mapToObj(i -> today[2] + "-" + month + "-" + i)
                 .collect(Collectors.toMap(Function.identity(), date ->
                         events.stream().filter(event -> {
                                     Calendar cal = new DateHandler(date).asCalendar();
