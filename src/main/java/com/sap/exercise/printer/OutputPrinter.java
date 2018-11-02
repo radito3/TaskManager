@@ -1,13 +1,20 @@
 package com.sap.exercise.printer;
 
 import com.sap.exercise.handler.DateHandler;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class OutputPrinter {
 
@@ -94,16 +101,17 @@ public class OutputPrinter {
         }
     }
 
-    public void printEvents(List<Event> events) {
+    public void printEvents(Set<Event> events) {
         //TODO add support for all types of events
-        //sort events by date
+        Arrays.sort(events.toArray(new Event[0]), Comparator.comparing(Event::getTimeOf));
+        writer.println(PrinterUtils.format(events));
     }
 
     //this will be deleted
     public void printEvent(Event event) {
         Calendar cal = event.getTimeOf();
         //need to format it properly
-        writer.println(cal.get(Calendar.DATE) + "   " + PrinterUtils.getMonth(cal.get(Calendar.MONTH)) + "   " +
+        writer.println(cal.get(Calendar.DATE) + "   " + PrinterUtils.getMonth(cal.get(Calendar.MONTH) + 1) + "   " +
                 PrinterUtils.getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + "   " + event.getTitle());
     }
 
@@ -111,15 +119,11 @@ public class OutputPrinter {
         int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg1;
 
-        String[] months = { "",
-                "January", "February", "March",
-                "April", "May", "June",
-                "July", "August", "September",
-                "October", "November", "December" };
-
         int[] days = DateHandler.getMonthDays();
 
-        String text = StringUtils.leftPad(months[month], months[month].length() + (wholeYear ? 6 : 4));
+        String text = StringUtils.leftPad(PrinterUtils.getMonth(month),
+                PrinterUtils.getMonth(month).length() + (wholeYear ? 6 : 4));
+
         writer.println(text + " " + (wholeYear ? "" : year));
         writer.println(" S  M Tu  W Th  F  S");
 
@@ -128,13 +132,17 @@ public class OutputPrinter {
         for (int i = 0; i < startingDay; i++)
             writer.print("   ");
 
-        for (int i = 1; i <= days[month]; i++) {
-            if (isToday(i, month, year))
-                writer.printf(INVERT + "%2d " + RESET, i);
-            else
-                printWithEvents(i, withEvents);
+        if (withEvents) {
+            printWithEvents(month, startingDay);
+        } else {
+            for (int i = 1; i <= days[month]; i++) {
+                if (isToday(i, month, year))
+                    writer.printf(INVERT + "%2d " + RESET, i);
+                else
+                    writer.printf("%2d ", i);
 
-            if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
+                if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
+            }
         }
     }
 
@@ -143,11 +151,30 @@ public class OutputPrinter {
         return day == today[0] && month == today[1] && year == today[2];
     }
 
-    private void printWithEvents(int day, boolean events) {
-//        if (events)
-//            writer.print("Not implemented");
-//        else
-            writer.printf("%2d ", day);
+    private void printWithEvents(int month, int startindDay) {
+        int[] today = DateHandler.getToday();
+        Set<Event> events = EventHandler.getEventsInTimeFrame(
+                today[2] + "-" + month + "-01",
+                today[2] + "-" + month + "-" + DateHandler.getMonthDays()[month]
+        );
+
+        IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
+                .mapToObj(i -> String.valueOf(today[2]) + "-" + month + "-" + i)
+                .collect(Collectors.toMap(Function.identity(), date ->
+                        events.stream().filter(event -> {
+                                    Calendar cal = new DateHandler(date).asCalendar();
+                                    return DateUtils.truncatedCompareTo(cal, event.getTimeOf(), Calendar.DAY_OF_MONTH) == 0;
+                                }
+                        ).collect(Collectors.toSet())
+                ))
+                .forEach((date, eventList) -> {
+                    //print only the day not the whole date!
+                    if (eventList.isEmpty()) {
+                        writer.printf("%2d ", Integer.valueOf(date));
+                    } else {
+                        writer.printf(CYAN_BACKGROUND + BLACK + "%2d" + RESET, Integer.valueOf(date));
+                    }
+                });
     }
 
 }

@@ -6,7 +6,7 @@ import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
 
-import java.util.List;
+import java.util.Set;
 
 public class Agenda implements Command {
 
@@ -22,10 +22,10 @@ public class Agenda implements Command {
             String start = times[0], end = times[1];
 
             ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
-            List<Event> events = evaluator.eval(this::getEventsInTimeFrame);
+            Set<Event> events = evaluator.eval(EventHandler::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
-                printer.println("\nNo upcoming events"); //may be coloured text
+                printer.println("\nNo upcoming events");
             } else {
                 events.forEach(printer::printEvent);  //will change it with printEvents method
             }
@@ -34,7 +34,4 @@ public class Agenda implements Command {
         }
     }
 
-    private List<Event> getEventsInTimeFrame(String start, String end) {
-        return EventHandler.getEventsInTimeFrame(start, end);
-    }
 }

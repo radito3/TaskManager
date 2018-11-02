@@ -15,6 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        Logger.getLogger("javax.mail").setLevel(Level.FINE);
         EventHandler.onStartup();
         InputParser.run();
     }

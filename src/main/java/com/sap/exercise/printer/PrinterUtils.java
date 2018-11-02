@@ -2,12 +2,13 @@ package com.sap.exercise.printer;
 
 import com.sap.exercise.model.Event;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class PrinterUtils {
 
     static String getMonth(int month, boolean flag) {
-        switch (month + 1) {
+        switch (month) {
             case 1:
                 return flag ? "Jan" : "January";
             case 2:
@@ -62,13 +63,16 @@ class PrinterUtils {
         return getDayOfWeek(day, false);
     }
 
-    static String format(List<Event> args) {
-        final StringBuilder result = new StringBuilder();
-        args.forEach(event -> {
-            //get longest date argument
-            //get longest month name
-            //left pad words correctly according to those variables
-        });
-        return result.toString();
+    static String format(Set<Event> args) {
+        int longestDate = 0;
+        int longestName = 0;
+        return args.stream()
+                .map(Event::getTitle) //temporary
+                .peek(event -> {
+                    //get longest date argument
+                    //get longest month name
+                    //left pad words correctly according to those variables
+                })
+                .collect(Collectors.joining("\n"));
     }
 }

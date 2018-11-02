@@ -12,14 +12,20 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,27 +35,28 @@ import static com.sap.exercise.Main.OUTPUT;
 public class EventHandler {
 
     private static ExecutorService service = Executors.newCachedThreadPool();
-    private static Map<String, List<Event>> table = new Hashtable<>();
+    private static Map<String, Set<Event>> table = new Hashtable<>();
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
+        //thread that constantly checks if an event (or its reminder) is coming up
+        //it calls the notifyBy methods
     }
 
     public static void create(Event event) {
         Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
-        Future<Event> futureEvent = service.submit(() -> CRUDOperations.getEventById(futureId.get()));
-        service.submit(() -> CRUDOperations.create(new CalendarEvents(futureEvent.get().getId(), futureEvent.get().getTimeOf())));
+        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             service.submit(() -> {
                 try {
                     CRUDOperations.create(
-                            eventStream(futureEvent.get().getId(), event.getToRepeat())
+                            eventStream((Integer) futureId.get(), event.getToRepeat())
                                     .collect(Collectors.toList())
                     );
                 } catch (InterruptedException | ExecutionException e) {
-                    printer.println(e.getMessage());
+                    printer.error(e.getMessage());
                 }
             });
         }
@@ -97,52 +104,43 @@ public class EventHandler {
             return futureEvent.get()
                     .orElseThrow(() -> new NullPointerException("Invalid event name"));
         } catch (InterruptedException | ExecutionException e) {
-            printer.println(e.getMessage());
+            printer.error(e.getMessage());
         }
-        return null;
+        return new Event();
     }
 
-    //for calendar
-    //this should return a string representing a colour
-    //so that the calendar printer can print it
-    public static String getEventsByDate(String date) {
-        //this needs to be async
-        List<Event> events = table.get(date) == null ? CRUDOperations.getEventsInTimeFrame(date, date) : table.get(date);
-        String result = "";
+    public static Set<Event> getEventsInTimeFrame(String start, String end) {
+        try {
+            return service.submit(() -> {
+                Set<Event> events = new HashSet<>();
+                List<String> nullDates = new ArrayList<>();
 
-        Supplier<Stream<Event.EventType>> eventStreamSupplier = () -> events.stream().map(Event::getTypeOf);
-        if (eventStreamSupplier.get().anyMatch(type -> type.equals(Event.EventType.TASK))) {
-            result = OutputPrinter.GREEN;
-        } //else for reminder and goal
+                DateHandler.fromTo(start, end).forEach(date -> {
+                    Set<Event> ev;
+                    if ((ev = table.get(date)) == null) {
+                        nullDates.add(date);
+                    } else {
+                        events.addAll(ev);
+                    }
+                });
 
-        return result;
-    }
+                if (nullDates.size() != 0) {
+                    List<String> fromTo = DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1));
+                    setEventsInTable(fromTo.get(0), fromTo.get(fromTo.size() - 1));
+                    fromTo.forEach(date -> events.addAll(table.get(date)));
+                }
 
-    //for agenda
-    public static List<Event> getEventsInTimeFrame(String start, String end) {
-        List<Event> events = new ArrayList<>();
-        List<String> nullDates = new ArrayList<>();
-        DateHandler.fromTo(start, end).forEach(date -> {
-            List<Event> ev;
-            if ((ev = table.get(date)) == null) {
-                nullDates.add(date);
-            } else {
-                events.addAll(ev);
-            }
-        });
-
-        if (nullDates.size() != 0) {
-            List<String> fromTo = DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1));
-            setEventsInTable(fromTo.get(0), fromTo.get(fromTo.size() - 1));
-            fromTo.forEach(date -> events.addAll(table.get(date)));
+                return events;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            printer.error(e.getMessage());
         }
-
-        events.sort(Comparator.comparing(Event::getTimeOf));
-        return events;
+        return new HashSet<>();
     }
 
     private static void setEventsInTable(String start, String end) {
-        //TODO implement
+        Future<List<Event>> future = service.submit(() -> CRUDOperations.getEventsInTimeFrame(start, end));
+        //TODO set them by their date
     }
 
     public static void notifyByPopup(Event event) {
@@ -151,8 +149,6 @@ public class EventHandler {
     }
 
     public static void notifyByEmail(Event event) {
-        Logger.getLogger("javax.mail").setLevel(Level.FINE);
-
         Properties props = new Properties();
         props.put("mail.smtp.host", "my-mail-server");
         Session session = Session.getInstance(props, null);

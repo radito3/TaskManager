@@ -36,11 +36,6 @@ public class CRUDOperations {
         return get(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
     }
 
-    static Event getEventById(Serializable id) {
-        return get(s -> s.byId(Event.class).loadOptional(id)
-                .orElseThrow(() -> new NullPointerException("No object exists with given identifier")));
-    }
-
     private static <T> T get(Function<Session, T> function) {
         try {
             return DatabaseUtilFactory.getDbClient().getObject(function);
