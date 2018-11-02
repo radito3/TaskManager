@@ -32,6 +32,7 @@ public class CRUDOperations {
         process(s -> s.delete(obj));
     }
 
+    @SuppressWarnings("unchecked")
     public static <R extends AbstractModel> R getObject(R obj) {
         return get(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
     }
@@ -42,6 +43,7 @@ public class CRUDOperations {
     }
 
     @SafeVarargs
+    @SuppressWarnings("unchecked")
     public static <R extends AbstractModel> List<R> getObjects(R... arr) {
         return get(s -> {
             List<R> result = new ArrayList<>();

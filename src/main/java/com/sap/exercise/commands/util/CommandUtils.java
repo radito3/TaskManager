@@ -56,17 +56,17 @@ public class CommandUtils {
         Option task = Option.builder("t")
                 .required(false)
                 .longOpt("task")
-                .desc("Specify the event created to be a Task")
+                .desc("Create a Task (default)")
                 .build();
         Option reminder = Option.builder("r")
                 .required(false)
                 .longOpt("reminder")
-                .desc("Specify the event created to be a Reminder")
+                .desc("Create a Reminder")
                 .build();
         Option goal = Option.builder("g")
                 .required(false)
                 .longOpt("goal")
-                .desc("Specify the event created to be a Goal")
+                .desc("Create a Goal")
                 .build();
         return new Options().addOption(task).addOption(reminder).addOption(goal);
     }
@@ -87,7 +87,7 @@ public class CommandUtils {
                 .longOpt("year")
                 .hasArg()
                 .optionalArg(true)
-                .desc("Display the whole year")
+                .desc("Display the whole year (default argument is current year)")
                 .build();
         Option withEvents = Option.builder("e")
                 .required(false)
@@ -97,14 +97,14 @@ public class CommandUtils {
         return new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
     }
 
-    public static Options timeFrameOptions() {
+    public static Options timeFrameOptions(boolean isDelete) {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")
                 .hasArg(true)
                 .numberOfArgs(1)
                 .optionalArg(false)
-                .desc("Specify the start time from when to get/delete entries")
+                .desc("Specify the start time from when to " + (isDelete ? "delete" : "get") + " entries")
                 .build();
         Option end = Option.builder("e")
                 .required(false)
@@ -112,7 +112,7 @@ public class CommandUtils {
                 .hasArg(true)
                 .numberOfArgs(1)
                 .optionalArg(false)
-                .desc("Specify the end time to when to get/delete entries")
+                .desc("Specify the end time to when to " + (isDelete ? "delete" : "get") + " entries")
                 .build();
         return new Options().addOption(start).addOption(end);
     }
@@ -121,27 +121,22 @@ public class CommandUtils {
         Option add = Option.builder("ad")
                 .required(false)
                 .longOpt("add")
-                .desc("Add an event")
                 .build();
         Option edit = Option.builder("e")
                 .required(false)
                 .longOpt("edit")
-                .desc("Edit an event")
                 .build();
         Option delete = Option.builder("d")
                 .required(false)
                 .longOpt("delete")
-                .desc("Delete an event")
                 .build();
         Option agenda = Option.builder("ag")
                 .required(false)
                 .longOpt("agenda")
-                .desc("Display a weekly agenda")
                 .build();
         Option calendar = Option.builder("c")
                 .required(false)
                 .longOpt("calendar")
-                .desc("Display a given calendar")
                 .build();
         return new Options().addOption(add).addOption(edit).addOption(delete).addOption(agenda).addOption(calendar);
     }
@@ -153,9 +148,20 @@ public class CommandUtils {
     }
 
     public static String[] flagHandlerForTimeFrame(String[] args, Function<CommandLine, String> func) throws ParseException {
-        CommandLine cmd = getParsedCmd(timeFrameOptions(), args);
+        return timeFrameFlagHandler(
+                getParsedCmd(timeFrameOptions(true), args),
+                func);
+    }
 
+    public static String[] flagHandlerForTimeFrame(String[] args) throws ParseException {
+        return timeFrameFlagHandler(
+                getParsedCmd(timeFrameOptions(false), args),
+                cmd -> "");
+    }
+
+    private static String[] timeFrameFlagHandler(CommandLine cmd, Function<CommandLine, String> func) {
         String startTime = "", endTime = "", eventName = func.apply(cmd);
+
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');
         }
@@ -164,9 +170,5 @@ public class CommandUtils {
         }
 
         return new String[] { startTime, endTime, eventName };
-    }
-
-    public static String[] flagHandlerForTimeFrame(String[] args) throws ParseException {
-        return flagHandlerForTimeFrame(args, cmd -> "");
     }
 }

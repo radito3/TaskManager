@@ -34,9 +34,6 @@ public class Delete implements Command {
             printer.println(result == 0 ? "\nEvent deleted" : "\nEvent entries deleted");
         } catch (NullPointerException | IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
-        } finally {
-            event = null;
-            evaluator = null;
         }
     }
 

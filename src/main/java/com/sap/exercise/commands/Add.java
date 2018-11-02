@@ -37,6 +37,7 @@ public class Add implements Command {
 
     private Event flagHandler(String[] args) throws ParseException {
         CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.addOptions(), args);
+
         if (cmd.getOptions().length > 1) {
             throw new IllegalArgumentException("Invalid number of arguments");
         }

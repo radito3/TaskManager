@@ -3,11 +3,8 @@ package com.sap.exercise.commands;
 import com.sap.exercise.commands.util.CommandUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-import java.io.PrintWriter;
-
-import static com.sap.exercise.Main.OUTPUT;
 
 public class Help implements Command {
 
@@ -18,37 +15,49 @@ public class Help implements Command {
 
     @Override
     public void execute(String... args) {
-        /*
-        if no arguments are present -> display pseudo man page for application
-        if an argument is present -> display helper for that argument
-         */
         try {
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.helpOptions(), args);
+
             if (cmd.getOptions().length > 1) {
-                throw new IllegalArgumentException("Too many arguments");
+                throw new IllegalArgumentException("Invalid number of arguments");
             }
 
             HelpFormatter formatter = new HelpFormatter();
+            String header, footer = "\nThe time options accept time formats as follows:\n" +
+                    "dd[*]mm[*]yyyy HH:mm\n" +
+                    "dd[*]mm[*]yyyy\n" +
+                    "dd mmm yyyy HH:mm\n" +
+                    "dd mmm yyyy\n" +
+                    "With [*] being one of the following: -, /, .";
+
             if (cmd.hasOption("ad")) {
-                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "add", "header",
-                        CommandUtils.addOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+                header = "\nCreate an event\n\n";
+                footer = "\nNote: Only one of the options can be present";
+                formatter.printHelp("add", header, CommandUtils.addOptions(), footer, true);
+
             } else if (cmd.hasOption('e')) {
-                //edit helper
-                printer.println("edit command help");
+                header = "\nEdit an event";
+                footer = "";
+                formatter.printHelp("edit <event name>", header, new Options(), footer, true);
+
             } else if (cmd.hasOption('d')) {
-                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "delete", "header",
-                        CommandUtils.timeFrameOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+                header = "\nDelete an event\n\n";
+                formatter.printHelp("delete <event name>", header, CommandUtils.timeFrameOptions(true), footer, true);
+
             } else if (cmd.hasOption("ag")) {
-                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "agenda", "header",
-                        CommandUtils.timeFrameOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+                header = "\nDisplay a weekly agenda (if not given time arguments)\n\n";
+                formatter.printHelp("agenda", header, CommandUtils.timeFrameOptions(false), footer, true);
+
             } else if (cmd.hasOption('c')) {
-                formatter.printHelp(new PrintWriter(OUTPUT), HelpFormatter.DEFAULT_WIDTH, "calendar", "header",
-                        CommandUtils.calendarOptions(), HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, "footer", true);
+                header = "\nDisplay a calendar\n\n";
+                footer = "\nNote: Only one of the options can be present";
+                formatter.printHelp("calendar", header, CommandUtils.calendarOptions(), footer, true);
+
             } else {
                 //print help in general
                 printer.println("general help");
             }
-        } catch (ParseException e) {
+        } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
     }

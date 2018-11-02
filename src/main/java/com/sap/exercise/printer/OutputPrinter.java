@@ -81,15 +81,15 @@ public class OutputPrinter {
         writer.println(RED + val + RESET);
     }
 
-    public void monthCalendar(int month) {
-        this.printCalendar(month, calendar.get(Calendar.YEAR), false, false);
+    public void monthCalendar(int month, boolean withEvents) {
+        this.printCalendar(month, calendar.get(Calendar.YEAR), false, withEvents);
     }
 
-    public void yearCalendar(int year) {
+    public void yearCalendar(int year, boolean withEvents) {
         writer.println(StringUtils.leftPad(String.valueOf(year), 12));
         writer.println();
         for (int i = 0; i < 12; i++) {
-            this.printCalendar(i, year, true, false);
+            this.printCalendar(i, year, true, withEvents);
             writer.println();
         }
     }
@@ -99,6 +99,7 @@ public class OutputPrinter {
         //sort events by date
     }
 
+    //this will be deleted
     public void printEvent(Event event) {
         Calendar cal = event.getTimeOf();
         //need to format it properly
@@ -143,9 +144,9 @@ public class OutputPrinter {
     }
 
     private void printWithEvents(int day, boolean events) {
-        if (events)
-            writer.print("Not implemented");
-        else
+//        if (events)
+//            writer.print("Not implemented");
+//        else
             writer.printf("%2d ", day);
     }
 
