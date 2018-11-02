@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.commands.util.ArgumentEvaluator;
 import com.sap.exercise.commands.util.CommandUtils;
-import com.sap.exercise.handler.CRUDOperations;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
 
@@ -16,7 +16,7 @@ public class Agenda implements Command {
     }
 
     @Override
-    public void execute(String... args) {  //TODO add configurable colour to output text
+    public void execute(String... args) {
         try {
             String[] times = CommandUtils.flagHandlerForTimeFrame(args);
             String start = times[0], end = times[1];
@@ -35,6 +35,6 @@ public class Agenda implements Command {
     }
 
     private List<Event> getEventsInTimeFrame(String start, String end) {
-        return CRUDOperations.getEventsInTimeFrame(start, end);
+        return EventHandler.getEventsInTimeFrame(start, end);
     }
 }

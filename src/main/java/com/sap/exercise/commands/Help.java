@@ -54,8 +54,12 @@ public class Help implements Command {
                 formatter.printHelp("calendar", header, CommandUtils.calendarOptions(), footer, true);
 
             } else {
-                //print help in general
-                printer.println("general help");
+                printer.println("Available options for help:\n" +
+                        " -ad, --add      Show help page for Add command\n" +
+                        " -e, --edit      Show help page for Edit command\n" +
+                        " -d, --delete    Show help page for Delete command\n" +
+                        " -ag, --agenda   Show help page for Agenda command\n" +
+                        " -c, --calendar  Show help page for Calendar command");
             }
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());

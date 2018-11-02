@@ -5,17 +5,21 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -25,21 +29,19 @@ import static com.sap.exercise.Main.OUTPUT;
 public class EventHandler {
 
     private static ExecutorService service = Executors.newCachedThreadPool();
-    private static Map<CalendarEvents, List<Event>> table = new Hashtable<>();
+    private static Map<String, List<Event>> table = new Hashtable<>();
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        //get events for a month
-        //put them in table
     }
 
     public static void create(Event event) {
         Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
+        Future<Event> futureEvent = service.submit(() -> CRUDOperations.getEventById(futureId.get()));
+        service.submit(() -> CRUDOperations.create(new CalendarEvents(futureEvent.get().getId(), futureEvent.get().getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            Future<Event> futureEvent = service.submit(() -> CRUDOperations.getEventById(futureId.get()));
-
             service.submit(() -> {
                 try {
                     CRUDOperations.create(
@@ -100,9 +102,47 @@ public class EventHandler {
         return null;
     }
 
-    public static List<Event> getEventsByDate(String date) {
+    //for calendar
+    //this should return a string representing a colour
+    //so that the calendar printer can print it
+    public static String getEventsByDate(String date) {
+        //this needs to be async
+        List<Event> events = table.get(date) == null ? CRUDOperations.getEventsInTimeFrame(date, date) : table.get(date);
+        String result = "";
+
+        Supplier<Stream<Event.EventType>> eventStreamSupplier = () -> events.stream().map(Event::getTypeOf);
+        if (eventStreamSupplier.get().anyMatch(type -> type.equals(Event.EventType.TASK))) {
+            result = OutputPrinter.GREEN;
+        } //else for reminder and goal
+
+        return result;
+    }
+
+    //for agenda
+    public static List<Event> getEventsInTimeFrame(String start, String end) {
+        List<Event> events = new ArrayList<>();
+        List<String> nullDates = new ArrayList<>();
+        DateHandler.fromTo(start, end).forEach(date -> {
+            List<Event> ev;
+            if ((ev = table.get(date)) == null) {
+                nullDates.add(date);
+            } else {
+                events.addAll(ev);
+            }
+        });
+
+        if (nullDates.size() != 0) {
+            List<String> fromTo = DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1));
+            setEventsInTable(fromTo.get(0), fromTo.get(fromTo.size() - 1));
+            fromTo.forEach(date -> events.addAll(table.get(date)));
+        }
+
+        events.sort(Comparator.comparing(Event::getTimeOf));
+        return events;
+    }
+
+    private static void setEventsInTable(String start, String end) {
         //TODO implement
-        return null;
     }
 
     public static void notifyByPopup(Event event) {
@@ -110,6 +150,26 @@ public class EventHandler {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
+    public static void notifyByEmail(Event event) {
+        Logger.getLogger("javax.mail").setLevel(Level.FINE);
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "my-mail-server");
+        Session session = Session.getInstance(props, null);
+
+        try {
+            MimeMessage msg = new MimeMessage(session);
+            msg.setFrom("me@example.com");
+            msg.setRecipients(Message.RecipientType.TO,
+                    "you@example.com");
+            msg.setSubject("JavaMail hello world example");
+            msg.setSentDate(new Date());
+            msg.setText("Hello, world!\n");
+            Transport.send(msg, "me@example.com", "my-password");
+        } catch (MessagingException mex) {
+            printer.println("send failed, exception: " + mex);
+        }
+    }
+
     //Threads for checking events for validity in time frame
-    //Threads for reminding user (via email or pop-up) for events
 }

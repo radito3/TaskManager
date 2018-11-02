@@ -7,7 +7,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -42,19 +41,6 @@ public class CRUDOperations {
                 .orElseThrow(() -> new NullPointerException("No object exists with given identifier")));
     }
 
-    @SafeVarargs
-    @SuppressWarnings("unchecked")
-    public static <R extends AbstractModel> List<R> getObjects(R... arr) {
-        return get(s -> {
-            List<R> result = new ArrayList<>();
-            for (R o : arr) {
-                Optional<R> opt = s.byId((Class<R>)o.getClass()).loadOptional(o.getId());
-                opt.ifPresent(result::add);
-            }
-            return result;
-        });
-    }
-
     private static <T> T get(Function<Session, T> function) {
         try {
             return DatabaseUtilFactory.getDbClient().getObject(function);
@@ -79,16 +65,17 @@ public class CRUDOperations {
                         .uniqueResultOptional());
     }
 
-    public static List<Event> getEventsInTimeFrame(String start, String end) {
+    static List<Event> getEventsInTimeFrame(String start, String end) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start + "\' AND Date <= \'" + end + "\';",
-                        Event.class).getResultList());
+                s.createNativeQuery("SELECT * FROM Eventt RIGHT JOIN CalendarEvents E on Eventt.Id = E.EventId " +
+                                "WHERE Date >= \'" + start + "\' AND Date <= \'" + end + "\';", Event.class)
+                        .getResultList());
     }
 
     static void deleteEventsInTimeFrame(Event event, String start, String end) {
         DatabaseUtilFactory.getDbClient().processObject(s ->
                 s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
-                        " AND Date >= " + start + " AND Date <= " + end)
+                        " AND Date >= \'" + start + "\' AND Date <= \'" + end + "\';")
                         .executeUpdate());
     }
 }

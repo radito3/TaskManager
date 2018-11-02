@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class DateHandler {
 
@@ -33,6 +35,11 @@ public class DateHandler {
 
     public Calendar asCalendar() {
         return currentCal;
+    }
+
+    public static List<String> fromTo(String from, String to) {
+        //increment date value by day
+        return new ArrayList<>();
     }
 
     public static int[] inOneWeek(String day, String month, String year) {

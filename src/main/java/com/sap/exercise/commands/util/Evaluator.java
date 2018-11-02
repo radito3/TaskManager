@@ -3,6 +3,7 @@ package com.sap.exercise.commands.util;
 import com.sap.exercise.handler.DateHandler;
 
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface Evaluator {
@@ -22,7 +23,7 @@ public interface Evaluator {
 
     static String stringifyDate(int year, int month, int day) {
         return Stream.of(year, month, day)
-                .reduce("", (a, b) -> a + "-" + b, String::concat)
-                .substring(1);
+                .map(String::valueOf)
+                .collect(Collectors.joining("-"));
     }
 }
