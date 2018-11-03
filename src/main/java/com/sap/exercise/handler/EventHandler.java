@@ -58,7 +58,7 @@ public class EventHandler {
                 + timeOf.get(Calendar.MINUTE)
                 - event.getReminder();
         try {
-            Thread.sleep(timeTo < 0 ? 0 : timeTo * 6000);
+            Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
             switch (DEFAULT_NOTIFICATION) {
                 case POPUP:
                     notifyByPopup(event);
