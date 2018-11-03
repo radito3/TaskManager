@@ -2,6 +2,7 @@ package com.sap.exercise.printer;
 
 import com.sap.exercise.model.Event;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,16 +64,43 @@ class PrinterUtils {
         return getDayOfWeek(day, false);
     }
 
-    static String format(List<Event> args) {
-        int longestDate = 0;
-        int longestName = 0;
-        return args.stream()
-                .map(Event::getTitle) //temporary
-                .peek(event -> {
-                    //get longest date argument
-                    //get longest month name
-                    //left pad words correctly according to those variables
-                })
-                .collect(Collectors.joining("\n"));
+    static void format(PrintStream writer, List<Event> args) {
+        //TODO finish
+        final Formatter formatter = new Formatter();
+        args.stream()
+            .peek(event -> {
+                //get longest date argument
+                //get longest month name
+                //left pad words correctly according to those variables
+            })
+            .collect(Collectors.toMap(Event::getTimeOf, Event::getTitle))
+            .forEach((date, title) -> {
+                //print each with proper formatting
+                writer.println();
+            });
+    }
+
+    private static class Formatter {
+        private int longestDate = 0;
+        private int longestName = 0;
+
+        Formatter() {
+        }
+
+        public int getLongestDate() {
+            return longestDate;
+        }
+
+        public void setLongestDate(int longestDate) {
+            this.longestDate = longestDate;
+        }
+
+        public int getLongestName() {
+            return longestName;
+        }
+
+        public void setLongestName(int longestName) {
+            this.longestName = longestName;
+        }
     }
 }

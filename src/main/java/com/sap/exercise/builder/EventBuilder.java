@@ -3,6 +3,7 @@ package com.sap.exercise.builder;
 import com.sap.exercise.builder.fields.*;
 import com.sap.exercise.model.Event;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class EventBuilder {
                 return Arrays.asList(new TitleFieldInfo(event), new TimeOfFieldInfo(event), new AllDayFieldInfo(event),
                         new ToRepeatFieldInfo(event, false));
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public Event getEvent() {

@@ -90,6 +90,7 @@ public class Event extends AbstractModel implements Serializable {
         this.toRepeat = toRepeat;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

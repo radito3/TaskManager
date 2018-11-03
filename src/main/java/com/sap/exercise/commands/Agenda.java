@@ -27,7 +27,7 @@ public class Agenda implements Command {
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");
             } else {
-                events.forEach(printer::printEvent);  //will change it with printEvents method
+                printer.printEvents(events);
             }
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());

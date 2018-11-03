@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,21 +27,13 @@ public class DateHandler {
         }
     }
 
-    private String asString(boolean start, boolean flag) {
+    public String asString(boolean start) {
         return String.valueOf(currentCal.get(Calendar.YEAR)) +
                 '-' +
                 (currentCal.get(Calendar.MONTH) + 1) +
                 '-' +
                 currentCal.get(Calendar.DAY_OF_MONTH) +
-                (flag ? "" : (start ? " 00:00" : " 23:59"));
-    }
-
-    public String asString() {
-        return this.asString(false, true);
-    }
-
-    public String asString(boolean start) {
-        return this.asString(start, false);
+                (start ? " 00:00" : " 23:59");
     }
 
     public Calendar asCalendar() {
@@ -48,7 +41,10 @@ public class DateHandler {
     }
 
     public static List<String> fromTo(String from, String to) {
-        //increment date value by day
+        if (from.equals(to)) {
+            return Collections.singletonList(from);
+        }
+        //TODO increment date value by day
         return new ArrayList<>();
     }
 

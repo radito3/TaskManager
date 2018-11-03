@@ -20,13 +20,13 @@ public class FieldValueUtils {
         if (!input.matches("^\\s*\\d{1,3}\\s*$")) {
             throw new IllegalArgumentException("Invalid number");
         }
-        return Integer.valueOf(input);
+        return Integer.valueOf(input.trim());
     }
 
     public static Event.RepeatableType valueOfRepeatable(String input) {
         String arg = "";
         if (input.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
-            arg = input;
+            arg = input.trim();
         } else if (input.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
             switch (input.toLowerCase()) {
                 case "d":

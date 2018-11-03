@@ -11,7 +11,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -106,15 +105,7 @@ public class OutputPrinter {
         //TODO add support for all types of events
         Event[] array = events.toArray(new Event[0]);
         Arrays.sort(array, Comparator.comparing(Event::getTimeOf));
-        writer.println(PrinterUtils.format(Arrays.asList(array)));
-    }
-
-    //this will be deleted
-    public void printEvent(Event event) {
-        Calendar cal = event.getTimeOf();
-        //need to format it properly
-        writer.println(cal.get(Calendar.DATE) + "   " + PrinterUtils.getMonth(cal.get(Calendar.MONTH) + 1) + "   " +
-                PrinterUtils.getDayOfWeek(cal.get(Calendar.DAY_OF_WEEK)) + "   " + event.getTitle());
+        PrinterUtils.format(writer, Arrays.asList(array));
     }
 
     private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
@@ -164,7 +155,7 @@ public class OutputPrinter {
                 .mapToObj(i -> DateHandler.stringifyDate(today[2], month, i))
                 .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
                 .forEach((date, eventList) -> {
-                    //print only the day not the whole date!
+                    //TODO print only the day not the whole date
                     if (eventList.isEmpty()) {
                         writer.printf("%2d ", Integer.valueOf(date));
                     } else {
@@ -178,7 +169,7 @@ public class OutputPrinter {
     }
 
     private Function<String, Set<Event>> valueMapper(Set<Event> events) {
-        return date ->
+        return (date) ->
                 events.stream()
                         .filter(event -> {
                             Calendar cal = new DateHandler(date).asCalendar();

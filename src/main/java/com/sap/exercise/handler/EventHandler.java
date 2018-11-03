@@ -45,7 +45,7 @@ public class EventHandler {
             String date = DateHandler.stringifyDate(today[0], today[1], today[2]);
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                events.forEach(EventHandler::notificationHandler);
+                events.forEach(event -> service.submit(() -> notificationHandler(event)));
             }
         });
     }
@@ -83,7 +83,8 @@ public class EventHandler {
     }
 
     private static Stream<CalendarEvents> eventStream(Integer eventId, Event.RepeatableType type) {
-        final Calendar calendar = Calendar.getInstance(); //the date is incorrectly incremented
+        //if the event is a goal, need to search for free time in schedule
+        final Calendar calendar = Calendar.getInstance(); //TODO Fix incorrect date incrementation
         final IntStream stream = IntStream.range(1, 31);
         switch (type) {
             case DAILY:
@@ -163,8 +164,11 @@ public class EventHandler {
         //TODO set them by their date
     }
 
-    public static void notifyByPopup(Event event) {
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), event.getTitle(), "Event reminder",
+    private static void notifyByPopup(Event event) {
+        int duration = event.getDuration();
+        boolean daysOrMinutes = event.getAllDay();
+        String body = event.getTitle() + "\n\nDuration: " + duration + (daysOrMinutes ? "days" : "minutes");
+        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder",
                 JOptionPane.PLAIN_MESSAGE);
     }
 

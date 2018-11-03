@@ -30,6 +30,6 @@ public class TitleFieldInfo implements FieldInfo {
 
     @Override
     public void argHandler(String arg) {
-        event.setTitle(FieldValueUtils.valueOfStr(arg));
+        event.setTitle(FieldValueUtils.valueOfStr(arg.trim()));
     }
 }

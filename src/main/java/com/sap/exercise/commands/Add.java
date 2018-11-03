@@ -19,8 +19,6 @@ public class Add implements Command {
 
     @Override
     public void execute(String... args) {
-        //if AllDay is true -> Duration will be in number of days
-        //if AllDay is false -> Duration is number of minutes
         try {
             Event event = flagHandler(args);
             BufferedReader reader = InputParser.getReader();
