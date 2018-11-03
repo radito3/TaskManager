@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.sap.exercise.Main.OUTPUT;
+import static com.sap.exercise.Application.Configuration.OUTPUT;
+import static com.sap.exercise.Application.Configuration.DEFAULT_NOTIFICATION;
 
 public class EventHandler {
 
@@ -58,7 +59,13 @@ public class EventHandler {
                 - event.getReminder();
         try {
             Thread.sleep(timeTo * 6000);
-            notifyByPopup(event); //default notification
+            switch (DEFAULT_NOTIFICATION) {
+                case POPUP:
+                    notifyByPopup(event);
+                    break;
+                case EMAIL:
+                    notifyByEmail(event);
+            }
         } catch (InterruptedException e) {
             printer.error(e.getMessage());
         }
@@ -172,7 +179,7 @@ public class EventHandler {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    public static void notifyByEmail(Event event) {
+    private static void notifyByEmail(Event event) {
         Properties props = new Properties();
         props.put("mail.smtp.host", "my-mail-server");
         Session session = Session.getInstance(props, null);
@@ -180,14 +187,13 @@ public class EventHandler {
         try {
             MimeMessage msg = new MimeMessage(session);
             msg.setFrom("me@example.com");
-            msg.setRecipients(Message.RecipientType.TO,
-                    "you@example.com");
-            msg.setSubject("JavaMail hello world example");
+            msg.setRecipients(Message.RecipientType.TO, "you@example.com");
+            msg.setSubject("Event reminder: " + event.getTitle());
             msg.setSentDate(new Date());
-            msg.setText("Hello, world!\n");
+            msg.setText("Event description: " + event.getDescription());
             Transport.send(msg, "me@example.com", "my-password");
         } catch (MessagingException mex) {
-            printer.println("send failed, exception: " + mex);
+            printer.error("Send failed, exception: " + mex.toString());
         }
     }
 

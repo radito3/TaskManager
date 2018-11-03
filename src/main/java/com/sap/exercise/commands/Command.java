@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.printer.OutputPrinter;
 
-import static com.sap.exercise.Main.OUTPUT;
+import static com.sap.exercise.Application.Configuration.OUTPUT;
 
 public interface Command {
 

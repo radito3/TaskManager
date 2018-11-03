@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sap.exercise.Main.INPUT;
-import static com.sap.exercise.Main.OUTPUT;
+import static com.sap.exercise.Application.Configuration.INPUT;
+import static com.sap.exercise.Application.Configuration.OUTPUT;
 
 public class InputParser {
 
