@@ -12,7 +12,6 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,19 +42,26 @@ public class EventHandler {
         service.submit(DatabaseUtilFactory::createDbClient);
         service.submit(() -> {
             int[] today = DateHandler.getToday();
-            String date = Arrays.stream(today).boxed()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining("-"));
-            String date1 = new DateHandler(date).asString(false); //need to make method that returns only the date
-            Set<Event> events = getEventsInTimeFrame(date1, date1);
+            String date = DateHandler.stringifyDate(today[0], today[1], today[2]);
+            Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                //get time to event reminder/timeOf
-//                while (true) {
-                    //check for incoming time to notify
-                    //notifyByPopup will be default
-//                }
+                events.forEach(EventHandler::notificationHandler);
             }
         });
+    }
+
+    private static void notificationHandler(Event event) {
+        Calendar timeOf = event.getTimeOf();
+        Calendar now = Calendar.getInstance();
+        int timeTo = ((timeOf.get(Calendar.HOUR_OF_DAY) - now.get(Calendar.HOUR_OF_DAY)) * 60)
+                + timeOf.get(Calendar.MINUTE)
+                - event.getReminder();
+        try {
+            Thread.sleep(timeTo * 6000);
+            notifyByPopup(event); //default notification
+        } catch (InterruptedException e) {
+            printer.error(e.getMessage());
+        }
     }
 
     public static void create(Event event) {
@@ -158,7 +164,7 @@ public class EventHandler {
     }
 
     public static void notifyByPopup(Event event) {
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Sample message", "Sample title",
+        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), event.getTitle(), "Event reminder",
                 JOptionPane.PLAIN_MESSAGE);
     }
 

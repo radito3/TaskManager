@@ -3,8 +3,6 @@ package com.sap.exercise.commands.util;
 import com.sap.exercise.handler.DateHandler;
 
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public interface Evaluator {
 
@@ -18,12 +16,8 @@ public interface Evaluator {
 
         int[] inOneWeek = DateHandler.getTime(day + 6, month, year);
 
-        return new String[] { stringifyDate(year, month, day), stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]) };
+        return new String[] { DateHandler.stringifyDate(year, month, day),
+                DateHandler.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]) };
     }
 
-    static String stringifyDate(int year, int month, int day) {
-        return Stream.of(year, month, day)
-                .map(String::valueOf)
-                .collect(Collectors.joining("-"));
-    }
 }

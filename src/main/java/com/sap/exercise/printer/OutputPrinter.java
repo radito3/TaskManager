@@ -106,7 +106,7 @@ public class OutputPrinter {
         //TODO add support for all types of events
         Event[] array = events.toArray(new Event[0]);
         Arrays.sort(array, Comparator.comparing(Event::getTimeOf));
-        writer.println(PrinterUtils.format(new HashSet<>(Arrays.asList(array))));
+        writer.println(PrinterUtils.format(Arrays.asList(array)));
     }
 
     //this will be deleted
@@ -161,14 +161,8 @@ public class OutputPrinter {
         );
 
         IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
-                .mapToObj(i -> today[2] + "-" + month + "-" + i)
-                .collect(Collectors.toMap(Function.identity(), date ->
-                        events.stream().filter(event -> {
-                                    Calendar cal = new DateHandler(date).asCalendar();
-                                    return DateUtils.truncatedCompareTo(cal, event.getTimeOf(), Calendar.DAY_OF_MONTH) == 0;
-                                }
-                        ).collect(Collectors.toSet())
-                ))
+                .mapToObj(i -> DateHandler.stringifyDate(today[2], month, i))
+                .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
                 .forEach((date, eventList) -> {
                     //print only the day not the whole date!
                     if (eventList.isEmpty()) {
@@ -177,6 +171,20 @@ public class OutputPrinter {
                         writer.printf(CYAN_BACKGROUND + BLACK + "%2d" + RESET, Integer.valueOf(date));
                     }
                 });
+    }
+
+    private Function<String, String> keyMapper() {
+        return Function.identity();
+    }
+
+    private Function<String, Set<Event>> valueMapper(Set<Event> events) {
+        return date ->
+                events.stream()
+                        .filter(event -> {
+                            Calendar cal = new DateHandler(date).asCalendar();
+                            return DateUtils.truncatedCompareTo(cal, event.getTimeOf(), Calendar.DAY_OF_MONTH) == 0;
+                        })
+                        .collect(Collectors.toSet());
     }
 
 }

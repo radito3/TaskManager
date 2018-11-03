@@ -18,7 +18,7 @@ public class OneArgEvaluator implements Evaluator {
             String[] date = arg.split("[-./ ]");
             int[] inOneWeek = DateHandler.inOneWeek(date[2], date[1], date[0]);
 
-            arg2 = Evaluator.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
+            arg2 = DateHandler.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
         }
     }
 

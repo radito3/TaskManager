@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DateHandler {
 
@@ -24,13 +26,21 @@ public class DateHandler {
         }
     }
 
-    public String asString(boolean start) {
+    private String asString(boolean start, boolean flag) {
         return String.valueOf(currentCal.get(Calendar.YEAR)) +
                 '-' +
                 (currentCal.get(Calendar.MONTH) + 1) +
                 '-' +
                 currentCal.get(Calendar.DAY_OF_MONTH) +
-                (start ? " 00:00" : " 23:59");
+                (flag ? "" : (start ? " 00:00" : " 23:59"));
+    }
+
+    public String asString() {
+        return this.asString(false, true);
+    }
+
+    public String asString(boolean start) {
+        return this.asString(start, false);
     }
 
     public Calendar asCalendar() {
@@ -40,6 +50,12 @@ public class DateHandler {
     public static List<String> fromTo(String from, String to) {
         //increment date value by day
         return new ArrayList<>();
+    }
+
+    public static String stringifyDate(int year, int month, int day) {
+        return Stream.of(year, month, day)
+                .map(String::valueOf)
+                .collect(Collectors.joining("-"));
     }
 
     public static int[] inOneWeek(String day, String month, String year) {

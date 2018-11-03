@@ -2,7 +2,7 @@ package com.sap.exercise.printer;
 
 import com.sap.exercise.model.Event;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 class PrinterUtils {
@@ -63,7 +63,7 @@ class PrinterUtils {
         return getDayOfWeek(day, false);
     }
 
-    static String format(Set<Event> args) {
+    static String format(List<Event> args) {
         int longestDate = 0;
         int longestName = 0;
         return args.stream()
