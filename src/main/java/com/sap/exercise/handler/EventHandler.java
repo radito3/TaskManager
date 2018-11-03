@@ -54,8 +54,8 @@ public class EventHandler {
     private static void notificationHandler(Event event) {
         Calendar timeOf = event.getTimeOf();
         Calendar now = Calendar.getInstance();
-        int timeTo = ((timeOf.get(Calendar.HOUR_OF_DAY) - now.get(Calendar.HOUR_OF_DAY)) * 60)
-                + timeOf.get(Calendar.MINUTE)
+        int timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
+                - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.HOUR_OF_DAY))
                 - event.getReminder();
         try {
             Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
