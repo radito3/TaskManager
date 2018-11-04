@@ -5,22 +5,14 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -31,7 +23,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.sap.exercise.Application.Configuration.OUTPUT;
-import static com.sap.exercise.Application.Configuration.DEFAULT_NOTIFICATION;
 
 public class EventHandler {
 
@@ -46,29 +37,9 @@ public class EventHandler {
             String date = DateHandler.stringifyDate(today[0], today[1], today[2]);
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                events.forEach(event -> service.submit(() -> notificationHandler(event)));
+                events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
             }
         });
-    }
-
-    private static void notificationHandler(Event event) {
-        Calendar timeOf = event.getTimeOf();
-        Calendar now = Calendar.getInstance();
-        int timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
-                - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.HOUR_OF_DAY))
-                - event.getReminder();
-        try {
-            Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
-            switch (DEFAULT_NOTIFICATION) {
-                case POPUP:
-                    notifyByPopup(event);
-                    break;
-                case EMAIL:
-                    notifyByEmail(event);
-            }
-        } catch (InterruptedException e) {
-            printer.error(e.getMessage());
-        }
     }
 
     public static void create(Event event) {
@@ -169,32 +140,6 @@ public class EventHandler {
     private static void setEventsInTable(String start, String end) {
         Future<List<Event>> future = service.submit(() -> CRUDOperations.getEventsInTimeFrame(start, end));
         //TODO set them by their date
-    }
-
-    private static void notifyByPopup(Event event) {
-        int duration = event.getDuration();
-        boolean daysOrMinutes = event.getAllDay();
-        String body = event.getTitle() + "\n\nDuration: " + duration + (daysOrMinutes ? "days" : "minutes");
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder",
-                JOptionPane.PLAIN_MESSAGE);
-    }
-
-    private static void notifyByEmail(Event event) {
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "my-mail-server");
-        Session session = Session.getInstance(props, null);
-
-        try {
-            MimeMessage msg = new MimeMessage(session);
-            msg.setFrom("me@example.com");
-            msg.setRecipients(Message.RecipientType.TO, "you@example.com");
-            msg.setSubject("Event reminder: " + event.getTitle());
-            msg.setSentDate(new Date());
-            msg.setText("Event description: " + event.getDescription());
-            Transport.send(msg, "me@example.com", "my-password");
-        } catch (MessagingException mex) {
-            printer.error("Send failed, exception: " + mex.toString());
-        }
     }
 
     //Threads for checking events for validity in time frame
