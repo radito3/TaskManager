@@ -27,13 +27,12 @@ public class DateHandler {
         }
     }
 
-    public String asString(boolean start) {
+    public String asString() {
         return String.valueOf(currentCal.get(Calendar.YEAR)) +
                 '-' +
                 (currentCal.get(Calendar.MONTH) + 1) +
                 '-' +
-                currentCal.get(Calendar.DAY_OF_MONTH) +
-                (start ? " 00:00" : " 23:59");
+                currentCal.get(Calendar.DAY_OF_MONTH);
     }
 
     public Calendar asCalendar() {
@@ -44,8 +43,29 @@ public class DateHandler {
         if (from.equals(to)) {
             return Collections.singletonList(from);
         }
-        //TODO increment date value by day
-        return new ArrayList<>();
+        String[] dateFrom = from.split("-");
+        String[] dateTo = from.split("-");
+
+        List<String> result = new ArrayList<>();
+
+        int[] fromDate = getSafeTime(Integer.valueOf(dateFrom[2]), Integer.valueOf(dateFrom[1]), Integer.valueOf(dateFrom[0]));
+        int[] toDate = getSafeTime(Integer.valueOf(dateTo[2]), Integer.valueOf(dateTo[1]), Integer.valueOf(dateTo[0]));
+
+        int toDays = toDate[0] - fromDate[0];
+
+        for (int i = fromDate[1]; i < toDate[1]; i++) {
+            toDays += getMonthDays()[i];
+        }
+
+        for (int i = 0; toDays > 0 && i <= toDays; i++) {
+            result.add(dateToString(getSafeTime(fromDate[0] + i, fromDate[1], fromDate[2])));
+        }
+
+        return result;
+    }
+
+    private static String dateToString(int[] date) {
+        return stringifyDate(date[2], date[1], date[0]);
     }
 
     public static String stringifyDate(int year, int month, int day) {
@@ -55,7 +75,7 @@ public class DateHandler {
     }
 
     public static int[] inOneWeek(String day, String month, String year) {
-        return getTime(Integer.valueOf(day) + 6, Integer.valueOf(month), Integer.valueOf(year));
+        return getSafeTime(Integer.valueOf(day) + 6, Integer.valueOf(month), Integer.valueOf(year));
     }
 
     public static int[] getToday() {
@@ -66,12 +86,12 @@ public class DateHandler {
         return new int[] { day, month, year };
     }
 
-    public static int[] getTime(int day, int month, int year) {
+    public static int[] getSafeTime(int day, int month, int year) {
         if (month > 12) {
-            return getTime(day, 1, year + 1);
+            return getSafeTime(day, 1, year + 1);
         }
         if (day > getMonthDays()[month]) {
-            return getTime(day - getMonthDays()[month], month + 1, year);
+            return getSafeTime(day - getMonthDays()[month], month + 1, year);
         }
         return new int[] { day, month, year };
     }

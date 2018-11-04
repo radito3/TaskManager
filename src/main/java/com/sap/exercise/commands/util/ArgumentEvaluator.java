@@ -21,12 +21,12 @@ public class ArgumentEvaluator {
                 String arg = argStream.get().findFirst().orElse("");
                 boolean end = arg.endsWith("-");
                 DateHandler handler = new DateHandler(arg);
-                evaluator = new OneArgEvaluator(handler.asString(!end) + (end ? "-" : ""));
+                evaluator = new OneArgEvaluator(handler.asString() + (end ? "-" : ""));
                 break;
             case 2:
                 DateHandler handler1 = new DateHandler(args[0]);
                 DateHandler handler2 = new DateHandler(args[1]);
-                evaluator = new TwoArgEvaluator(handler1.asString(true), handler2.asString(false));
+                evaluator = new TwoArgEvaluator(handler1.asString(), handler2.asString());
                 break;
         }
     }

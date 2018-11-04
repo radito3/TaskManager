@@ -14,7 +14,7 @@ public interface Evaluator {
         int[] today = DateHandler.getToday();
         int year = today[2], month = today[1], day = today[0];
 
-        int[] inOneWeek = DateHandler.getTime(day + 6, month, year);
+        int[] inOneWeek = DateHandler.getSafeTime(day + 6, month, year);
 
         return new String[] { DateHandler.stringifyDate(year, month, day),
                 DateHandler.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]) };
