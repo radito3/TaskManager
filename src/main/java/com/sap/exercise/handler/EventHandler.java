@@ -18,9 +18,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.IntFunction;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static com.sap.exercise.Application.Configuration.OUTPUT;
 
@@ -49,10 +50,7 @@ public class EventHandler {
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             service.submit(() -> {
                 try {
-                    CRUDOperations.create(
-                            eventStream((Integer) futureId.get(), event.getToRepeat())
-                                    .collect(Collectors.toList())
-                    );
+                    CRUDOperations.create(eventsList((Integer) futureId.get(), event.getToRepeat()));
                 } catch (InterruptedException | ExecutionException e) {
                     printer.error(e.getMessage());
                 }
@@ -60,24 +58,24 @@ public class EventHandler {
         }
     }
 
-    private static Stream<CalendarEvents> eventStream(Integer eventId, Event.RepeatableType type) {
-        //if the event is a goal, need to search for free time in schedule
-        final Calendar calendar = Calendar.getInstance(); //TODO Fix incorrect date incrementation
-        final IntStream stream = IntStream.range(1, 31);
+    private static List<CalendarEvents> eventsList(Integer eventId, Event.RepeatableType type) {
+        Supplier<Calendar> calSupplier = Calendar::getInstance;
         switch (type) {
             case DAILY:
-                return stream
-                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.DAY_OF_MONTH, i));
+                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.DAY_OF_MONTH, i));
             case WEEKLY:
-                return stream
-                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.WEEK_OF_YEAR, i));
+                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.WEEK_OF_YEAR, i));
             case MONTHLY:
-                return stream
-                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.MONTH, i));
+                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.MONTH, i));
             default:
-                return IntStream.range(1, 4)
-                        .mapToObj(i -> eventSupplier(eventId, calendar, Calendar.YEAR, i));
+                return streamCreator(4, i -> eventSupplier(eventId, calSupplier.get(), Calendar.YEAR, i));
         }
+    }
+
+    private static List<CalendarEvents> streamCreator(int endInclusive, IntFunction<CalendarEvents> func) {
+        return IntStream.rangeClosed(1, endInclusive)
+                .mapToObj(func)
+                .collect(Collectors.toList());
     }
 
     private static CalendarEvents eventSupplier(Integer eventId, Calendar calendar, int field, int amount) {
