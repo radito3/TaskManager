@@ -1,6 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.commands.util.CommandUtils;
+import com.sap.exercise.handler.DateHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -24,11 +25,7 @@ public class Help implements Command {
 
             HelpFormatter formatter = new HelpFormatter();
             String header, footer = "\nThe time options accept time formats as follows:\n" +
-                    "dd[*]mm[*]yyyy HH:mm\n" +
-                    "dd[*]mm[*]yyyy\n" +
-                    "dd mmm yyyy HH:mm\n" +
-                    "dd mmm yyyy\n" +
-                    "With [*] being one of the following: -, /, .";
+                    String.join("\n", DateHandler.DATE_FORMATS);
 
             if (cmd.hasOption("ad")) {
                 header = "\nCreate an event\n\n";

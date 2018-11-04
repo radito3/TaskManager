@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.IntFunction;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,7 +35,7 @@ public class EventHandler {
         service.submit(DatabaseUtilFactory::createDbClient);
         service.submit(() -> {
             int[] today = DateHandler.getToday();
-            String date = DateHandler.stringifyDate(today[0], today[1], today[2]);
+            String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
                 events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
@@ -59,28 +59,27 @@ public class EventHandler {
     }
 
     private static List<CalendarEvents> eventsList(Integer eventId, Event.RepeatableType type) {
-        Supplier<Calendar> calSupplier = Calendar::getInstance;
         switch (type) {
             case DAILY:
-                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.DAY_OF_MONTH, i));
+                return eventEntriesHandler(30, eventId, Calendar.DAY_OF_MONTH);
             case WEEKLY:
-                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.WEEK_OF_YEAR, i));
+                return eventEntriesHandler(30, eventId, Calendar.WEEK_OF_YEAR);
             case MONTHLY:
-                return streamCreator(30, i -> eventSupplier(eventId, calSupplier.get(), Calendar.MONTH, i));
+                return eventEntriesHandler(30, eventId, Calendar.MONTH);
             default:
-                return streamCreator(4, i -> eventSupplier(eventId, calSupplier.get(), Calendar.YEAR, i));
+                return eventEntriesHandler(4, eventId, Calendar.YEAR);
         }
     }
 
-    private static List<CalendarEvents> streamCreator(int endInclusive, IntFunction<CalendarEvents> func) {
+    private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, int field) {
+        Supplier<Calendar> calSupplier = Calendar::getInstance;
         return IntStream.rangeClosed(1, endInclusive)
-                .mapToObj(func)
+                .mapToObj(i -> {
+                    Calendar calendar = calSupplier.get();
+                    calendar.add(field, i);
+                    return new CalendarEvents(eventId, calendar);
+                })
                 .collect(Collectors.toList());
-    }
-
-    private static CalendarEvents eventSupplier(Integer eventId, Calendar calendar, int field, int amount) {
-        calendar.add(field, amount);
-        return new CalendarEvents(eventId, calendar);
     }
 
     public static void update(Event event) {
@@ -112,19 +111,15 @@ public class EventHandler {
                 Set<Event> events = new HashSet<>();
                 List<String> nullDates = new ArrayList<>();
 
-                DateHandler.fromTo(start, end).forEach(date -> {
-                    Set<Event> ev;
-                    if ((ev = table.get(date)) == null) {
-                        nullDates.add(date);
-                    } else {
-                        events.addAll(ev);
-                    }
-                });
+                DateHandler.fromTo(start, end).forEach(handleDates(events, nullDates::add));
 
                 if (nullDates.size() != 0) {
-                    List<String> fromTo = DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1));
-                    setEventsInTable(fromTo.get(0), fromTo.get(fromTo.size() - 1));
-                    fromTo.forEach(date -> events.addAll(table.get(date)));
+                    int size = table.size();
+                    setEventsInTable(nullDates.get(0), nullDates.get(nullDates.size() - 1));
+                    if (size != table.size()) {
+                        DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1))
+                                .forEach(handleDates(events, str -> {}));
+                    }
                 }
 
                 return events;
@@ -135,10 +130,39 @@ public class EventHandler {
         return new HashSet<>();
     }
 
-    private static void setEventsInTable(String start, String end) {
-        Future<List<Event>> future = service.submit(() -> CRUDOperations.getEventsInTimeFrame(start, end));
-        //TODO set them by their date
+    private static Consumer<String> handleDates(Set<Event> events, Consumer<String> listConsumer) {
+        return (date) -> {
+            Set<Event> ev;
+            if ((ev = table.get(date)) == null) {
+                listConsumer.accept(date);
+            } else {
+                events.addAll(ev);
+            }
+        };
     }
 
-    //Threads for checking events for validity in time frame
+    private static void setEventsInTable(String start, String end) {
+        try {
+            Map<Calendar, Set<Event>> map = service.submit(() -> CRUDOperations.getEventsInTimeFrame(start, end))
+                    .get().stream()
+                    .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
+
+            for (String date : DateHandler.fromTo(start, end)) {
+                for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
+                    if (dateMatches(date, entry.getKey())) {
+                        table.put(date, entry.getValue());
+                    }
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            printer.error(e.getMessage());
+        }
+    }
+
+    private static boolean dateMatches(String date, Calendar calendar) {
+        String[] splitDate = date.split("-");
+        return Integer.valueOf(splitDate[2]) == calendar.get(Calendar.DAY_OF_MONTH)
+                && Integer.valueOf(splitDate[1]) == calendar.get(Calendar.MONTH)
+                && Integer.valueOf(splitDate[0]) == calendar.get(Calendar.YEAR);
+    }
 }

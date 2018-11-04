@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class DateHandler {
 
-    private static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
+    public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy" };
 
     private Calendar currentCal = new Calendar.Builder().setCalendarType("gregorian").build();
@@ -39,28 +39,25 @@ public class DateHandler {
         return currentCal;
     }
 
-    public static List<String> fromTo(String from, String to) {
+    static List<String> fromTo(String from, String to) {
         if (from.equals(to)) {
             return Collections.singletonList(from);
         }
         String[] dateFrom = from.split("-");
         String[] dateTo = from.split("-");
 
-        List<String> result = new ArrayList<>();
-
         int[] fromDate = getSafeTime(Integer.valueOf(dateFrom[2]), Integer.valueOf(dateFrom[1]), Integer.valueOf(dateFrom[0]));
         int[] toDate = getSafeTime(Integer.valueOf(dateTo[2]), Integer.valueOf(dateTo[1]), Integer.valueOf(dateTo[0]));
 
         int toDays = toDate[0] - fromDate[0];
-
         for (int i = fromDate[1]; i < toDate[1]; i++) {
             toDays += getMonthDays()[i];
         }
 
+        List<String> result = new ArrayList<>();
         for (int i = 0; toDays > 0 && i <= toDays; i++) {
             result.add(dateToString(getSafeTime(fromDate[0] + i, fromDate[1], fromDate[2])));
         }
-
         return result;
     }
 
