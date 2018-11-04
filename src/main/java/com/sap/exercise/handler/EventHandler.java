@@ -33,14 +33,18 @@ public class EventHandler {
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        service.submit(() -> {
+        service.submit(checkForUpcomingEvents());
+    }
+
+    private static Runnable checkForUpcomingEvents() {
+        return () -> {
             int[] today = DateHandler.getToday();
             String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
                 events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
             }
-        });
+        };
     }
 
     public static void create(Event event) {
@@ -56,6 +60,8 @@ public class EventHandler {
                 }
             });
         }
+
+        service.submit(checkForUpcomingEvents());
     }
 
     private static List<CalendarEvents> eventsList(Integer eventId, Event.RepeatableType type) {
@@ -84,14 +90,22 @@ public class EventHandler {
 
     public static void update(Event event) {
         service.submit(() -> CRUDOperations.update(event));
+        service.submit(NotificationHandler.onDelete(event));
+        service.submit(checkForUpcomingEvents());
     }
 
     public static void delete(Event event) {
         service.submit(() -> CRUDOperations.delete(event));
+        service.submit(NotificationHandler.onDelete(event));
     }
 
     public static void deleteInTimeFrame(Event event, String start, String end) {
         service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
+        service.submit(() -> {
+            if (DateHandler.containsToday(start, end)) {
+                service.submit(NotificationHandler.onDelete(event));
+            }
+        });
     }
 
     public static Event getEventByTitle(String title) {

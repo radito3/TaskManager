@@ -61,6 +61,10 @@ public class DateHandler {
         return result;
     }
 
+    static boolean containsToday(String start, String end) {
+        return fromTo(start, end).contains(dateToString(getToday()));
+    }
+
     private static String dateToString(int[] date) {
         return stringifyDate(date[2], date[1], date[0]);
     }

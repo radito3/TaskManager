@@ -25,12 +25,15 @@ public class NotificationHandler implements Runnable {
     private Application.Configuration.NotificationType notificationType = DEFAULT_NOTIFICATION;
 
     NotificationHandler(Event event) {
-        Calendar timeOf = event.getTimeOf();
-        Calendar now = Calendar.getInstance();
-        this.timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
-                - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.HOUR_OF_DAY))
-                - event.getReminder();
-        this.event = event;
+        if (!Notifications.contains(event.getId())) {
+            Calendar timeOf = event.getTimeOf();
+            Calendar now = Calendar.getInstance();
+            this.timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
+                    - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.HOUR_OF_DAY))
+                    - event.getReminder();
+            this.event = event;
+            Notifications.put(event.getId(), Thread.currentThread());
+        }
     }
 
     NotificationHandler(Event event, Application.Configuration.NotificationType type) {
@@ -40,18 +43,30 @@ public class NotificationHandler implements Runnable {
 
     @Override
     public void run() {
-        try {
-            Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
-            switch (notificationType) {
-                case POPUP:
-                    notifyByPopup();
-                    break;
-                case EMAIL:
-                    notifyByEmail();
+        if (event != null) {
+            try {
+                Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
+                switch (notificationType) {
+                    case POPUP:
+                        notifyByPopup();
+                        break;
+                    case EMAIL:
+                        notifyByEmail();
+                }
+            } catch (InterruptedException e) {
+                printer.error(e.getMessage()); //may need to remove
             }
-        } catch (InterruptedException e) {
-            printer.error(e.getMessage());
         }
+    }
+
+    static Runnable onDelete(Event event) {
+        return () -> {
+            Thread thread;
+            if ((thread = Notifications.get(event.getId())) != null) {
+                thread.interrupt();
+                Notifications.delete(event.getId());
+            }
+        };
     }
 
     private void notifyByPopup() {
