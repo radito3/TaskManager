@@ -3,104 +3,94 @@ package com.sap.exercise.printer;
 import com.sap.exercise.model.Event;
 
 import java.io.PrintStream;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.stream.Stream;
 
 class PrinterUtils {
 
-    static String getMonth(int month, boolean flag) {
+    static String getMonth(int month) {
         switch (month) {
             case 1:
-                return flag ? "Jan" : "January";
+                return "January";
             case 2:
-                return flag ? "Feb" : "February";
+                return "February";
             case 3:
-                return flag ? "Mar" : "March";
+                return "March";
             case 4:
-                return flag ? "Apr" : "April";
+                return "April";
             case 5:
                 return "May";
             case 6:
-                return flag ? "Jun" : "June";
+                return "June";
             case 7:
-                return flag ? "Jul" : "July";
+                return "July";
             case 8:
-                return flag ? "Aug" : "August";
+                return "August";
             case 9:
-                return flag ? "Sep" : "September";
+                return "September";
             case 10:
-                return flag ? "Oct" : "October";
+                return "October";
             case 11:
-                return flag ? "Nov" : "November";
+                return "November";
             default:
-                return flag ? "Dec" : "December";
+                return "December";
         }
     }
 
-    static String getMonth(int month) {
-        return getMonth(month, false);
-    }
-
-    static String getDayOfWeek(int day, boolean flag) {
-        switch (day) {
-            case 1:
-                return flag ? "Mon" : "Monday";
-            case 2:
-                return flag ? "Tue" : "Tuesday";
-            case 3:
-                return flag ? "Wed" : "Wednesday";
-            case 4:
-                return flag ? "Thu" : "Thursday";
-            case 5:
-                return flag ? "Fri" : "Friday";
-            case 6:
-                return flag ? "Sat" : "Saturday";
-            default:
-                return flag ? "Sun" : "Sunday";
-        }
-    }
-
-    static String getDayOfWeek(int day) {
-        return getDayOfWeek(day, false);
-    }
-
-    static void format(PrintStream writer, List<Event> args) {
-        //TODO finish
+    static void format(PrintStream writer, Stream<Event> args) {
         final Formatter formatter = new Formatter();
-        args.stream()
-            .peek(event -> {
-                //get longest date argument
-                //get longest month name
-                //left pad words correctly according to those variables
+        args.peek(event -> {
+                if (event.getAllDay()) {
+                    formatter.setAllDay();
+                }
+                formatter.setType(event.getTypeOf());
             })
-            .collect(Collectors.toMap(Event::getTimeOf, Event::getTitle))
-            .forEach((date, title) -> {
-                //print each with proper formatting
+            .forEach(event -> {
+                Date date = event.getTimeOf().getTime();
+                writer.print(date.toString().substring(0, 10));
+
+                if (formatter.isAllDay()) {
+                    writer.print("       ");
+                } else {
+                    writer.print(" " + date.toString().substring(11, 16) + " ");
+                }
+
+                switch (formatter.getType()) {
+                    case TASK:
+                        writer.print(OutputPrinter.CYAN + event.getTitle() + OutputPrinter.RESET);
+                        break;
+                    case REMINDER:
+                        writer.print(OutputPrinter.GREEN + event.getTitle() + OutputPrinter.RESET);
+                        break;
+                    case GOAL:
+                        writer.print(OutputPrinter.PURPLE + event.getTitle() + OutputPrinter.RESET);
+                }
+
                 writer.println();
             });
     }
 
     private static class Formatter {
-        private int longestDate = 0;
-        private int longestName = 0;
+        private boolean allDay = false;
+        private Event.EventType type;
 
         Formatter() {
         }
 
-        public int getLongestDate() {
-            return longestDate;
+        boolean isAllDay() {
+            return allDay;
         }
 
-        public void setLongestDate(int longestDate) {
-            this.longestDate = longestDate;
+        void setAllDay() {
+            this.allDay = true;
         }
 
-        public int getLongestName() {
-            return longestName;
+        Event.EventType getType() {
+            return type;
         }
 
-        public void setLongestName(int longestName) {
-            this.longestName = longestName;
+        void setType(Event.EventType type) {
+            this.type = type;
         }
     }
 }

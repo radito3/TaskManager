@@ -11,10 +11,12 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class OutputPrinter {
 
@@ -102,10 +104,9 @@ public class OutputPrinter {
     }
 
     public void printEvents(Set<Event> events) {
-        //TODO add support for all types of events
         Event[] array = events.toArray(new Event[0]);
         Arrays.sort(array, Comparator.comparing(Event::getTimeOf));
-        PrinterUtils.format(writer, Arrays.asList(array));
+        PrinterUtils.format(writer, Stream.of(array));
     }
 
     private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
@@ -129,14 +130,18 @@ public class OutputPrinter {
             printWithEvents(month, startingDay);
         } else {
             for (int i = 1; i <= days[month]; i++) {
-                if (isToday(i, month, year))
-                    writer.printf(INVERT + "%2d " + RESET, i);
-                else
-                    writer.printf("%2d ", i);
+                printDay(i, month, year, "");
 
                 if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
             }
         }
+    }
+
+    private void printDay(int day, int month, int year, String format) {
+        if (isToday(day, month, year))
+            writer.printf(INVERT + "%2d " + RESET, day);
+        else
+            writer.printf(format + "%2d " + RESET, day);
     }
 
     private boolean isToday(int day, int month, int year) {
@@ -144,7 +149,7 @@ public class OutputPrinter {
         return day == today[0] && month == today[1] && year == today[2];
     }
 
-    private void printWithEvents(int month, int startindDay) {
+    private void printWithEvents(int month, int startingDay) {
         int[] today = DateHandler.getToday();
         Set<Event> events = EventHandler.getEventsInTimeFrame(
                 today[2] + "-" + month + "-01",
@@ -154,18 +159,31 @@ public class OutputPrinter {
         IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
                 .mapToObj(i -> DateHandler.stringifyDate(today[2], month, i))
                 .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
-                .forEach((date, eventList) -> {
-                    //TODO print only the day not the whole date
-                    if (eventList.isEmpty()) {
-                        writer.printf("%2d ", Integer.valueOf(date));
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(entry -> Integer.valueOf(entry.getKey().get(2))))
+                .forEach(entry -> {
+                    List<String> date = entry.getKey();
+                    Set<Event> eventSet = entry.getValue();
+
+                    if (eventSet.isEmpty()) {
+                        printDay(Integer.valueOf(date.get(2)), month, Integer.valueOf(date.get(0)), "");
                     } else {
-                        writer.printf(CYAN_BACKGROUND + BLACK + "%2d" + RESET, Integer.valueOf(date));
+                        printDay(Integer.valueOf(date.get(2)), month, Integer.valueOf(date.get(0)), CYAN_BACKGROUND + BLACK);
+                    }
+
+                    if (((Integer.valueOf(date.get(2)) + startingDay) % 7 == 0) ||
+                            (Integer.valueOf(date.get(2)) == DateHandler.getMonthDays()[month])) {
+                        writer.println();
                     }
                 });
     }
 
-    private Function<String, String> keyMapper() {
-        return Function.identity();
+    private Function<String, List<String>> keyMapper() {
+        return (date) -> Stream.of(date)
+                .map(str -> str.split("-"))
+                .flatMap(Arrays::stream)
+                .collect(Collectors.toList());
     }
 
     private Function<String, Set<Event>> valueMapper(Set<Event> events) {
