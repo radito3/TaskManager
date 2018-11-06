@@ -4,6 +4,7 @@ import com.sap.exercise.model.Event;
 
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class PrinterUtils {
@@ -40,34 +41,28 @@ class PrinterUtils {
     static void format(PrintStream writer, Stream<Event> args) {
         final Formatter formatter = new Formatter();
         args.peek(event -> {
-                if (event.getAllDay()) {
-                    formatter.setAllDay();
-                }
-                formatter.setType(event.getTypeOf());
-            })
-            .forEach(event -> {
-                Date date = event.getTimeOf().getTime();
-                writer.print(date.toString().substring(0, 10));
+                    if (event.getAllDay()) {
+                        formatter.setAllDay();
+                    }
+                    formatter.setType(event.getTypeOf());
+                })
+                .collect(Collectors.groupingBy(Event::getTimeOf)) //after this the elements aren't sorted by date
+                .forEach((cal, eventList) -> {
+                    Date date = cal.getTime();
+                    writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
 
-                if (formatter.isAllDay()) {
-                    writer.print("       ");
-                } else {
-                    writer.print(" " + date.toString().substring(11, 16) + " ");
-                }
+                    eventList.forEach(event -> {
+                        if (formatter.isAllDay()) {
+                            writer.print("       ");
+                        } else {
+                            writer.print(" " + date.toString().substring(11, 16) + " ");
+                        }
+                        formatter.printTitle(writer, event.getTitle());
+                        writer.println();
+                    });
 
-                switch (formatter.getType()) {
-                    case TASK:
-                        writer.print(OutputPrinter.CYAN + event.getTitle() + OutputPrinter.RESET);
-                        break;
-                    case REMINDER:
-                        writer.print(OutputPrinter.GREEN + event.getTitle() + OutputPrinter.RESET);
-                        break;
-                    case GOAL:
-                        writer.print(OutputPrinter.PURPLE + event.getTitle() + OutputPrinter.RESET);
-                }
-
-                writer.println();
-            });
+                    writer.println();
+                });
     }
 
     private static class Formatter {
@@ -85,12 +80,21 @@ class PrinterUtils {
             this.allDay = true;
         }
 
-        Event.EventType getType() {
-            return type;
-        }
-
         void setType(Event.EventType type) {
             this.type = type;
+        }
+
+        void printTitle(PrintStream writer, String title) {
+            switch (type) {
+                case TASK:
+                    writer.print(OutputPrinter.CYAN + title + OutputPrinter.RESET);
+                    break;
+                case REMINDER:
+                    writer.print(OutputPrinter.GREEN + title + OutputPrinter.RESET);
+                    break;
+                case GOAL:
+                    writer.print(OutputPrinter.PURPLE + title + OutputPrinter.RESET);
+            }
         }
     }
 }

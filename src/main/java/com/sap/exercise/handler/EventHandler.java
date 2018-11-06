@@ -4,12 +4,13 @@ import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +29,9 @@ import static com.sap.exercise.Application.Configuration.OUTPUT;
 public class EventHandler {
 
     private static ExecutorService service = Executors.newCachedThreadPool();
-    private static Map<String, Set<Event>> table = new Hashtable<>();
+
+    private static Map<Calendar, Set<Event>> table = new Hashtable<>();
+
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
     public static void onStartup() {
@@ -36,12 +39,12 @@ public class EventHandler {
         service.submit(checkForUpcomingEvents());
     }
 
-    private static Runnable checkForUpcomingEvents() {
+    private static Runnable checkForUpcomingEvents() { //may make this into an infinite loop
         return () -> {
             int[] today = DateHandler.getToday();
             String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
-            if (!events.isEmpty()) {
+            if (!events.isEmpty()) { //only notifies about the last inserted event
                 events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
             }
         };
@@ -49,36 +52,45 @@ public class EventHandler {
 
     public static void create(Event event) {
         Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
-        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
+        Future future = service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            service.submit(() -> {
+            future = service.submit(() -> {
                 try {
-                    CRUDOperations.create(eventsList((Integer) futureId.get(), event.getToRepeat()));
+                    CRUDOperations.create(eventsList((Integer) futureId.get(), event));
                 } catch (InterruptedException | ExecutionException e) {
                     printer.error(e.getMessage());
                 }
             });
         }
 
-        service.submit(checkForUpcomingEvents());
+        Future f1 = future;
+        service.submit(() -> {
+            while (!f1.isDone()) ;
+            checkForUpcomingEvents().run();
+        });
     }
 
-    private static List<CalendarEvents> eventsList(Integer eventId, Event.RepeatableType type) {
-        switch (type) {
+    private static List<CalendarEvents> eventsList(Integer eventId, Event event) {
+        switch (event.getToRepeat()) {
             case DAILY:
-                return eventEntriesHandler(30, eventId, Calendar.DAY_OF_MONTH);
+                return eventEntriesHandler(30, eventId, event, Calendar.DAY_OF_MONTH);
             case WEEKLY:
-                return eventEntriesHandler(30, eventId, Calendar.WEEK_OF_YEAR);
+                return eventEntriesHandler(30, eventId, event, Calendar.WEEK_OF_YEAR);
             case MONTHLY:
-                return eventEntriesHandler(30, eventId, Calendar.MONTH);
+                return eventEntriesHandler(30, eventId, event, Calendar.MONTH);
             default:
-                return eventEntriesHandler(4, eventId, Calendar.YEAR);
+                return eventEntriesHandler(4, eventId, event, Calendar.YEAR);
         }
     }
 
-    private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, int field) {
-        Supplier<Calendar> calSupplier = Calendar::getInstance;
+    private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
+        Supplier<Calendar> calSupplier = () -> {
+            DateHandler date = new DateHandler(event.getTimeOf());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date.asCalendar().getTime());
+            return cal;
+        };
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {
                     Calendar calendar = calSupplier.get();
@@ -89,9 +101,14 @@ public class EventHandler {
     }
 
     public static void update(Event event) {
-        service.submit(() -> CRUDOperations.update(event));
+        Future future = service.submit(() -> CRUDOperations.update(event));
         service.submit(NotificationHandler.onDelete(event));
-        service.submit(checkForUpcomingEvents());
+        service.submit(() -> {
+            while (!future.isDone()) {
+                ;
+            }
+            checkForUpcomingEvents().run();
+        });
     }
 
     public static void delete(Event event) {
@@ -125,14 +142,15 @@ public class EventHandler {
                 Set<Event> events = new HashSet<>();
                 List<String> nullDates = new ArrayList<>();
 
-                DateHandler.fromTo(start, end).forEach(handleDates(events, nullDates::add));
+                DateHandler.fromTo(start, end)
+                        .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
 
                 if (nullDates.size() != 0) {
                     int size = table.size();
                     setEventsInTable(nullDates.get(0), nullDates.get(nullDates.size() - 1));
                     if (size != table.size()) {
                         DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1))
-                                .forEach(handleDates(events, str -> {}));
+                                .forEach(handleDates(events, date -> {}));
                     }
                 }
 
@@ -144,7 +162,7 @@ public class EventHandler {
         return new HashSet<>();
     }
 
-    private static Consumer<String> handleDates(Set<Event> events, Consumer<String> listConsumer) {
+    private static Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (date) -> {
             Set<Event> ev;
             if ((ev = table.get(date)) == null) {
@@ -161,9 +179,9 @@ public class EventHandler {
                     .get().stream()
                     .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
 
-            for (String date : DateHandler.fromTo(start, end)) {
+            for (Calendar date : DateHandler.fromTo(start, end)) {
                 for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
-                    if (dateMatches(date, entry.getKey())) {
+                    if (DateUtils.isSameDay(date, entry.getKey())) {
                         table.put(date, entry.getValue());
                     }
                 }
@@ -171,12 +189,5 @@ public class EventHandler {
         } catch (InterruptedException | ExecutionException e) {
             printer.error(e.getMessage());
         }
-    }
-
-    private static boolean dateMatches(String date, Calendar calendar) {
-        String[] splitDate = date.split("-");
-        return Integer.valueOf(splitDate[2]) == calendar.get(Calendar.DAY_OF_MONTH)
-                && Integer.valueOf(splitDate[1]) == calendar.get(Calendar.MONTH)
-                && Integer.valueOf(splitDate[0]) == calendar.get(Calendar.YEAR);
     }
 }

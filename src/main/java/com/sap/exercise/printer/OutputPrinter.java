@@ -11,7 +11,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -155,44 +154,39 @@ public class OutputPrinter {
                 today[2] + "-" + month + "-01",
                 today[2] + "-" + month + "-" + DateHandler.getMonthDays()[month]
         );
-
+        //only works with past events
         IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
                 .mapToObj(i -> DateHandler.stringifyDate(today[2], month, i))
+                .map(str -> new DateHandler(str).asCalendar())
                 .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
                 .entrySet()
                 .stream()
-                .sorted(Comparator.comparingInt(entry -> Integer.valueOf(entry.getKey().get(2))))
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)))
                 .forEach(entry -> {
-                    List<String> date = entry.getKey();
+                    Calendar date = entry.getKey();
                     Set<Event> eventSet = entry.getValue();
 
                     if (eventSet.isEmpty()) {
-                        printDay(Integer.valueOf(date.get(2)), month, Integer.valueOf(date.get(0)), "");
+                        printDay(date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), "");
                     } else {
-                        printDay(Integer.valueOf(date.get(2)), month, Integer.valueOf(date.get(0)), CYAN_BACKGROUND + BLACK);
+                        printDay(date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
                     }
 
-                    if (((Integer.valueOf(date.get(2)) + startingDay) % 7 == 0) ||
-                            (Integer.valueOf(date.get(2)) == DateHandler.getMonthDays()[month])) {
+                    if (((date.get(Calendar.DAY_OF_MONTH) + startingDay) % 7 == 0) ||
+                            (date.get(Calendar.DAY_OF_MONTH) == DateHandler.getMonthDays()[month])) {
                         writer.println();
                     }
                 });
     }
 
-    private Function<String, List<String>> keyMapper() {
-        return (date) -> Stream.of(date)
-                .map(str -> str.split("-"))
-                .flatMap(Arrays::stream)
-                .collect(Collectors.toList());
+    private Function<Calendar, Calendar> keyMapper() {
+        return Function.identity();
     }
 
-    private Function<String, Set<Event>> valueMapper(Set<Event> events) {
+    private Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
         return (date) ->
                 events.stream()
-                        .filter(event -> {
-                            Calendar cal = new DateHandler(date).asCalendar();
-                            return DateUtils.truncatedCompareTo(cal, event.getTimeOf(), Calendar.DAY_OF_MONTH) == 0;
-                        })
+                        .filter(event -> DateUtils.truncatedCompareTo(date, event.getTimeOf(), Calendar.DAY_OF_MONTH) == 0)
                         .collect(Collectors.toSet());
     }
 

@@ -4,11 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class DateHandler {
@@ -27,6 +28,10 @@ public class DateHandler {
         }
     }
 
+    DateHandler(Calendar calendar) {
+        this.currentCal = calendar;
+    }
+
     public String asString() {
         return String.valueOf(currentCal.get(Calendar.YEAR)) +
                 '-' +
@@ -39,34 +44,29 @@ public class DateHandler {
         return currentCal;
     }
 
-    static List<String> fromTo(String from, String to) {
-        if (from.equals(to)) {
-            return Collections.singletonList(from);
-        }
-        String[] dateFrom = from.split("-");
-        String[] dateTo = from.split("-");
-
-        int[] fromDate = getSafeTime(Integer.valueOf(dateFrom[2]), Integer.valueOf(dateFrom[1]), Integer.valueOf(dateFrom[0]));
-        int[] toDate = getSafeTime(Integer.valueOf(dateTo[2]), Integer.valueOf(dateTo[1]), Integer.valueOf(dateTo[0]));
-
-        int toDays = toDate[0] - fromDate[0];
-        for (int i = fromDate[1]; i < toDate[1]; i++) {
-            toDays += getMonthDays()[i];
+    static List<Calendar> fromTo(String fromStr, String toStr) { //need to test more
+        Supplier<DateHandler> supplier = () -> new DateHandler(fromStr);
+        if (fromStr.equals(toStr)) {
+            return Collections.singletonList(supplier.get().currentCal);
         }
 
-        List<String> result = new ArrayList<>();
-        for (int i = 0; toDays > 0 && i <= toDays; i++) {
-            result.add(dateToString(getSafeTime(fromDate[0] + i, fromDate[1], fromDate[2])));
-        }
-        return result;
+        DateHandler to = new DateHandler(toStr);
+        long days = (to.currentCal.getTimeInMillis() - supplier.get().currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
+
+        return LongStream.rangeClosed(0, days)
+                .mapToObj(i -> {
+                    Calendar cal = supplier.get().currentCal;
+                    cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
+                    return cal;
+                })
+                .collect(Collectors.toList());
     }
 
     static boolean containsToday(String start, String end) {
-        return fromTo(start, end).contains(dateToString(getToday()));
-    }
-
-    private static String dateToString(int[] date) {
-        return stringifyDate(date[2], date[1], date[0]);
+        Calendar from = new DateHandler(start).currentCal;
+        Calendar to = new DateHandler(end).currentCal;
+        int[] today = getToday();
+        return from.get(Calendar.DAY_OF_MONTH) <= today[0] && to.get(Calendar.DAY_OF_MONTH) >= today[0];
     }
 
     public static String stringifyDate(int year, int month, int day) {

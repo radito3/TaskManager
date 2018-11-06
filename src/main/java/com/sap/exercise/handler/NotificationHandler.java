@@ -10,14 +10,19 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.sap.exercise.Application.Configuration.DEFAULT_NOTIFICATION;
 import static com.sap.exercise.Application.Configuration.OUTPUT;
 
 public class NotificationHandler implements Runnable {
+
+    private static Map<Serializable, Thread> events = new ConcurrentHashMap<>();
 
     private final OutputPrinter printer = new OutputPrinter(OUTPUT);
     private long timeTo;
@@ -25,14 +30,14 @@ public class NotificationHandler implements Runnable {
     private Application.Configuration.NotificationType notificationType = DEFAULT_NOTIFICATION;
 
     NotificationHandler(Event event) {
-        if (!Notifications.contains(event.getId())) {
+        if (!events.containsKey(event.getId())) {
             Calendar timeOf = event.getTimeOf();
             Calendar now = Calendar.getInstance();
             this.timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
-                    - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.HOUR_OF_DAY))
+                    - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE))
                     - event.getReminder();
             this.event = event;
-            Notifications.put(event.getId(), Thread.currentThread());
+            events.put(event.getId(), Thread.currentThread());
         }
     }
 
@@ -62,9 +67,9 @@ public class NotificationHandler implements Runnable {
     static Runnable onDelete(Event event) {
         return () -> {
             Thread thread;
-            if ((thread = Notifications.get(event.getId())) != null) {
+            if ((thread = events.get(event.getId())) != null) {
                 thread.interrupt();
-                Notifications.delete(event.getId());
+                events.remove(event.getId());
             }
         };
     }
@@ -72,7 +77,7 @@ public class NotificationHandler implements Runnable {
     private void notifyByPopup() {
         int duration = event.getDuration();
         boolean daysOrMinutes = event.getAllDay();
-        String body = event.getTitle() + "\n\nDuration: " + duration + (daysOrMinutes ? "days" : "minutes");
+        String body = event.getTitle() + "\nDuration: " + duration + (daysOrMinutes ? " days" : " minutes");
 
         JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder", JOptionPane.PLAIN_MESSAGE);
     }
