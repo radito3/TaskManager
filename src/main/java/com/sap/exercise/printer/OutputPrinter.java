@@ -186,7 +186,7 @@ public class OutputPrinter {
     private Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
         return (date) ->
                 events.stream()
-                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf())
+                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
                         .collect(Collectors.toSet());
     }
 
