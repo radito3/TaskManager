@@ -3,6 +3,7 @@ package com.sap.exercise.printer;
 import com.sap.exercise.model.Event;
 
 import java.io.PrintStream;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -50,7 +51,7 @@ class PrinterUtils {
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
-                .sorted(Comparator.comparing(Event::getTimeOf))
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
                 .forEach((cal, eventList) -> {
                     Date date = cal.getTime();
                     writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
