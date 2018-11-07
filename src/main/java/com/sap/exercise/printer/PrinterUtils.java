@@ -1,12 +1,19 @@
 package com.sap.exercise.printer;
 
+import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.model.Event;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 class PrinterUtils {
@@ -40,56 +47,67 @@ class PrinterUtils {
         }
     }
 
-    static void format(PrintStream writer, Stream<Event> args) {
-        final Formatter formatter = new Formatter();
-        args.peek(event -> {
-                    if (event.getAllDay()) {
-                        formatter.setAllDay();
-                    }
-                    formatter.setType(event.getTypeOf());
-                })
+    static void printDay(PrintStream writer, int day, int month, int year, String format) {
+        if (isToday(day, month, year))
+            writer.printf(OutputPrinter.INVERT + "%2d " + OutputPrinter.RESET, day);
+        else
+            writer.printf(format + "%2d " + OutputPrinter.RESET, day);
+    }
+
+    private static boolean isToday(int day, int month, int year) {
+        int[] today = DateHandler.getToday();
+        return day == today[0] && month == today[1] && year == today[2];
+    }
+
+    static Stream<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, Set<Event> events) {
+        return IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
+                .mapToObj(i -> DateHandler.stringifyDate(year, month, i))
+                .map(str -> new DateHandler(str).asCalendar())
+                .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
+                .entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
+    }
+
+    private static Function<Calendar, Calendar> keyMapper() {
+        return Function.identity();
+    }
+
+    private static Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
+        return (date) ->
+                events.stream()
+                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
+                        .collect(Collectors.toSet());
+    }
+
+    static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(Formatter formatter, Set<Event> events) {
+        return events.stream()
+                .peek(event -> formatter.setAllDay(event.getAllDay()))
+                .peek(event -> formatter.setType(event.getTypeOf()))
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
-                .forEach(entry -> {
-                    Date date = entry.getKey().getTime();
-                    writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
-
-                    entry.getValue().forEach(event -> {
-                        if (formatter.isAllDay()) {
-                            writer.print("       ");
-                        } else {
-                            writer.print(" " + date.toString().substring(11, 16) + " ");
-                        }
-                        formatter.printTitle(writer, event.getTitle());
-                        writer.println();
-                    });
-
-                    writer.println();
-                });
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
     }
 
-    private static class Formatter {
+    static class Formatter {
         private boolean allDay = false;
         private Event.EventType type;
+        private PrintStream writer;
 
-        Formatter() {
+        Formatter(PrintStream writer) {
+            this.writer = writer;
         }
 
-        boolean isAllDay() {
-            return allDay;
-        }
-
-        void setAllDay() {
-            this.allDay = true;
+        void setAllDay(boolean allDay) {
+            this.allDay = allDay;
         }
 
         void setType(Event.EventType type) {
             this.type = type;
         }
 
-        void printTitle(PrintStream writer, String title) {
+        void printTitle(String title) {
             switch (type) {
                 case TASK:
                     writer.print(OutputPrinter.CYAN + title + OutputPrinter.RESET);
@@ -99,6 +117,14 @@ class PrinterUtils {
                     break;
                 case GOAL:
                     writer.print(OutputPrinter.PURPLE + title + OutputPrinter.RESET);
+            }
+        }
+
+        void printTime(Date date) {
+            if (allDay) {
+                writer.print("       ");
+            } else {
+                writer.print(" " + date.toString().substring(11, 16) + " ");
             }
         }
     }

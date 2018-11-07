@@ -4,18 +4,12 @@ import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Comparator;
+import java.util.Date;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class OutputPrinter {
 
@@ -103,9 +97,20 @@ public class OutputPrinter {
     }
 
     public void printEvents(Set<Event> events) {
-        Event[] array = events.toArray(new Event[0]);
-        Arrays.sort(array, Comparator.comparing(Event::getTimeOf));
-        PrinterUtils.format(writer, Stream.of(array));
+        final PrinterUtils.Formatter formatter = new PrinterUtils.Formatter(writer);
+        PrinterUtils.mapAndSort(formatter, events)
+                .forEach(entry -> {
+                    Date date = entry.getKey().getTime();
+                    writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
+
+                    entry.getValue().forEach(event -> {
+                        formatter.printTime(date);
+                        formatter.printTitle(event.getTitle());
+                        writer.println();
+                    });
+
+                    writer.println();
+                });
     }
 
     private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
@@ -129,23 +134,11 @@ public class OutputPrinter {
             printWithEvents(month, startingDay);
         } else {
             for (int i = 1; i <= days[month]; i++) {
-                printDay(i, month, year, "");
+                PrinterUtils.printDay(writer, i, month, year, "");
 
                 if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
             }
         }
-    }
-
-    private void printDay(int day, int month, int year, String format) {
-        if (isToday(day, month, year))
-            writer.printf(INVERT + "%2d " + RESET, day);
-        else
-            writer.printf(format + "%2d " + RESET, day);
-    }
-
-    private boolean isToday(int day, int month, int year) {
-        int[] today = DateHandler.getToday();
-        return day == today[0] && month == today[1] && year == today[2];
     }
 
     private void printWithEvents(int month, int startingDay) {
@@ -154,22 +147,18 @@ public class OutputPrinter {
                 today[2] + "-" + month + "-01",
                 today[2] + "-" + month + "-" + DateHandler.getMonthDays()[month]
         );
-        //only works with past events
-        IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
-                .mapToObj(i -> DateHandler.stringifyDate(today[2], month, i))
-                .map(str -> new DateHandler(str).asCalendar())
-                .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)))
+
+        PrinterUtils.monthEventsSorted(month, today[2], events)
                 .forEach(entry -> {
                     Calendar date = entry.getKey();
                     Set<Event> eventSet = entry.getValue();
 
                     if (eventSet.isEmpty()) {
-                        printDay(date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), "");
+                        PrinterUtils.printDay(writer,
+                                date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), "");
                     } else {
-                        printDay(date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
+                        PrinterUtils.printDay(writer,
+                                date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
                     }
 
                     if (((date.get(Calendar.DAY_OF_MONTH) + startingDay) % 7 == 0) ||
@@ -177,17 +166,6 @@ public class OutputPrinter {
                         writer.println();
                     }
                 });
-    }
-
-    private Function<Calendar, Calendar> keyMapper() {
-        return Function.identity();
-    }
-
-    private Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
-        return (date) ->
-                events.stream()
-                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
-                        .collect(Collectors.toSet());
     }
 
 }
