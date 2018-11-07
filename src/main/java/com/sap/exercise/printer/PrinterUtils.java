@@ -52,11 +52,11 @@ class PrinterUtils {
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
-                .forEach((cal, eventList) -> {
-                    Date date = cal.getTime();
+                .forEach(entry -> {
+                    Date date = entry.getKey().getTime();
                     writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
 
-                    eventList.forEach(event -> {
+                    entry.getValue().forEach(event -> {
                         if (formatter.isAllDay()) {
                             writer.print("       ");
                         } else {
