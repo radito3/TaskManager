@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class OutputPrinter {
@@ -97,15 +99,15 @@ public class OutputPrinter {
     }
 
     public void printEvents(Set<Event> events) {
-        final PrinterUtils.Formatter formatter = new PrinterUtils.Formatter(writer);
-        PrinterUtils.mapAndSort(formatter, events)
+        Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
+        PrinterUtils.mapAndSort(writer, eventFormatters, events)
                 .forEach(entry -> {
                     Date date = entry.getKey().getTime();
-                    writer.print(OutputPrinter.YELLOW + date.toString().substring(0, 10) + OutputPrinter.RESET);
+                    writer.print(YELLOW + date.toString().substring(0, 10) + RESET);
 
                     entry.getValue().forEach(event -> {
-                        formatter.printTime(date);
-                        formatter.printTitle(event.getTitle());
+                        eventFormatters.get(event).printTime(date);
+                        eventFormatters.get(event).printTitle(event.getTitle());
                         writer.println();
                     });
 

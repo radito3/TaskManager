@@ -80,10 +80,14 @@ class PrinterUtils {
                         .collect(Collectors.toSet());
     }
 
-    static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(Formatter formatter, Set<Event> events) {
+    static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
         return events.stream()
-                .peek(event -> formatter.setAllDay(event.getAllDay()))
-                .peek(event -> formatter.setType(event.getTypeOf()))
+                .peek(event -> {
+                    Formatter formatter = new Formatter(writer);
+                    formatter.setAllDay(event.getAllDay());
+                    formatter.setType(event.getTypeOf());
+                    eventFormatters.put(event, formatter);
+                })
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
@@ -117,6 +121,7 @@ class PrinterUtils {
                     break;
                 case GOAL:
                     writer.print(OutputPrinter.PURPLE + title + OutputPrinter.RESET);
+                    break;
             }
         }
 

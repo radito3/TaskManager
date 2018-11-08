@@ -29,7 +29,8 @@ public class TimeOfFieldInfo implements FieldInfo {
 
     @Override
     public void argHandler(String arg) {
-        DateHandler dateHandler = new DateHandler(arg);
+        String hours = arg.contains(":") ? "" : " 12:00";
+        DateHandler dateHandler = new DateHandler(arg.trim() + hours);
         event.setTimeOf(dateHandler.asCalendar());
     }
 }
