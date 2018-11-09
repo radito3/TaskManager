@@ -28,6 +28,4 @@ public class Application {
 
     }
 
-    //Implement User system - every user has their own calendar
-    //Users may be able to share calendars/some parts of their calendars
 }

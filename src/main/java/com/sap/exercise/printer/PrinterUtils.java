@@ -49,9 +49,9 @@ class PrinterUtils {
 
     static void printDay(PrintStream writer, int day, int month, int year, String format) {
         if (isToday(day, month, year))
-            writer.printf(OutputPrinter.INVERT + "%2d " + OutputPrinter.RESET, day);
+            writer.printf(OutputPrinter.INVERT + "%2d" + OutputPrinter.RESET + " ", day);
         else
-            writer.printf(format + "%2d " + OutputPrinter.RESET, day);
+            writer.printf(format + "%2d" + OutputPrinter.RESET + " ", day);
     }
 
     private static boolean isToday(int day, int month, int year) {
@@ -63,14 +63,10 @@ class PrinterUtils {
         return IntStream.rangeClosed(1, DateHandler.getMonthDays()[month])
                 .mapToObj(i -> DateHandler.stringifyDate(year, month, i))
                 .map(str -> new DateHandler(str).asCalendar())
-                .collect(Collectors.toMap(keyMapper(), valueMapper(events)))
+                .collect(Collectors.toMap(Function.identity(), valueMapper(events)))
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
-    }
-
-    private static Function<Calendar, Calendar> keyMapper() {
-        return Function.identity();
     }
 
     private static Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
