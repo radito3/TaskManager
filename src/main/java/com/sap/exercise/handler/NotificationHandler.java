@@ -3,6 +3,8 @@ package com.sap.exercise.handler;
 import com.sap.exercise.Application;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,9 +35,8 @@ public class NotificationHandler implements Runnable {
         if (!events.containsKey(event.getId())) {
             Calendar timeOf = event.getTimeOf();
             Calendar now = Calendar.getInstance();
-            this.timeTo = (timeOf.get(Calendar.HOUR_OF_DAY) * 60 + timeOf.get(Calendar.MINUTE))
-                    - (now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE))
-                    - event.getReminder();
+            this.timeTo = (timeOf.getTimeInMillis() - now.getTimeInMillis())
+                    - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
             this.event = event;
             events.put(event.getId(), Thread.currentThread());
         }
@@ -50,17 +51,16 @@ public class NotificationHandler implements Runnable {
     public void run() {
         if (event != null) {
             try {
-                Thread.sleep(timeTo < 0 ? 0 : timeTo * 60000);
+                Thread.sleep(timeTo < 0 ? 0 : timeTo);
                 switch (notificationType) {
                     case POPUP:
                         notifyByPopup();
                         break;
                     case EMAIL:
                         notifyByEmail();
+                        break;
                 }
-            } catch (InterruptedException e) {
-                printer.error(e.getMessage()); //may need to remove
-            }
+            } catch (InterruptedException ignored) {}
         }
     }
 
@@ -83,6 +83,12 @@ public class NotificationHandler implements Runnable {
     }
 
     private void notifyByEmail() {
+        EmailValidator validator = EmailValidator.getInstance(true);
+        if (!validator.isValid("email-address")) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Invalid email", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Properties props = new Properties();
         props.put("mail.smtp.host", "my-mail-server");
         Session session = Session.getInstance(props, null);

@@ -34,28 +34,31 @@ public class EventHandler {
 
     private static OutputPrinter printer = new OutputPrinter(OUTPUT);
 
+//    private static EventObservable observable = new EventObservable();
+
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        service.submit(checkForUpcomingEvents());
+//        observable.addObserver(new NotificationObserver());
+        checkForUpcomingEvents();
     }
 
-    private static Runnable checkForUpcomingEvents() { //may make this into an infinite loop
-        return () -> {
+    static void checkForUpcomingEvents() {
+        service.submit(() -> {
             int[] today = DateHandler.getToday();
             String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
-            if (!events.isEmpty()) { //only notifies about the last inserted event
+            if (!events.isEmpty()) {           //only notifies about the last inserted event (maybe)
                 events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
             }
-        };
+        });
     }
 
     public static void create(Event event) {
         Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
-        Future future = service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
+        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            future = service.submit(() -> {
+            service.submit(() -> {
                 try {
                     CRUDOperations.create(eventsList((Integer) futureId.get(), event));
                 } catch (InterruptedException | ExecutionException e) {
@@ -64,11 +67,20 @@ public class EventHandler {
             });
         }
 
-        Future f1 = future;
-        service.submit(() -> {
-            while (!f1.isDone()) ;
-            checkForUpcomingEvents().run();
+//        observable.onCreate(event);
+        int[] today = DateHandler.getToday();
+        String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
+        table.forEach((cal, eventSet) -> {
+            if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {
+                try {
+                    event.setId((Integer) futureId.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                eventSet.add(event);
+            }
         });
+        checkForUpcomingEvents();
     }
 
     private static List<CalendarEvents> eventsList(Integer eventId, Event event) {
@@ -101,26 +113,39 @@ public class EventHandler {
     }
 
     public static void update(Event event) {
-        Future future = service.submit(() -> CRUDOperations.update(event));
-        service.submit(NotificationHandler.onDelete(event));
-        service.submit(() -> {
-            while (!future.isDone()) {
-                ;
+        service.submit(() -> CRUDOperations.update(event));
+//        observable.onUpdate(event);
+        NotificationHandler.onDelete(event).run();
+        table.values().forEach(set -> {
+            if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
+                set.add(event);
             }
-            checkForUpcomingEvents().run();
         });
+        checkForUpcomingEvents();
     }
 
     public static void delete(Event event) {
         service.submit(() -> CRUDOperations.delete(event));
+//        observable.onDelete(event);
         service.submit(NotificationHandler.onDelete(event));
+        service.submit(() -> table.values().forEach(set -> set.removeIf(event1 -> event1.equals(event))));
     }
 
     public static void deleteInTimeFrame(Event event, String start, String end) {
         service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
+//        observable.onDeleteTimeFrame(event, start, end);
         service.submit(() -> {
             if (DateHandler.containsToday(start, end)) {
                 service.submit(NotificationHandler.onDelete(event));
+            }
+        });
+        service.submit(() -> {
+            for (Calendar cal : DateHandler.fromTo(start, end)) {
+                table.forEach((date, eventSet) -> {
+                    if (DateUtils.isSameDay(cal, date)) {
+                        eventSet.removeIf(event1 -> event1.equals(event));
+                    }
+                });
             }
         });
     }

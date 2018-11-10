@@ -44,7 +44,7 @@ public class DateHandler {
         return currentCal;
     }
 
-    static List<Calendar> fromTo(String fromStr, String toStr) { //need to test more
+    static List<Calendar> fromTo(String fromStr, String toStr) {
         Supplier<DateHandler> supplier = () -> new DateHandler(fromStr);
         if (fromStr.equals(toStr)) {
             return Collections.singletonList(supplier.get().currentCal);
