@@ -28,26 +28,29 @@ import static com.sap.exercise.Application.Configuration.OUTPUT;
 
 public class EventHandler {
 
-    private static ExecutorService service = Executors.newCachedThreadPool();
+    private static final transient ExecutorService service = Executors.newCachedThreadPool();
 
-    private static Map<Calendar, Set<Event>> table = new Hashtable<>();
+    private static final transient Map<Calendar, Set<Event>> table = new Hashtable<>();
 
-    private static OutputPrinter printer = new OutputPrinter(OUTPUT);
+    private static final OutputPrinter printer = new OutputPrinter(OUTPUT);
 
-//    private static EventObservable observable = new EventObservable();
+    private static final EventActions actions = new EventActions();
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-//        observable.addObserver(new NotificationObserver());
+        actions.addObserver(new CreationObserver(table, printer));
+        actions.addObserver(new UpdateObserver(table));
+        actions.addObserver(new DeletionObserver(table, service));
+        actions.addObserver(new DeletionTimeFrameObserver(table, service));
         checkForUpcomingEvents();
     }
 
-    static void checkForUpcomingEvents() {
+    private static void checkForUpcomingEvents() {
         service.submit(() -> {
             int[] today = DateHandler.getToday();
             String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
-            if (!events.isEmpty()) {           //only notifies about the last inserted event (maybe)
+            if (!events.isEmpty()) {
                 events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
             }
         });
@@ -67,19 +70,7 @@ public class EventHandler {
             });
         }
 
-//        observable.onCreate(event);
-        int[] today = DateHandler.getToday();
-        String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
-        table.forEach((cal, eventSet) -> {
-            if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {
-                try {
-                    event.setId((Integer) futureId.get());
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-                eventSet.add(event);
-            }
-        });
+        actions.onCreate(event, futureId);
         checkForUpcomingEvents();
     }
 
@@ -114,40 +105,18 @@ public class EventHandler {
 
     public static void update(Event event) {
         service.submit(() -> CRUDOperations.update(event));
-//        observable.onUpdate(event);
-        NotificationHandler.onDelete(event).run();
-        table.values().forEach(set -> {
-            if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
-                set.add(event);
-            }
-        });
+        actions.onUpdate(event);
         checkForUpcomingEvents();
     }
 
     public static void delete(Event event) {
         service.submit(() -> CRUDOperations.delete(event));
-//        observable.onDelete(event);
-        service.submit(NotificationHandler.onDelete(event));
-        service.submit(() -> table.values().forEach(set -> set.removeIf(event1 -> event1.equals(event))));
+        actions.onDelete(event);
     }
 
     public static void deleteInTimeFrame(Event event, String start, String end) {
         service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
-//        observable.onDeleteTimeFrame(event, start, end);
-        service.submit(() -> {
-            if (DateHandler.containsToday(start, end)) {
-                service.submit(NotificationHandler.onDelete(event));
-            }
-        });
-        service.submit(() -> {
-            for (Calendar cal : DateHandler.fromTo(start, end)) {
-                table.forEach((date, eventSet) -> {
-                    if (DateUtils.isSameDay(cal, date)) {
-                        eventSet.removeIf(event1 -> event1.equals(event));
-                    }
-                });
-            }
-        });
+        actions.onDeleteTimeFrame(event, start, end);
     }
 
     public static Event getEventByTitle(String title) {

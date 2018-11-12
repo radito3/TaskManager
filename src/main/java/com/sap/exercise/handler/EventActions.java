@@ -2,17 +2,19 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.model.Event;
 
+import java.io.Serializable;
 import java.util.Observable;
+import java.util.concurrent.Future;
 
-class EventObservable extends Observable {
+class EventActions extends Observable {
 
     enum ActionType {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
     }
 
-    void onCreate(Event event) {
+    void onCreate(Event event, Future<Serializable> future) {
         setChanged();
-        notifyObservers(new Object[] { event, ActionType.CREATE });
+        notifyObservers(new Object[] { event, ActionType.CREATE, future });
     }
 
     void onUpdate(Event event) {
