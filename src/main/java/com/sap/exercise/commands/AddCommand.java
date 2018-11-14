@@ -10,7 +10,7 @@ import org.apache.commons.cli.ParseException;
 
 import java.io.BufferedReader;
 
-public class Add implements Command {
+public class AddCommand implements Command {
 
     @Override
     public String getName() {

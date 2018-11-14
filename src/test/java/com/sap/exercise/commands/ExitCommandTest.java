@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExitTest {
+public class ExitCommandTest {
 
     @Rule
     public ExpectedSystemExit ee = ExpectedSystemExit.none();
@@ -15,13 +15,13 @@ public class ExitTest {
     @Test
     @DisplayName("Exit command name test")
     public void exitNameTest() {
-        Exit exit = new Exit();
+        ExitCommand exit = new ExitCommand();
         assertEquals("exit", exit.getName(), "Exit command name is incorrect");
     }
 
     @org.junit.Test
     public void exitTest() {
         ee.expectSystemExitWithStatus(0);
-        new Exit().execute();
+        new ExitCommand().execute();
     }
 }

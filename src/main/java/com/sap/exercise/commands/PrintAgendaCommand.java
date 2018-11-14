@@ -8,7 +8,7 @@ import org.apache.commons.cli.ParseException;
 
 import java.util.Set;
 
-public class Agenda implements Command {
+public class PrintAgendaCommand implements Command {
 
     @Override
     public String getName() {

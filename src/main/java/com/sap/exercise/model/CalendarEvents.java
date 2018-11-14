@@ -1,12 +1,21 @@
 package com.sap.exercise.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 @Entity
 @Table(name = "CalendarEvents")
+// Is the mapping to Event 1:1 ? If so, why is this entity extracted from Event?
 public class CalendarEvents extends AbstractModel implements Serializable {
 
     @Id
