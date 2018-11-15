@@ -10,6 +10,7 @@ public interface FieldInfo {
     String getNameToDisplay();
 
     // Dido : name methods as verbs / actions - the behavior this object 'does'/'acts' , not 'is'
-    void argHandler(String arg);
+    // Rangel: Like this?
+    void handleArg(String arg);
 
 }

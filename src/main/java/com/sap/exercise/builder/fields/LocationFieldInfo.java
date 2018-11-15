@@ -29,7 +29,7 @@ public class LocationFieldInfo implements FieldInfo {
     }
 
     @Override
-    public void argHandler(String arg) {
+    public void handleArg(String arg) {
         event.setLocation(FieldValueUtils.valueOfStr(arg.trim()));
     }
 }

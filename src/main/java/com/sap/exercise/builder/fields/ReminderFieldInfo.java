@@ -29,7 +29,7 @@ public class ReminderFieldInfo implements FieldInfo {
     }
 
     @Override
-    public void argHandler(String arg) {
+    public void handleArg(String arg) {
         event.setReminder(FieldValueUtils.valueOfInt(arg));
     }
 }

@@ -23,7 +23,7 @@ public class CommandUtils {
                 input = checkMandatoryField(input, reader, field);
 
                 if (!input.isEmpty())
-                    field.argHandler(input);
+                    field.handleArg(input);
             }
         } catch (IOException e) {
             Command.printer.error("Error: " + e.getMessage());

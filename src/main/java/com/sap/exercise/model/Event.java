@@ -16,7 +16,22 @@ public class Event extends AbstractModel implements Serializable {
     }
 
     public enum RepeatableType {
-        NONE, DAILY, WEEKLY, MONTHLY, YEARLY
+        NONE, DAILY, WEEKLY, MONTHLY, YEARLY;
+
+        public static RepeatableType getRepeatableFromAlias(String input) {
+            switch (input) {
+                case "d":
+                    return DAILY;
+                case "w":
+                    return WEEKLY;
+                case "m":
+                    return MONTHLY;
+                case "y":
+                    return YEARLY;
+                default:
+                    return NONE;
+            }
+        }
     }
 
     @Id
@@ -45,10 +60,10 @@ public class Event extends AbstractModel implements Serializable {
     private Boolean allDay;
 
     @Column(columnDefinition = "mysql->int(11)", name = "Duration", nullable = false)
-    private Integer duration; //if allDay is true -> number of days; else -> number of minutes per day
+    private Integer duration;
 
     @Column(columnDefinition = "mysql->int(11)", name = "Reminder", nullable = false)
-    private Integer reminder; //minutes before appointed time to remind
+    private Integer reminder;
 
     @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
     @Enumerated(EnumType.STRING)

@@ -31,7 +31,7 @@ public class DurationFieldInfo implements FieldInfo {
     }
 
     @Override
-    public void argHandler(String arg) {
+    public void handleArg(String arg) {
         event.setDuration(FieldValueUtils.valueOfInt(arg));
     }
 }

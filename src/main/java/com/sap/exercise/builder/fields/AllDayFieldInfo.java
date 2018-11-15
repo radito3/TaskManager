@@ -28,7 +28,7 @@ public class AllDayFieldInfo implements FieldInfo {
     }
 
     @Override
-    public void argHandler(String arg) {
+    public void handleArg(String arg) {
         event.setAllDay(FieldValueUtils.valueOfBool(arg));
     }
 }

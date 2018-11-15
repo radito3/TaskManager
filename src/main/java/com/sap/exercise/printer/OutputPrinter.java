@@ -127,7 +127,7 @@ public class OutputPrinter {
         writer.println(text + " " + (wholeYear ? "" : year));
         writer.println(" S  M Tu  W Th  F  S");
 
-        int startingDay = calendar.getFirstDayOfWeek() - 1;
+        int startingDay = getStartingDay(year, month); //Starting day isn't calculated correctly
 
         for (int i = 0; i < startingDay; i++)
             writer.print("   ");
@@ -140,6 +140,29 @@ public class OutputPrinter {
 
                 if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
             }
+        }
+    }
+
+    private int getStartingDay(int year, int month) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        switch (cal.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.MONDAY:
+                return 1;
+            case Calendar.TUESDAY:
+                return 2;
+            case Calendar.WEDNESDAY:
+                return 3;
+            case Calendar.THURSDAY:
+                return 4;
+            case Calendar.FRIDAY:
+                return 5;
+            case Calendar.SATURDAY:
+                return 6;
+            default:
+                return 7;
         }
     }
 

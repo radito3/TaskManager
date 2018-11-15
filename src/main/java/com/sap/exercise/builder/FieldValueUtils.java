@@ -24,33 +24,15 @@ public class FieldValueUtils {
     }
 
     // Dido:knowledge about the actual 'repeatable' values is in multiple places - in the RepeatableType enum and in the following method
+    // Rangel: Has this fixed the issue?
     public static Event.RepeatableType valueOfRepeatable(String input) {
-        // Dido: avoid using largeish if-else-if-else...blocks - code gets harder to read and follow, mistakes in refactoring get made
-        // easily
-        String arg = "";
         if (input.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
-            arg = input.trim();
-        } else if (input.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
-            switch (input.toLowerCase().trim()) {
-                case "d":
-                    arg = "daily";
-                    break;
-                case "w":
-                    arg = "weekly";
-                    break;
-                case "m":
-                    arg = "monthly";
-                    break;
-                case "y":
-                    arg = "yearly";
-                    break;
-                case "n":
-                    arg = "none";
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid input");
+            return Event.RepeatableType.valueOf(input.trim().toUpperCase());
         }
-        return Event.RepeatableType.valueOf(arg.toUpperCase());
+        if (input.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
+            return Event.RepeatableType.getRepeatableFromAlias(input.trim().toLowerCase());
+        }
+        throw new IllegalArgumentException("Invalid input");
     }
 
     public static String valueOfStr(String input) {

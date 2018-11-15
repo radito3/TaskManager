@@ -30,7 +30,7 @@ public class ToRepeatFieldInfo implements FieldInfo {
     }
 
     @Override
-    public void argHandler(String arg) {
+    public void handleArg(String arg) {
         if (isGoal && arg.toLowerCase().matches("^\\s*n|none\\s*$")) {
             throw new IllegalArgumentException("Invalid input");
         }

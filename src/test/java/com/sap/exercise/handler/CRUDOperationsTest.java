@@ -29,11 +29,7 @@ public class CRUDOperationsTest extends AbstractTest {
     @Test
     @DisplayName("Creation of no objects test")
     public void createNoObjTest() {
-        try {
-            CRUDOperations.create(new ArrayList<>());
-        } catch (Exception e) {
-            fail("An exception is thrown");
-        }
+        assertDoesNotThrow(() -> CRUDOperations.create(new ArrayList<>()));
     }
 
     @Test

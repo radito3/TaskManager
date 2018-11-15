@@ -16,6 +16,7 @@ import com.sap.exercise.builder.fields.ToRepeatFieldInfo;
 import com.sap.exercise.model.Event;
 
 //Dido: this does not read as a builder (as in the builder pattern) This looks more like a 'wrapper' (check out that pattern)
+// Will change it
 public class EventBuilder {
 
     private Event event;

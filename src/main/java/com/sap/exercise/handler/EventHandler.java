@@ -1,7 +1,5 @@
 package com.sap.exercise.handler;
 
-import static com.sap.exercise.Application.Configuration.OUTPUT;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,6 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.sap.exercise.Application;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
@@ -28,17 +27,16 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 
 //Dido : I guess this would be the controller in MVC
-//Dido: I challenge you - remove the static keyword from this class! (any form of Signelton counts as static). 
+//Dido: I challenge you - remove the static keyword from this class! (any form of Signelton counts as static). = Will do
 public class EventHandler {
 
-    // Dido: Why transient? Are you serializing this class/object?
-    private static final transient ExecutorService service = Executors.newCachedThreadPool();
+    private static final ExecutorService service = Executors.newCachedThreadPool();
 
     // Dido: what does 'table' mean? What information does it contain, what purpose does it serve? Is this the actual model containing all
     // the data? Is it a cache of the same data, which is otherwise persisted in DB?
-    private static final transient Map<Calendar, Set<Event>> table = new Hashtable<>();
+    private static final Map<Calendar, Set<Event>> table = new Hashtable<>();
 
-    private static final OutputPrinter printer = new OutputPrinter(OUTPUT);
+    private static final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
     private static final EventActions actions = new EventActions();
 
@@ -52,7 +50,7 @@ public class EventHandler {
     }
 
     // Dido: So you check for upcomming events, only when events are created/updated and when the app starts?
-    // If i start the app in 23:55 at the evening, will I get tomorrow's events printed in 5-6 minutes?
+    // If i start the app in 23:55 at the evening, will I get tomorrow's events printed in 5-6 minutes? = Yes
     private static void checkForUpcomingEvents() {
         service.submit(() -> {
             int[] today = DateHandler.getToday();
