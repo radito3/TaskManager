@@ -31,7 +31,7 @@ public class DeletionTimeFrameObserver implements Observer {
 
             service.submit(() -> {
                 if (DateHandler.containsToday(timeFrame[0], timeFrame[1])) {
-                    service.submit(NotificationHandler.onDelete(event));
+                    service.submit(Notifications.onDelete(event));
                 }
             });
             service.submit(() -> {

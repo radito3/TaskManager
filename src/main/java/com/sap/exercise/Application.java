@@ -25,7 +25,8 @@ public class Application {
 
         public static final InputStream INPUT = System.in;
         public static final OutputStream OUTPUT = System.out;
-        public static final NotificationType DEFAULT_NOTIFICATION = NotificationType.POPUP;
+        public static NotificationType NOTIFICATION_TYPE = NotificationType.POPUP;
+        public static String USER_EMAIL = "default-email";
 
     }
 

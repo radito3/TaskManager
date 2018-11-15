@@ -26,7 +26,7 @@ public class DeletionObserver implements Observer {
         EventActions.ActionType type = (EventActions.ActionType) objects[1];
 
         if (type == EventActions.ActionType.DELETE) {
-            service.submit(NotificationHandler.onDelete(event));
+            service.submit(Notifications.onDelete(event));
             service.submit(() -> table.values().forEach(set -> set.removeIf(event1 -> event1.equals(event))));
         }
     }

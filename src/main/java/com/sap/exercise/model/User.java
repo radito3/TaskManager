@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "User")
-// Dido: Is this dead code?
+// Dido: Is this dead code? = For v1.0 yes
 public class User extends AbstractModel implements Serializable {
 
     @Id

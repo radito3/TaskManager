@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -57,7 +56,7 @@ public class EventHandler {
             String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                events.forEach(event -> service.submit(() -> new NotificationHandler(event).run()));
+                events.forEach(event -> service.submit(() -> Notifications.newNotificationHandler(event).run()));
             }
         });
     }
@@ -126,40 +125,27 @@ public class EventHandler {
     }
 
     public static Event getEventByTitle(String title) {
-        try { // Why is this executed in a separate thread?
-            Future<Optional<Event>> futureEvent = service.submit(() -> CRUDOperations.getEventByTitle(title));
-            return futureEvent.get()
-                    .orElseThrow(() -> new NullPointerException("Invalid event name"));
-        } catch (InterruptedException | ExecutionException e) {
-            printer.error(e.getMessage());
-        }
-        return new Event();
+        return CRUDOperations.getEventByTitle(title)
+                .orElseThrow(() -> new NullPointerException("Invalid event name"));
     }
 
     public static Set<Event> getEventsInTimeFrame(String start, String end) {
-        try {
-            return service.submit(() -> {
-                Set<Event> events = new HashSet<>();
-                List<String> nullDates = new ArrayList<>();
+        Set<Event> events = new HashSet<>();
+        List<String> nullDates = new ArrayList<>();
 
-                DateHandler.fromTo(start, end)
-                        .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
+        DateHandler.fromTo(start, end)
+                .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
 
-                if (nullDates.size() != 0) {
-                    int size = table.size();
-                    setEventsInTable(nullDates.get(0), nullDates.get(nullDates.size() - 1));
-                    if (size != table.size()) {
-                        DateHandler.fromTo(nullDates.get(0), nullDates.get(nullDates.size() - 1))
-                                .forEach(handleDates(events, date -> {}));
-                    }
-                }
-
-                return events;
-            }).get();
-        } catch (InterruptedException | ExecutionException e) {
-            printer.error(e.getMessage());
+        if (nullDates.size() != 0) {
+            String startIndex = nullDates.get(0),
+                    endIndex = nullDates.get(nullDates.size() - 1);
+            if (setEventsInTable(startIndex, endIndex)) {
+                DateHandler.fromTo(startIndex, endIndex)
+                        .forEach(handleDates(events, date -> {}));
+            }
         }
-        return new HashSet<>();
+
+        return events;
     }
 
     private static Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
@@ -173,21 +159,19 @@ public class EventHandler {
         };
     }
 
-    private static void setEventsInTable(String start, String end) {
-        try {
-            Map<Calendar, Set<Event>> map = service.submit(() -> CRUDOperations.getEventsInTimeFrame(start, end))
-                    .get().stream()
-                    .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
+    private static boolean setEventsInTable(String start, String end) {
+        Map<Calendar, Set<Event>> map = CRUDOperations.getEventsInTimeFrame(start, end).stream()
+                .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
+        boolean hasNewEntries = false;
 
-            for (Calendar date : DateHandler.fromTo(start, end)) {
-                for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
-                    if (DateUtils.isSameDay(date, entry.getKey())) {
-                        table.put(date, entry.getValue());
-                    }
+        for (Calendar date : DateHandler.fromTo(start, end)) {
+            for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
+                if (DateUtils.isSameDay(date, entry.getKey())) {
+                    table.put(date, entry.getValue());
+                    hasNewEntries = true;
                 }
             }
-        } catch (InterruptedException | ExecutionException e) {
-            printer.error(e.getMessage());
         }
+        return hasNewEntries;
     }
 }

@@ -23,7 +23,7 @@ public class UpdateObserver implements Observer {
         EventActions.ActionType type = (EventActions.ActionType) objects[1];
 
         if (type == EventActions.ActionType.UPDATE) {
-            NotificationHandler.onDelete(event).run();
+            Notifications.onDelete(event).run();
 
             table.values().forEach(set -> {
                 if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
