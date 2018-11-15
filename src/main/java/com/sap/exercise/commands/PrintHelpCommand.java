@@ -7,7 +7,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-public class Help implements Command {
+public class PrintHelpCommand implements Command {
 
     @Override
     public String getName() {

@@ -1,17 +1,8 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.Application;
-import com.sap.exercise.model.Event;
-import com.sap.exercise.printer.OutputPrinter;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.validator.routines.EmailValidator;
+import static com.sap.exercise.Application.Configuration.DEFAULT_NOTIFICATION;
+import static com.sap.exercise.Application.Configuration.OUTPUT;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,9 +10,21 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.sap.exercise.Application.Configuration.DEFAULT_NOTIFICATION;
-import static com.sap.exercise.Application.Configuration.OUTPUT;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
+import javax.swing.JOptionPane;
 
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.validator.routines.EmailValidator;
+
+import com.sap.exercise.Application;
+import com.sap.exercise.model.Event;
+import com.sap.exercise.printer.OutputPrinter;
+
+//Dido - why not use OOP  - do a notification handler for each notification type and decide which one to use in production depending on the configuration
 public class NotificationHandler implements Runnable {
 
     private static Map<Serializable, Thread> events = new ConcurrentHashMap<>();

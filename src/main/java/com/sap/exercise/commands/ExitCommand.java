@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.parser.InputParser;
 
-public class Exit implements Command {
+public class ExitCommand implements Command {
 
     @Override
     public String getName() {

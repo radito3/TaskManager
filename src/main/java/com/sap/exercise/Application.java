@@ -1,12 +1,13 @@
 package com.sap.exercise;
 
-import com.sap.exercise.handler.EventHandler;
-import com.sap.exercise.parser.InputParser;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sap.exercise.handler.EventHandler;
+import com.sap.exercise.parser.InputParser;
+
 
 public class Application {
 

@@ -1,19 +1,19 @@
 package com.sap.exercise.builder;
 
-import com.sap.exercise.model.Event;
-
 import java.util.Optional;
+
+import com.sap.exercise.model.Event;
 
 public class FieldValueUtils {
 
-    public static Boolean valueOfBool(String input) {      
+    public static Boolean valueOfBool(String input) {
         if (input.toLowerCase().matches("^\\s*y|yes\\s*$")) {
             return true;
-        } else if (input.toLowerCase().matches("^\\s*n|no\\s*$")) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Invalid input");
         }
+        if (input.toLowerCase().matches("^\\s*n|no\\s*$")) {
+            return false;
+        }
+        throw new IllegalArgumentException("Invalid input");
     }
 
     public static Integer valueOfInt(String input) {
@@ -23,12 +23,15 @@ public class FieldValueUtils {
         return Integer.valueOf(input.trim());
     }
 
+    // Dido:knowledge about the actual 'repeatable' values is in multiple places - in the RepeatableType enum and in the following method
     public static Event.RepeatableType valueOfRepeatable(String input) {
+        // Dido: avoid using largeish if-else-if-else...blocks - code gets harder to read and follow, mistakes in refactoring get made
+        // easily
         String arg = "";
         if (input.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
             arg = input.trim();
         } else if (input.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
-            switch (input.toLowerCase()) {
+            switch (input.toLowerCase().trim()) {
                 case "d":
                     arg = "daily";
                     break;

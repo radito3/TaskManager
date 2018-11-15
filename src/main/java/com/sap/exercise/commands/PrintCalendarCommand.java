@@ -4,7 +4,7 @@ import com.sap.exercise.commands.util.CommandUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
-public class Calendar implements Command {
+public class PrintCalendarCommand implements Command {
 
     private java.util.Calendar cal = java.util.Calendar.getInstance();
 

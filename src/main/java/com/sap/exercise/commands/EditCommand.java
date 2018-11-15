@@ -1,14 +1,14 @@
 package com.sap.exercise.commands;
 
+import java.io.BufferedReader;
+
 import com.sap.exercise.builder.EventBuilder;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.parser.InputParser;
 
-import java.io.BufferedReader;
-
-public class Edit implements Command {
+public class EditCommand implements Command {
 
     @Override
     public String getName() {
@@ -18,6 +18,7 @@ public class Edit implements Command {
     @Override
     public void execute(String... args) {
         try {
+            // Dido: I see some dublication in those 'execute' methods of the commands. Any ideas how to reuse those few lines of code?
             String name = CommandUtils.buildEventName(args);
             Event event = EventHandler.getEventByTitle(name);
             BufferedReader reader = InputParser.getReader();
