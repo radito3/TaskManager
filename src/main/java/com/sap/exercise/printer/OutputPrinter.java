@@ -8,10 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Locale;
 
 public class OutputPrinter {
 
@@ -90,7 +92,7 @@ public class OutputPrinter {
     }
 
     public void yearCalendar(int year, boolean withEvents) {
-        writer.println(StringUtils.leftPad(String.valueOf(year), 12));
+        writer.println(StringUtils.leftPad(String.valueOf(year), 14));
         writer.println();
         for (int i = 0; i < 12; i++) {
             this.printCalendar(i, year, true, withEvents);
@@ -119,61 +121,53 @@ public class OutputPrinter {
         int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg1;
 
-        int[] days = DateHandler.getMonthDays();
+        Calendar cal = new GregorianCalendar(year, month - 1, 1);
 
-        String text = StringUtils.leftPad(PrinterUtils.getMonth(month),
-                PrinterUtils.getMonth(month).length() + (wholeYear ? 6 : 4));
+        String monthName = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
 
-        writer.println(text + " " + (wholeYear ? "" : year));
-        writer.println(" S  M Tu  W Th  F  S");
+        String monthHeader = StringUtils.leftPad(monthName,monthName.length() + (wholeYear ? 8 : 6));
 
-        int startingDay = getStartingDay(year, month); //Starting day isn't calculated correctly
+        int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
+        int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        for (int i = 0; i < startingDay; i++)
-            writer.print("   ");
+        writer.println(monthHeader + " " + (wholeYear ? "" : year));
+        writer.println("Su  Mo  Tu  We  Th  Fr  Sa");
+
+        int weekdayIndex = 0;
+
+        for (int day = 1; day < firstWeekdayOfMonth; day++) {
+            writer.print("    ");
+            weekdayIndex++;
+        }
 
         if (withEvents) {
-            printWithEvents(month, startingDay);
+            printWithEvents(month, weekdayIndex, numberOfMonthDays);
         } else {
-            for (int i = 1; i <= days[month]; i++) {
-                PrinterUtils.printDay(writer, i, month, year, "");
+            for (int day = 1; day <= numberOfMonthDays; day++) {
+                PrinterUtils.printDay(writer, day, month, year, "");
 
-                if (((i + startingDay) % 7 == 0) || (i == days[month])) writer.println();
+                weekdayIndex++;
+                if (weekdayIndex == 7) {
+                    weekdayIndex = 0;
+                    writer.println();
+                } else {
+                    writer.print("  ");
+                }
             }
         }
+        writer.println();
     }
 
-    private int getStartingDay(int year, int month) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        switch (cal.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.MONDAY:
-                return 1;
-            case Calendar.TUESDAY:
-                return 2;
-            case Calendar.WEDNESDAY:
-                return 3;
-            case Calendar.THURSDAY:
-                return 4;
-            case Calendar.FRIDAY:
-                return 5;
-            case Calendar.SATURDAY:
-                return 6;
-            default:
-                return 7;
-        }
-    }
+    private void printWithEvents(int month, int weekdayIndex, int numOfMonthDays) {
+        Calendar today = Calendar.getInstance();
+        int year = today.get(Calendar.YEAR);
 
-    private void printWithEvents(int month, int startingDay) {
-        int[] today = DateHandler.getToday();
         Set<Event> events = EventHandler.getEventsInTimeFrame(
-                today[2] + "-" + month + "-01",
-                today[2] + "-" + month + "-" + DateHandler.getMonthDays()[month]
+                DateHandler.stringifyDate(year, month, 1),
+                DateHandler.stringifyDate(year, month, numOfMonthDays)
         );
 
-        PrinterUtils.monthEventsSorted(month, today[2], events)
+        PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
                 .forEach(entry -> {
                     Calendar date = entry.getKey();
                     Set<Event> eventSet = entry.getValue();
@@ -186,10 +180,13 @@ public class OutputPrinter {
                                 date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
                     }
 
-                    if (((date.get(Calendar.DAY_OF_MONTH) + startingDay) % 7 == 0) ||
-                            (date.get(Calendar.DAY_OF_MONTH) == DateHandler.getMonthDays()[month])) {
-                        writer.println();
-                    }
+//                    weekdayIndex++;
+//                    if (weekdayIndex == 7) {
+//                        weekdayIndex = 0;
+//                        System.out.println();
+//                    } else {
+//                        System.out.print("  ");
+//                    }
                 });
     }
 

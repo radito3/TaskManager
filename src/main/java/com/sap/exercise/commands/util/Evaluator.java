@@ -2,6 +2,7 @@ package com.sap.exercise.commands.util;
 
 import com.sap.exercise.handler.DateHandler;
 
+import java.util.Calendar;
 import java.util.function.BiFunction;
 
 public interface Evaluator {
@@ -11,13 +12,16 @@ public interface Evaluator {
     short getNumOfArgs();
 
     default String[] getWeekTimeFrame() {
-        int[] today = DateHandler.getToday();
-        int year = today[2], month = today[1], day = today[0];
+        Calendar today = Calendar.getInstance();
+        int year = today.get(Calendar.YEAR);
+        int month = today.get(Calendar.MONTH);
+        int day = today.get(Calendar.DAY_OF_MONTH);
 
-        int[] inOneWeek = DateHandler.getSafeTime(day + 6, month, year);
+        String todayStr = DateHandler.stringifyDate(year, month, day);
 
-        return new String[] { DateHandler.stringifyDate(year, month, day),
-                DateHandler.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]) };
+        today.add(Calendar.DAY_OF_MONTH, 6);
+
+        return new String[] { todayStr, DateHandler.stringifyDate(year, month, day) };
     }
 
 }

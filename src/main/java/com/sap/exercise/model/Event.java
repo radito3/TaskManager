@@ -1,7 +1,5 @@
 package com.sap.exercise.model;
 
-import com.sap.exercise.handler.DateHandler;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -83,9 +81,11 @@ public class Event extends AbstractModel implements Serializable {
     }
 
     private Calendar getDefaultCalendar() {
-        int[] today = DateHandler.getToday();
-        DateHandler handler = new DateHandler("1-" + today[1] + "-" + today[2] + " 12:00");
-        return handler.asCalendar();
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.MINUTE, 0);
+        return cal;
     }
 
     public Event(String title, EventType type, Calendar timeOf, RepeatableType repeat) {

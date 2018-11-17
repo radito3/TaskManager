@@ -2,6 +2,8 @@ package com.sap.exercise.commands.util;
 
 import com.sap.exercise.handler.DateHandler;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.function.BiFunction;
 
 public class OneArgEvaluator implements Evaluator {
@@ -16,9 +18,14 @@ public class OneArgEvaluator implements Evaluator {
             arg1 = arg;
 
             String[] date = arg.split("[-./ ]");
-            int[] inOneWeek = DateHandler.inOneWeek(date[2], date[1], date[0]);
 
-            arg2 = DateHandler.stringifyDate(inOneWeek[2], inOneWeek[1], inOneWeek[0]);
+            Calendar cal = new GregorianCalendar(Integer.valueOf(date[0]), Integer.valueOf(date[1]), Integer.valueOf(date[2]));
+            cal.add(Calendar.DAY_OF_MONTH, 6);
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH);
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+
+            arg2 = DateHandler.stringifyDate(year, month, day);
         }
     }
 

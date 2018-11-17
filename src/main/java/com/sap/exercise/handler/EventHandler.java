@@ -52,8 +52,12 @@ public class EventHandler {
     // If i start the app in 23:55 at the evening, will I get tomorrow's events printed in 5-6 minutes? = Yes
     private static void checkForUpcomingEvents() {
         service.submit(() -> {
-            int[] today = DateHandler.getToday();
-            String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
+            Calendar today = Calendar.getInstance();
+            int year = today.get(Calendar.YEAR);
+            int month = today.get(Calendar.MONTH);
+            int day = today.get(Calendar.DAY_OF_MONTH);
+            String date = DateHandler.stringifyDate(year, month, day);
+
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
                 events.forEach(event -> service.submit(() -> Notifications.newNotificationHandler(event).run()));
@@ -93,12 +97,7 @@ public class EventHandler {
     }
 
     private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
-        Supplier<Calendar> calSupplier = () -> {
-            DateHandler date = new DateHandler(event.getTimeOf());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date.asCalendar().getTime());
-            return cal;
-        };
+        Supplier<Calendar> calSupplier = event::getTimeOf;
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {
                     Calendar calendar = calSupplier.get();

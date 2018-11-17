@@ -32,8 +32,12 @@ public class CreationObserver implements Observer {
 
         if (type == EventActions.ActionType.CREATE) {
             Future<Serializable> futureId = (Future<Serializable>) objects[2];
-            int[] today = DateHandler.getToday();
-            String date = DateHandler.stringifyDate(today[2], today[1], today[0]);
+
+            Calendar today = Calendar.getInstance();
+            int year = today.get(Calendar.YEAR);
+            int month = today.get(Calendar.MONTH);
+            int day = today.get(Calendar.DAY_OF_MONTH);
+            String date = DateHandler.stringifyDate(year, month, day);
 
             table.forEach((cal, eventSet) -> {
                 if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {
