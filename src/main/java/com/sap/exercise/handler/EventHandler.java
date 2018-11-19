@@ -31,9 +31,7 @@ public class EventHandler {
 
     private static final ExecutorService service = Executors.newCachedThreadPool();
 
-    // Dido: what does 'table' mean? What information does it contain, what purpose does it serve? Is this the actual model containing all
-    // the data? Is it a cache of the same data, which is otherwise persisted in DB?
-    private static final Map<Calendar, Set<Event>> table = new Hashtable<>();
+    private static final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
 
     private static final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
@@ -41,10 +39,10 @@ public class EventHandler {
 
     public static void onStartup() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        actions.addObserver(new CreationObserver(table, printer));
-        actions.addObserver(new UpdateObserver(table));
-        actions.addObserver(new DeletionObserver(table, service));
-        actions.addObserver(new DeletionTimeFrameObserver(table, service));
+        actions.addObserver(new CreationObserver(eventsMap, printer));
+        actions.addObserver(new UpdateObserver(eventsMap));
+        actions.addObserver(new DeletionObserver(eventsMap, service));
+        actions.addObserver(new DeletionTimeFrameObserver(eventsMap, service));
         checkForUpcomingEvents();
     }
 
@@ -60,7 +58,7 @@ public class EventHandler {
 
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                events.forEach(event -> service.submit(() -> Notifications.newNotificationHandler(event).run()));
+                events.forEach(event -> service.submit(Notifications.newNotificationHandler(event)));
             }
         });
     }
@@ -97,7 +95,7 @@ public class EventHandler {
     }
 
     private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
-        Supplier<Calendar> calSupplier = event::getTimeOf;
+        Supplier<Calendar> calSupplier = () -> (Calendar) event.getTimeOf().clone();
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {
                     Calendar calendar = calSupplier.get();
@@ -150,7 +148,7 @@ public class EventHandler {
     private static Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (date) -> {
             Set<Event> ev;
-            if ((ev = table.get(date)) == null) {
+            if ((ev = eventsMap.get(date)) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -166,7 +164,7 @@ public class EventHandler {
         for (Calendar date : DateHandler.fromTo(start, end)) {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
-                    table.put(date, entry.getValue());
+                    eventsMap.put(date, entry.getValue());
                     hasNewEntries = true;
                 }
             }

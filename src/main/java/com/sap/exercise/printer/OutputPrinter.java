@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OutputPrinter {
 
@@ -161,6 +162,7 @@ public class OutputPrinter {
     private void printWithEvents(int month, int weekdayIndex, int numOfMonthDays) {
         Calendar today = Calendar.getInstance();
         int year = today.get(Calendar.YEAR);
+        AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
         Set<Event> events = EventHandler.getEventsInTimeFrame(
                 DateHandler.stringifyDate(year, month, 1),
@@ -180,13 +182,13 @@ public class OutputPrinter {
                                 date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
                     }
 
-//                    weekdayIndex++;
-//                    if (weekdayIndex == 7) {
-//                        weekdayIndex = 0;
-//                        System.out.println();
-//                    } else {
-//                        System.out.print("  ");
-//                    }
+                    weekdayInd.incrementAndGet();
+                    if (weekdayInd.get() == 7) {
+                        weekdayInd.set(0);
+                        writer.println();
+                    } else {
+                        writer.print("  ");
+                    }
                 });
     }
 

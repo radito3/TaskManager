@@ -24,7 +24,7 @@ public abstract class Notifications {
             Calendar timeOf = event.getTimeOf();
             Calendar now = Calendar.getInstance();
 
-            this.timeTo = (timeOf.getTimeInMillis() - now.getTimeInMillis())
+            this.timeTo = event.getAllDay() ? 0 : (timeOf.getTimeInMillis() - now.getTimeInMillis())
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
             this.event = event;
 

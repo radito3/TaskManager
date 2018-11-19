@@ -29,14 +29,14 @@ class PrinterUtils {
     private static boolean isToday(int day, int month, int year) {
         Calendar today = Calendar.getInstance();
         int year1 = today.get(Calendar.YEAR);
-        int month1 = today.get(Calendar.MONTH);
+        int month1 = today.get(Calendar.MONTH) + 1;
         int day1 = today.get(Calendar.DAY_OF_MONTH);
         return day == day1 && month == month1 && year == year1;
     }
 
     static Stream<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
         return IntStream.rangeClosed(1, numOfMonthDays)
-                .mapToObj(i -> (Calendar) new GregorianCalendar(year, month, i))
+                .mapToObj(i -> (Calendar) new GregorianCalendar(year, month - 1, i))
                 .collect(Collectors.toMap(Function.identity(), valueMapper(events)))
                 .entrySet()
                 .stream()
