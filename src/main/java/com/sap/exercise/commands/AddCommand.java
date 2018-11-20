@@ -26,7 +26,7 @@ public class AddCommand implements Command {
 
             CommandUtils.interactiveInput(reader, builder);
 
-            EventHandler.create(builder.getEvent());
+            EventHandler.getInstance().create(builder.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

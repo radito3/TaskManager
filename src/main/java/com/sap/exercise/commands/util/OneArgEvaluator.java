@@ -19,10 +19,10 @@ public class OneArgEvaluator implements Evaluator {
 
             String[] date = arg.split("[-./ ]");
 
-            Calendar cal = new GregorianCalendar(Integer.valueOf(date[0]), Integer.valueOf(date[1]), Integer.valueOf(date[2]));
+            Calendar cal = new GregorianCalendar(Integer.valueOf(date[0]) - 1, Integer.valueOf(date[1]), Integer.valueOf(date[2]));
             cal.add(Calendar.DAY_OF_MONTH, 6);
-            int year = cal.get(Calendar.YEAR);
-            int month = cal.get(Calendar.MONTH);
+            int year = cal.get(Calendar.YEAR); //year is incorrect in some cases
+            int month = cal.get(Calendar.MONTH) + 1;
             int day = cal.get(Calendar.DAY_OF_MONTH);
 
             arg2 = DateHandler.stringifyDate(year, month, day);

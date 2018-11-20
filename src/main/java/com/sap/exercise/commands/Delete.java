@@ -10,6 +10,7 @@ public class Delete implements Command {
 
     private Event event;
     private ArgumentEvaluator evaluator;
+    private EventHandler handler = EventHandler.getInstance();
     
     @Override
     public String getName() {
@@ -26,7 +27,7 @@ public class Delete implements Command {
             String start = vars[0],
                     end = vars[1],
                     eventName = vars[2];
-            event = EventHandler.getEventByTitle(eventName);
+            event = handler.getEventByTitle(eventName);
 
             evaluator = new ArgumentEvaluator(start, end);
             int result = evaluator.eval(this::deleteEvents);
@@ -39,10 +40,10 @@ public class Delete implements Command {
 
     private int deleteEvents(String start, String end) {
         if (event.getToRepeat() == Event.RepeatableType.NONE || evaluator.numOfArgs() == 0) {
-            EventHandler.delete(event);
+            handler.delete(event);
             return 0;
         }
-        EventHandler.deleteInTimeFrame(event, start, end);
+        handler.deleteInTimeFrame(event, start, end);
         return 1;
     }
 }

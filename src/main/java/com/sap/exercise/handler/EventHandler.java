@@ -8,10 +8,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Observable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -25,30 +27,32 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 
-//Dido : I guess this would be the controller in MVC
-//Dido: I challenge you - remove the static keyword from this class! (any form of Signelton counts as static). = Will do
-public class EventHandler {
+public class EventHandler extends Observable {
 
-    private static final ExecutorService service = Executors.newCachedThreadPool();
+    private static EventHandler instance = new EventHandler();
 
-    private static final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
+    private final ExecutorService service = Executors.newCachedThreadPool();
+    private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
+    private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
-    private static final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
+    enum ActionType {
+        CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
+    }
 
-    private static final EventActions actions = new EventActions();
-
-    public static void onStartup() {
+    EventHandler() {
         service.submit(DatabaseUtilFactory::createDbClient);
-        actions.addObserver(new CreationObserver(eventsMap, printer));
-        actions.addObserver(new UpdateObserver(eventsMap));
-        actions.addObserver(new DeletionObserver(eventsMap, service));
-        actions.addObserver(new DeletionTimeFrameObserver(eventsMap, service));
+        addObserver(new CreationObserver());
+        addObserver(new UpdateObserver());
+        addObserver(new DeletionObserver());
+        addObserver(new DeletionTimeFrameObserver());
         checkForUpcomingEvents();
     }
 
-    // Dido: So you check for upcomming events, only when events are created/updated and when the app starts?
-    // If i start the app in 23:55 at the evening, will I get tomorrow's events printed in 5-6 minutes? = Yes
-    private static void checkForUpcomingEvents() {
+    public static EventHandler getInstance() {
+        return instance;
+    }
+
+    private void checkForUpcomingEvents() {
         service.submit(() -> {
             Calendar today = Calendar.getInstance();
             int year = today.get(Calendar.YEAR);
@@ -63,7 +67,7 @@ public class EventHandler {
         });
     }
 
-    public static void create(Event event) {
+    public void create(Event event) {
         Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
         service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
 
@@ -77,7 +81,8 @@ public class EventHandler {
             });
         }
 
-        actions.onCreate(event, futureId);
+        setChanged();
+        notifyObservers(new Object[] { event, ActionType.CREATE, futureId });
         checkForUpcomingEvents();
     }
 
@@ -105,28 +110,31 @@ public class EventHandler {
                 .collect(Collectors.toList());
     }
 
-    public static void update(Event event) {
+    public void update(Event event) {
         service.submit(() -> CRUDOperations.update(event));
-        actions.onUpdate(event);
+        setChanged();
+        notifyObservers(new Object[] { event, ActionType.UPDATE });
         checkForUpcomingEvents();
     }
 
-    public static void delete(Event event) {
+    public void delete(Event event) {
         service.submit(() -> CRUDOperations.delete(event));
-        actions.onDelete(event);
+        setChanged();
+        notifyObservers(new Object[] { event, ActionType.DELETE });
     }
 
-    public static void deleteInTimeFrame(Event event, String start, String end) {
+    public void deleteInTimeFrame(Event event, String start, String end) {
         service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
-        actions.onDeleteTimeFrame(event, start, end);
+        setChanged();
+        notifyObservers(new Object[] { event, ActionType.DELETE_TIME_FRAME, new String[] {start, end} });
     }
 
-    public static Event getEventByTitle(String title) {
+    public Event getEventByTitle(String title) {
         return CRUDOperations.getEventByTitle(title)
                 .orElseThrow(() -> new NullPointerException("Invalid event name"));
     }
 
-    public static Set<Event> getEventsInTimeFrame(String start, String end) {
+    public Set<Event> getEventsInTimeFrame(String start, String end) {
         Set<Event> events = new HashSet<>();
         List<String> nullDates = new ArrayList<>();
 
@@ -145,7 +153,7 @@ public class EventHandler {
         return events;
     }
 
-    private static Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
+    private Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (date) -> {
             Set<Event> ev;
             if ((ev = eventsMap.get(date)) == null) {
@@ -156,7 +164,7 @@ public class EventHandler {
         };
     }
 
-    private static boolean setEventsInTable(String start, String end) {
+    private boolean setEventsInTable(String start, String end) {
         Map<Calendar, Set<Event>> map = CRUDOperations.getEventsInTimeFrame(start, end).stream()
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
         boolean hasNewEntries = false;
@@ -170,5 +178,17 @@ public class EventHandler {
             }
         }
         return hasNewEntries;
+    }
+
+    void submitRunnable(Runnable runnable) {
+        service.submit(runnable);
+    }
+
+    void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
+        eventsMap.forEach(biConsumer);
+    }
+
+    void printError(String msg) {
+        printer.error(msg);
     }
 }

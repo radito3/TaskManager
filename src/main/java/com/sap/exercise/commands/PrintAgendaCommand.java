@@ -22,8 +22,7 @@ public class PrintAgendaCommand implements Command {
             String start = times[0], end = times[1];
 
             ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
-            //TODO change set to list, so that repeating events show up not just once
-            Set<Event> events = evaluator.eval(EventHandler::getEventsInTimeFrame);
+            Set<Event> events = evaluator.eval(EventHandler.getInstance()::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");

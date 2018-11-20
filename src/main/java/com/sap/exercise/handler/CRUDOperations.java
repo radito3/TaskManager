@@ -2,6 +2,7 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.AbstractModel;
+import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -65,6 +66,12 @@ public class CRUDOperations {
                 s.createNativeQuery("SELECT * FROM Eventt RIGHT JOIN CalendarEvents E on Eventt.Id = E.EventId " +
                                 "WHERE Date >= \'" + start + "\' AND Date <= \'" + end + "\';", Event.class)
                         .getResultList());
+    }
+
+    public static List<CalendarEvents> getCalendarEventsByEventId(Integer id) {
+        return DatabaseUtilFactory.getDbClient().getObject(s ->
+                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE EventId = " + id + " ;", CalendarEvents.class)
+                .getResultList());
     }
 
     static void deleteEventsInTimeFrame(Event event, String start, String end) {

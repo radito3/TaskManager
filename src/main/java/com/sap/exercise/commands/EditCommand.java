@@ -18,15 +18,18 @@ public class EditCommand implements Command {
     @Override
     public void execute(String... args) {
         try {
-            // Dido: I see some dublication in those 'execute' methods of the commands. Any ideas how to reuse those few lines of code?
-            String name = CommandUtils.buildEventName(args);
-            Event event = EventHandler.getEventByTitle(name);
+            // Dido: I see some duplication in those 'execute' methods of the commands. Any ideas how to reuse those few lines of code?
+            //No
+            EventHandler handler = EventHandler.getInstance();
             BufferedReader reader = InputParser.getReader();
+
+            String name = CommandUtils.buildEventName(args);
+            Event event = handler.getEventByTitle(name);
             EventBuilder builder = new EventBuilder(event);
 
             CommandUtils.interactiveInput(reader, builder);
 
-            EventHandler.update(builder.getEvent());
+            handler.update(builder.getEvent());
             printer.println("\nEvent updated");
         } catch (NullPointerException | IllegalArgumentException e) {
             printer.println(e.getMessage());

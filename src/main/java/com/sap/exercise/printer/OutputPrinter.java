@@ -164,7 +164,7 @@ public class OutputPrinter {
         int year = today.get(Calendar.YEAR);
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
-        Set<Event> events = EventHandler.getEventsInTimeFrame(
+        Set<Event> events = EventHandler.getInstance().getEventsInTimeFrame(
                 DateHandler.stringifyDate(year, month, 1),
                 DateHandler.stringifyDate(year, month, numOfMonthDays)
         );

@@ -1,6 +1,5 @@
 package com.sap.exercise;
 
-import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.parser.InputParser;
 
 import java.io.InputStream;
@@ -13,7 +12,6 @@ public class Application {
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.FINE);
-        EventHandler.onStartup();
         InputParser.run();
     }
 
