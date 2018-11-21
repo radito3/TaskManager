@@ -17,13 +17,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.sap.exercise.Application;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.printer.OutputPrinter;
 
 public class EventHandler extends Observable {
 
@@ -31,7 +29,6 @@ public class EventHandler extends Observable {
 
     private final ExecutorService service = Executors.newCachedThreadPool();
     private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
-    private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
     enum ActionType {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
@@ -158,6 +155,11 @@ public class EventHandler extends Observable {
 
     private boolean setEventsInTable(String start, String end) {
         Map<Calendar, Set<Event>> map = CRUDOperations.getEventsInTimeFrame(start, end).stream()
+                .map(calEvents -> {
+                    Event event = CRUDOperations.getObjById(Event.class, calEvents.getEventId());
+                    event.setTimeOf(calEvents.getDate());
+                    return event;
+                })
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
         boolean hasNewEntries = false;
 

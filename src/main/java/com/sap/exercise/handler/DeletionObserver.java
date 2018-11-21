@@ -16,7 +16,9 @@ public class DeletionObserver implements Observer {
 
         if (type == EventHandler.ActionType.DELETE) {
             handler.submitRunnable(Notifications.onDelete(event));
-            handler.submitRunnable(() -> handler.iterateEventsMap((cal, set) -> set.removeIf(event1 -> event1.equals(event))));
+            handler.submitRunnable(() -> handler.iterateEventsMap((cal, set) ->
+                    set.removeIf(event1 -> event1.getId().equals(event.getId()))
+            ));
         }
     }
 }

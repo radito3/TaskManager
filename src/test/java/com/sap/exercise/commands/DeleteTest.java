@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,11 +26,11 @@ public class DeleteTest extends AbstractTest {
     @DisplayName("Delete command functionality test")
     public void deleteCommandTest() {
         Event event = new Event("test title");
-        CRUDOperations.create(event);
+        Serializable id = CRUDOperations.create(event);
 
         new Delete().execute("test", "title");
         assertThrows(NullPointerException.class,
-                () -> CRUDOperations.getObject(event),
+                () -> CRUDOperations.getObjById(Event.class, (Integer) id),
                 "Event has not been deleted");
     }
 
@@ -50,7 +51,6 @@ public class DeleteTest extends AbstractTest {
 
     @Test
     @DisplayName("Delete test with incorrect event name")
-    @Disabled("Doesn't work for some reason")
     public void deleteIncorrectNameTest() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream defaultOut = System.out;

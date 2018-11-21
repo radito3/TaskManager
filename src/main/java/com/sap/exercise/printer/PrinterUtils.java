@@ -1,7 +1,5 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.handler.CRUDOperations;
-import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -46,20 +44,10 @@ class PrinterUtils {
     }
 
     private static Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
-        List<CalendarEvents> calEvents = CRUDOperations.getCalendarEventsByEventId(1);
-        Stream.Builder<Event> streamBuilder = Stream.builder();
-
-        return (date) -> {
-            Stream<Event> result = events.stream()
-                    .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
-                    .peek(event -> {
-                        calEvents.forEach(calendarEvents -> {
-                            //TODO add new Events with setting their date to the calEvent entry date
-                        });
-                    });
-            return Stream.concat(result, streamBuilder.build())
-                    .collect(Collectors.toSet());
-        };
+        return (date) ->
+                events.stream()
+                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
+                        .collect(Collectors.toSet());
     }
 
     static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
@@ -73,12 +61,10 @@ class PrinterUtils {
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
-                .map(entry -> {
-                    return entry; //TODO apply valueMapper logic here
-                })
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
     }
 
+    //TODO fix formatting on multiple events per day
     static class Formatter {
         private boolean allDay = false;
         private Event.EventType type;

@@ -28,7 +28,7 @@ public class DeletionTimeFrameObserver implements Observer {
                 for (Calendar cal : DateHandler.fromTo(timeFrame[0], timeFrame[1])) {
                     handler.iterateEventsMap((date, eventSet) -> {
                         if (DateUtils.isSameDay(cal, date)) {
-                            eventSet.removeIf(event1 -> event1.equals(event));
+                            eventSet.removeIf(event1 -> event1.getId().equals(event.getId()));
                         }
                     });
                 }

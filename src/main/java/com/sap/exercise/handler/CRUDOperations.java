@@ -32,9 +32,8 @@ public class CRUDOperations {
         process(s -> s.delete(obj));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <R extends AbstractModel> R getObject(R obj) {
-        return get(s -> s.get((Class<R>)obj.getClass(), obj.getId()));
+    public static <T extends AbstractModel> T getObjById(Class<T> objClass, Integer id) {
+        return get(s -> s.get(objClass, id));
     }
 
     private static <T> T get(Function<Session, T> function) {
@@ -61,17 +60,11 @@ public class CRUDOperations {
                         .uniqueResultOptional());
     }
 
-    static List<Event> getEventsInTimeFrame(String start, String end) {
+    static List<CalendarEvents> getEventsInTimeFrame(String start, String end) {
         return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM Eventt RIGHT JOIN CalendarEvents E on Eventt.Id = E.EventId " +
-                                "WHERE Date >= \'" + start + "\' AND Date <= \'" + end + "\';", Event.class)
+                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
+                        "\' AND Date <= \'" + end + "\';", CalendarEvents.class)
                         .getResultList());
-    }
-
-    public static List<CalendarEvents> getCalendarEventsByEventId(Integer id) {
-        return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE EventId = " + id + " ;", CalendarEvents.class)
-                .getResultList());
     }
 
     static void deleteEventsInTimeFrame(Event event, String start, String end) {

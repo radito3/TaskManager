@@ -6,6 +6,7 @@ import com.sap.exercise.model.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +18,11 @@ public class CRUDOperationsTest extends AbstractTest {
     @DisplayName("Creation and reading test")
     public void createAndReadTest() {
         User user = new User();
-        CRUDOperations.create(user);
+        Serializable id = CRUDOperations.create(user);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
-                () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
+                () -> assertNotNull(CRUDOperations.getObjById(User.class, (Integer) id), "Object retrieved from db is null"),
+                () -> assertEquals(user, CRUDOperations.getObjById(User.class, (Integer) id), "Object retrieved from db doesn't match")
         );
         CRUDOperations.delete(user);
     }
@@ -36,14 +37,14 @@ public class CRUDOperationsTest extends AbstractTest {
     @DisplayName("Updating test")
     public void updateTest()  {
         User user = new User();
-        CRUDOperations.create(user);
+        Serializable id = CRUDOperations.create(user);
 
         user.setUserName("new name");
         CRUDOperations.update(user);
 
         assertAll("Object integrity assertions",
-                () -> assertNotNull(CRUDOperations.getObject(user), "Object retrieved from db is null"),
-                () -> assertEquals(user, CRUDOperations.getObject(user), "Object retrieved from db doesn't match")
+                () -> assertNotNull(CRUDOperations.getObjById(User.class, (Integer) id), "Object retrieved from db is null"),
+                () -> assertEquals(user, CRUDOperations.getObjById(User.class, (Integer) id), "Object retrieved from db doesn't match")
         );
         CRUDOperations.delete(user);
     }
@@ -52,11 +53,11 @@ public class CRUDOperationsTest extends AbstractTest {
     @DisplayName("Deletion test")
     public void deleteTest() {
         User user = new User();
-        CRUDOperations.create(user);
+        Serializable id = CRUDOperations.create(user);
 
         CRUDOperations.delete(user);
         assertThrows(NullPointerException.class,
-                () -> CRUDOperations.getObject(user),
+                () -> CRUDOperations.getObjById(User.class, (Integer) id),
                 "Returning null from db doesn't throw exception");
     }
 
