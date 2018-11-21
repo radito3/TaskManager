@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import java.io.BufferedReader;
 
-import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
@@ -25,7 +25,7 @@ public class EditCommand implements Command {
 
             String name = CommandUtils.buildEventName(args);
             Event event = handler.getEventByTitle(name);
-            EventBuilder builder = new EventBuilder(event);
+            EventWrapper builder = new EventWrapper(event);
 
             CommandUtils.interactiveInput(reader, builder);
 

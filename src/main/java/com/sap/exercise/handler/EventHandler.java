@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Observable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -68,21 +66,15 @@ public class EventHandler extends Observable {
     }
 
     public void create(Event event) {
-        Future<Serializable> futureId = service.submit(() -> CRUDOperations.create(event));
-        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) futureId.get(), event.getTimeOf())));
+        Serializable id = CRUDOperations.create(event);
+        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) id, event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            service.submit(() -> {
-                try {
-                    CRUDOperations.create(eventsList((Integer) futureId.get(), event));
-                } catch (InterruptedException | ExecutionException e) {
-                    printer.error(e.getMessage());
-                }
-            });
+            service.submit(() -> CRUDOperations.create(eventsList((Integer) id, event)));
         }
 
         setChanged();
-        notifyObservers(new Object[] { event, ActionType.CREATE, futureId });
+        notifyObservers(new Object[] { event, ActionType.CREATE, id });
         checkForUpcomingEvents();
     }
 
@@ -139,7 +131,7 @@ public class EventHandler extends Observable {
         List<String> nullDates = new ArrayList<>();
 
         DateHandler.fromTo(start, end)
-                .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
+                .forEach(handleDates(events, date -> nullDates.add(DateHandler.asString(date))));
 
         if (nullDates.size() != 0) {
             String startIndex = nullDates.get(0),
@@ -186,9 +178,5 @@ public class EventHandler extends Observable {
 
     void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);
-    }
-
-    void printError(String msg) {
-        printer.error(msg);
     }
 }

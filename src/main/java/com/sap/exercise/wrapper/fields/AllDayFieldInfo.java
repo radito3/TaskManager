@@ -1,7 +1,7 @@
-package com.sap.exercise.builder.fields;
+package com.sap.exercise.wrapper.fields;
 
-import com.sap.exercise.builder.FieldInfo;
-import com.sap.exercise.builder.FieldValueUtils;
+import com.sap.exercise.wrapper.FieldInfo;
+import com.sap.exercise.wrapper.FieldValueUtils;
 import com.sap.exercise.model.Event;
 
 public class AllDayFieldInfo implements FieldInfo {

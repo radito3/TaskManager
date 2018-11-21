@@ -1,7 +1,7 @@
 package com.sap.exercise.commands.util;
 
-import com.sap.exercise.builder.EventBuilder;
-import com.sap.exercise.builder.FieldInfo;
+import com.sap.exercise.wrapper.EventWrapper;
+import com.sap.exercise.wrapper.FieldInfo;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public class CommandUtils {
 
-    public static void interactiveInput(BufferedReader reader, EventBuilder builder) {
+    public static void interactiveInput(BufferedReader reader, EventWrapper builder) {
         try {
             for (FieldInfo field : builder.getFields()) {
                 Command.printer.print(field.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);

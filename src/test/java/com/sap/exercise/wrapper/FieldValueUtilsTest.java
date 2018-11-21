@@ -1,4 +1,4 @@
-package com.sap.exercise.builder;
+package com.sap.exercise.wrapper;
 
 import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.DisplayName;

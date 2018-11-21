@@ -24,24 +24,24 @@ public class DateHandler {
             String argument = StringUtils.removeEnd(text.trim(), "-");
             currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
         } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    DateHandler(Calendar calendar) {
-        this.currentCal = calendar;
-    }
-
     public String asString() {
-        return String.valueOf(currentCal.get(Calendar.YEAR)) +
-                '-' +
-                (currentCal.get(Calendar.MONTH) + 1) +
-                '-' +
-                currentCal.get(Calendar.DAY_OF_MONTH);
+        return asString(currentCal);
     }
 
     public Calendar asCalendar() {
         return currentCal;
+    }
+
+    static String asString(Calendar cal) {
+        return String.valueOf(cal.get(Calendar.YEAR)) +
+                '-' +
+                (cal.get(Calendar.MONTH) + 1) +
+                '-' +
+                cal.get(Calendar.DAY_OF_MONTH);
     }
 
     static List<Calendar> fromTo(String fromStr, String toStr) {

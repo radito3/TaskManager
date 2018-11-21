@@ -3,6 +3,7 @@ package com.sap.exercise.commands.util;
 import com.sap.exercise.handler.DateHandler;
 
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -11,7 +12,8 @@ public class ArgumentEvaluator {
     private Evaluator evaluator;
 
     public ArgumentEvaluator(String... args) {
-        Supplier<Stream<String>> argStream = () -> Stream.of(args).filter(s -> !s.isEmpty());
+        Predicate<String> condition = String::isEmpty;
+        Supplier<Stream<String>> argStream = () -> Stream.of(args).filter(condition.negate());
 
         switch (Math.toIntExact(argStream.get().count())) {
             case 0:

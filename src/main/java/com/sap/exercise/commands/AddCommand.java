@@ -1,6 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
@@ -22,7 +22,7 @@ public class AddCommand implements Command {
         try {
             Event event = flagHandler(args);
             BufferedReader reader = InputParser.getReader();
-            EventBuilder builder = new EventBuilder(event);
+            EventWrapper builder = new EventWrapper(event);
 
             CommandUtils.interactiveInput(reader, builder);
 

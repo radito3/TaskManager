@@ -1,26 +1,26 @@
-package com.sap.exercise.builder.fields;
+package com.sap.exercise.wrapper.fields;
 
-import com.sap.exercise.builder.FieldInfo;
-import com.sap.exercise.builder.FieldValueUtils;
+import com.sap.exercise.wrapper.FieldInfo;
+import com.sap.exercise.wrapper.FieldValueUtils;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
-public class TitleFieldInfo implements FieldInfo {
+public class DescriptionFieldInfo implements FieldInfo {
 
     private Event event;
 
-    public TitleFieldInfo(Event event) {
+    public DescriptionFieldInfo(Event event) {
         this.event = event;
     }
 
     @Override
     public String getName() {
-        return "title";
+        return "description";
     }
 
     @Override
     public boolean isMandatory() {
-        return true;
+        return false;
     }
 
     @Override
@@ -30,6 +30,6 @@ public class TitleFieldInfo implements FieldInfo {
 
     @Override
     public void handleArg(String arg) {
-        event.setTitle(FieldValueUtils.valueOfStr(arg.trim()));
+        event.setDescription(FieldValueUtils.valueOfStr(arg.trim()));
     }
 }

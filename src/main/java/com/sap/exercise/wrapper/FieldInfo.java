@@ -1,4 +1,4 @@
-package com.sap.exercise.builder;
+package com.sap.exercise.wrapper;
 
 //Dido: nice, good use of an interface
 public interface FieldInfo {

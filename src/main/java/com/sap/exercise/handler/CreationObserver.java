@@ -7,13 +7,10 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class CreationObserver implements Observer {
 
     @Override
-    @SuppressWarnings("unchecked")
     public void update(Observable observable, Object o) {
         Object[] objects = (Object[]) o;
         Event event = (Event) objects[0];
@@ -21,7 +18,7 @@ public class CreationObserver implements Observer {
         EventHandler.ActionType type = (EventHandler.ActionType) objects[1];
 
         if (type == EventHandler.ActionType.CREATE) {
-            Future<Serializable> futureId = (Future<Serializable>) objects[2];
+            Serializable id = (Serializable) objects[2];
 
             Calendar today = Calendar.getInstance();
             int year = today.get(Calendar.YEAR);
@@ -31,11 +28,7 @@ public class CreationObserver implements Observer {
 
             handler.iterateEventsMap((cal, eventSet) -> {
                 if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {
-                    try {
-                        event.setId((Integer) futureId.get());
-                    } catch (InterruptedException | ExecutionException e) {
-                        handler.printError(e.getMessage());
-                    }
+                    event.setId((Integer) id);
                     eventSet.add(event);
                 }
             });

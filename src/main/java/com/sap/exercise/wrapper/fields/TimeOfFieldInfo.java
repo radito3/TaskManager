@@ -1,6 +1,6 @@
-package com.sap.exercise.builder.fields;
+package com.sap.exercise.wrapper.fields;
 
-import com.sap.exercise.builder.FieldInfo;
+import com.sap.exercise.wrapper.FieldInfo;
 import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.model.Event;
 

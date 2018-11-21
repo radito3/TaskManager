@@ -73,6 +73,9 @@ class PrinterUtils {
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
+                .map(entry -> {
+                    return entry; //TODO apply valueMapper logic here
+                })
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
     }
 
