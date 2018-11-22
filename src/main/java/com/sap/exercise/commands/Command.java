@@ -1,7 +1,6 @@
 package com.sap.exercise.commands;
 
-import static com.sap.exercise.Application.Configuration.OUTPUT;
-
+import com.sap.exercise.Application;
 import com.sap.exercise.printer.OutputPrinter;
 
 //Again - good use of an interface
@@ -11,7 +10,7 @@ import com.sap.exercise.printer.OutputPrinter;
 //That way, you'd be able to also initialize the state of the stateful ones in advance :)
 public interface Command {
 
-    OutputPrinter printer = new OutputPrinter(OUTPUT);
+    OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
     String getName();
 

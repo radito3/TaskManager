@@ -28,10 +28,8 @@ class PrinterUtils {
 
     private static boolean isToday(int day, int month, int year) {
         Calendar today = Calendar.getInstance();
-        int year1 = today.get(Calendar.YEAR);
-        int month1 = today.get(Calendar.MONTH) + 1;
-        int day1 = today.get(Calendar.DAY_OF_MONTH);
-        return day == day1 && month == month1 && year == year1;
+        Calendar toCheck = new GregorianCalendar(year, month - 1, day);
+        return DateUtils.isSameDay(today, toCheck);
     }
 
     static Stream<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {

@@ -1,1 +1,0 @@
-TODO implement tests for all commands including utility classes
