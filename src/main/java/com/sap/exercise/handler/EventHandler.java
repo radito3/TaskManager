@@ -75,7 +75,7 @@ public class EventHandler extends Observable {
         checkForUpcomingEvents();
     }
 
-    private static List<CalendarEvents> eventsList(Integer eventId, Event event) {
+    private List<CalendarEvents> eventsList(Integer eventId, Event event) {
         switch (event.getToRepeat()) {
             case DAILY:
                 return eventEntriesHandler(30, eventId, event, Calendar.DAY_OF_MONTH);
@@ -88,7 +88,7 @@ public class EventHandler extends Observable {
         }
     }
 
-    private static List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
+    private List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
         Supplier<Calendar> calSupplier = () -> (Calendar) event.getTimeOf().clone();
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {

@@ -54,7 +54,7 @@ public class EmailNotificationHandler extends Notifications implements Runnable 
                 msg.setRecipients(Message.RecipientType.TO, Application.Configuration.USER_EMAIL);
                 msg.setSubject("Event reminder: " + event.getTitle());
                 msg.setSentDate(new Date());
-                msg.setText("Event description: " + event.getDescription());
+                msg.setText("Event description: " + event.getDescription(), "utf-8", "plain");
                 Transport.send(msg, "me@example.com", "my-password");
             } catch (MessagingException mex) {
                 printer.error("Send failed, exception: " + mex.toString());

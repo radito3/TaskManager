@@ -17,8 +17,9 @@ public class InputParser {
 
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(Application.Configuration.INPUT));
 
-    private static Map<String, Command> commands = Stream.of(new ExitCommand(), new AddCommand(), new EditCommand(),
-            new Delete(), new PrintHelpCommand(), new PrintAgendaCommand(), new PrintCalendarCommand())
+    private static Map<String, Command> commands = Stream.of(
+            new ExitCommand(), new AddCommand(), new EditCommand(), new Delete(), new PrintHelpCommand(),
+            new PrintAgendaCommand(), new PrintCalendarCommand())
             .collect(Collectors.toMap(Command::getName, Function.identity()));
 
     private static OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);

@@ -50,21 +50,33 @@ class PrinterUtils {
 
     static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
         return events.stream()
-                .peek(event -> {
-                    Formatter formatter = new Formatter(writer);
-                    formatter.setAllDay(event.getAllDay());
-                    formatter.setType(event.getTypeOf());
-                    eventFormatters.put(event, formatter);
-                })
                 .collect(Collectors.groupingBy(Event::getTimeOf))
                 .entrySet()
                 .stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
+                .peek(entry -> {
+                    Formatter formatter = new Formatter(writer);
+                    formatter.setMultipleEvents(entry.getValue().size() != 1);
+                    formatter.setFirst();
+
+                    Event first = entry.getValue().get(0);
+                    formatter.setAllDay(first.getAllDay());
+                    formatter.setType(first.getTypeOf());
+                    eventFormatters.put(first, formatter);
+
+                    entry.getValue().stream().skip(1).forEach(event -> {
+                        Formatter fmt = (Formatter) formatter.clone();
+                        fmt.setAllDay(event.getAllDay());
+                        fmt.setType(event.getTypeOf());
+                        eventFormatters.put(event, fmt);
+                    });
+                });
     }
 
-    //TODO fix formatting on multiple events per day
-    static class Formatter {
+    static class Formatter implements Cloneable {
         private boolean allDay = false;
+        private boolean multipleEvents = false;
+        private boolean first = false;
         private Event.EventType type;
         private PrintStream writer;
 
@@ -78,6 +90,14 @@ class PrinterUtils {
 
         void setType(Event.EventType type) {
             this.type = type;
+        }
+
+        void setMultipleEvents(boolean val) {
+            this.multipleEvents = val;
+        }
+
+        void setFirst() {
+            this.first = true;
         }
 
         void printTitle(String title) {
@@ -95,11 +115,24 @@ class PrinterUtils {
         }
 
         void printTime(Date date) {
+            if (multipleEvents && !first) {
+                writer.print("          ");
+            }
             if (allDay) {
                 writer.print("       ");
             } else {
                 writer.print(" " + date.toString().substring(11, 16) + " ");
             }
+        }
+
+        public Object clone() {
+            Formatter other = null;
+            try {
+                other = (Formatter) super.clone();
+                other.writer = this.writer;
+                other.first = false;
+            } catch (CloneNotSupportedException ignored) {}
+            return other;
         }
     }
 }
