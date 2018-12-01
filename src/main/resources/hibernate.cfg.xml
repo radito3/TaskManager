@@ -5,15 +5,15 @@
     <session-factory>
 
         <!-- Database connection settings -->
-        <property name = "hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7263770</property>
-        <property name="hibernate.connection.username">sql7263770</property>
-        <property name = "hibernate.connection.password">HmnFUzhq3H</property>
-        <!--<property name = "hibernate.connection.url">-->
-            <!--jdbc:mysql://localhost:3306/Think_a_bitDB?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true-->
-        <!--</property>-->
-        <!--<property name = "hibernate.connection.username">netprog</property>-->
-        <!--<property name = "hibernate.connection.password">Think-a-bit2018</property>-->
+        <!--<property name = "hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>-->
+        <!--<property name="hibernate.connection.url">jdbc:mysql://sql7.freemysqlhosting.net:3306/sql7263770</property>-->
+        <!--<property name="hibernate.connection.username">sql7263770</property>-->
+        <!--<property name = "hibernate.connection.password">HmnFUzhq3H</property>-->
+        <property name = "hibernate.connection.url">
+            jdbc:mysql://localhost:3306/Think_a_bitDB?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true
+        </property>
+        <property name = "hibernate.connection.username">netprog</property>
+        <property name = "hibernate.connection.password">Think-a-bit2018</property>
         <property name = "hibernate.hbm2ddl.auto">update</property>
 
         <!-- JDBC connection pool (use the built-in) -->
