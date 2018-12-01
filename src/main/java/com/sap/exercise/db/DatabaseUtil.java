@@ -30,38 +30,41 @@ public class DatabaseUtil {
     }
 
     public synchronized void processObject(Consumer<Session> consumer) {
-        Transaction transaction = null;
-
-        try (Session session = factory.openSession()) {
-            transaction = session.beginTransaction();
-
-            consumer.accept(session);
-            transaction.commit();
-        } catch (HibernateException e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            throw e;
-        }
+        process(consumer, null);
     }
 
     public synchronized <T> T getObject(Function<Session, T> function) {
+        return process(null, function);
+    }
+
+    private <T> T process(Consumer<Session> consumer, Function<Session, T> function) {
         Transaction transaction = null;
+        T value = null;
+        Runnable onError = () -> {};
 
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
 
-            T obj = function.apply(session);
-            transaction.commit();
-            if (obj == null) throw new NullPointerException("Object does not exist");
+            if (function != null) {
+                value = function.apply(session);
+                if (value == null) {
+                    onError = () -> { throw new NullPointerException("Object does not exist"); };
+                }
+            } else {
+                consumer.accept(session);
+            }
 
-            return obj;
+            transaction.commit();
+
         } catch (HibernateException e) {
             if (transaction != null) {
                 transaction.rollback();
             }
             throw e;
+        } finally {
+            onError.run();
         }
+        return value;
     }
 
 }
