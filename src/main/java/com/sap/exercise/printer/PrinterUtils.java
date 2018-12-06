@@ -55,25 +55,22 @@ class PrinterUtils {
                 .stream()
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
                 .peek(entry -> {
-                    Formatter formatter = new Formatter(writer);
-                    formatter.setMultipleEvents(entry.getValue().size() != 1);
-                    formatter.setFirst();
+                    List<Event> eventList = entry.getValue();
 
-                    Event first = entry.getValue().get(0);
-                    formatter.setAllDay(first.getAllDay());
-                    formatter.setType(first.getTypeOf());
-                    eventFormatters.put(first, formatter);
-
-                    entry.getValue().stream().skip(1).forEach(event -> {
-                        Formatter fmt = (Formatter) formatter.clone();
-                        fmt.setAllDay(event.getAllDay());
-                        fmt.setType(event.getTypeOf());
-                        eventFormatters.put(event, fmt);
-                    });
+                    for (int i = 0; i < eventList.size(); i++) {
+                        Formatter formatter = new Formatter(writer);
+                        formatter.setMultipleEvents(eventList.size() != 1);
+                        if (i == 0) {
+                            formatter.setFirst();
+                        }
+                        formatter.setAllDay(eventList.get(i).getAllDay());
+                        formatter.setType(eventList.get(i).getTypeOf());
+                        eventFormatters.put(eventList.get(i), formatter);
+                    }
                 });
     }
 
-    static class Formatter implements Cloneable {
+    static class Formatter {
         private boolean allDay = false;
         private boolean multipleEvents = false;
         private boolean first = false;
@@ -123,16 +120,6 @@ class PrinterUtils {
             } else {
                 writer.print(" " + date.toString().substring(11, 16) + " ");
             }
-        }
-
-        public Object clone() {
-            Formatter other = null;
-            try {
-                other = (Formatter) super.clone();
-                other.writer = this.writer;
-                other.first = false;
-            } catch (CloneNotSupportedException ignored) {}
-            return other;
         }
     }
 }

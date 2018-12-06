@@ -174,13 +174,8 @@ public class OutputPrinter {
                     Calendar date = entry.getKey();
                     Set<Event> eventSet = entry.getValue();
 
-                    if (eventSet.isEmpty()) {
-                        PrinterUtils.printDay(writer,
-                                date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), "");
-                    } else {
-                        PrinterUtils.printDay(writer,
-                                date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR), CYAN_BACKGROUND + BLACK);
-                    }
+                    PrinterUtils.printDay(writer, date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR),
+                            eventSet.isEmpty() ? "" : CYAN_BACKGROUND + BLACK);
 
                     weekdayInd.incrementAndGet();
                     if (weekdayInd.get() == 7) {
