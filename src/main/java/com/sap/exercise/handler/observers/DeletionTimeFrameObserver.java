@@ -21,14 +21,15 @@ public class DeletionTimeFrameObserver implements Observer {
 
         if (type == EventHandler.ActionType.DELETE_TIME_FRAME) {
             String[] timeFrame = (String[]) objects[2];
+            DateHandler dateHandler = new DateHandler(timeFrame[0], timeFrame[1]);
 
             handler.submitRunnable(() -> {
-                if (DateHandler.containsToday(timeFrame[0], timeFrame[1])) {
+                if (dateHandler.containsToday()) {
                     handler.submitRunnable(Notifications.onDelete(event));
                 }
             });
             handler.submitRunnable(() -> {
-                for (Calendar cal : DateHandler.fromTo(timeFrame[0], timeFrame[1])) {
+                for (Calendar cal : dateHandler.fromTo()) {
                     handler.iterateEventsMap((date, eventSet) -> {
                         if (DateUtils.isSameDay(cal, date)) {
                             eventSet.removeIf(event1 -> event1.getId().equals(event.getId()));

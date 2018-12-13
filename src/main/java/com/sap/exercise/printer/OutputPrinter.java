@@ -1,6 +1,5 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
@@ -165,8 +164,8 @@ public class OutputPrinter {
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
         Set<Event> events = EventHandler.getInstance().getEventsInTimeFrame(
-                DateHandler.stringifyDate(year, month, 1),
-                DateHandler.stringifyDate(year, month, numOfMonthDays)
+                year + "-" + month + "-1",
+                year + "-" + month + "-" + numOfMonthDays
         );
 
         PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
@@ -175,7 +174,7 @@ public class OutputPrinter {
                     Set<Event> eventSet = entry.getValue();
 
                     PrinterUtils.printDay(writer, date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR),
-                            eventSet.isEmpty() ? "" : CYAN_BACKGROUND + BLACK);
+                            eventSet.isEmpty() ? "" : (CYAN_BACKGROUND + BLACK));
 
                     weekdayInd.incrementAndGet();
                     if (weekdayInd.get() == 7) {

@@ -53,7 +53,7 @@ public class EventHandler extends Observable {
 
     private void checkForUpcomingEvents() {
         service.submit(() -> {
-            String date = DateHandler.todayAsString();
+            String date = new DateHandler(DateHandler.Dates.TODAY).asString();
 
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
@@ -127,14 +127,14 @@ public class EventHandler extends Observable {
         Set<Event> events = new HashSet<>();
         List<String> nullDates = new ArrayList<>();
 
-        DateHandler.fromTo(start, end)
-                .forEach(handleDates(events, date -> nullDates.add(DateHandler.asString(date))));
+        new DateHandler(start, end).fromTo()
+                .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
 
         if (nullDates.size() != 0) {
             String startIndex = nullDates.get(0),
                     endIndex = nullDates.get(nullDates.size() - 1);
             if (setEventsInTable(startIndex, endIndex)) {
-                DateHandler.fromTo(startIndex, endIndex)
+                new DateHandler(startIndex, endIndex).fromTo()
                         .forEach(handleDates(events, date -> {}));
             }
         }
@@ -163,7 +163,7 @@ public class EventHandler extends Observable {
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
         boolean hasNewEntries = false;
 
-        for (Calendar date : DateHandler.fromTo(start, end)) {
+        for (Calendar date : new DateHandler(start, end).fromTo()) {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
                     eventsMap.put(date, entry.getValue());

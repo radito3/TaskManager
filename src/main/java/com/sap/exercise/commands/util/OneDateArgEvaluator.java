@@ -12,7 +12,7 @@ public class OneDateArgEvaluator implements Evaluator {
 
     OneDateArgEvaluator(String arg) {
         if (arg.endsWith("-")) {
-            arg1 = getWeekTimeFrame()[0];
+            arg1 = new DateHandler(DateHandler.Dates.TODAY).asString();
             arg2 = arg.substring(0, arg.length() - 1);
         } else {
             arg1 = arg;
@@ -21,11 +21,8 @@ public class OneDateArgEvaluator implements Evaluator {
 
             Calendar cal = new GregorianCalendar(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
             cal.add(Calendar.DAY_OF_MONTH, 6);
-            int year = cal.get(Calendar.YEAR);
-            int month = cal.get(Calendar.MONTH) + 1;
-            int day = cal.get(Calendar.DAY_OF_MONTH);
 
-            arg2 = DateHandler.stringifyDate(year, month, day);
+            arg2 = new DateHandler(cal).asString();
         }
     }
 

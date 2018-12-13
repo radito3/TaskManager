@@ -20,10 +20,9 @@ public class CreationObserver implements Observer {
 
         if (type == EventHandler.ActionType.CREATE) {
             Serializable id = (Serializable) objects[2];
-            String date = DateHandler.todayAsString();
 
             handler.iterateEventsMap((cal, eventSet) -> {
-                if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {
+                if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
                     event.setId((Integer) id);
                     eventSet.add(event);
                 }

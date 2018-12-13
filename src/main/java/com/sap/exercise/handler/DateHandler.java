@@ -5,12 +5,9 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 public class DateHandler {
 
@@ -18,67 +15,77 @@ public class DateHandler {
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
     private Calendar currentCal = Calendar.getInstance();
+    private DateHandler startDate;
+    private DateHandler endDate;
+
+    public enum Dates {
+        TODAY, IN_ONE_WEEK
+    }
 
     public DateHandler(String text) {
         try {
             String argument = StringUtils.removeEnd(text.trim(), "-");
-            currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
+            this.currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
         } catch (ParseException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public String asString() {
-        return asString(currentCal);
+    public DateHandler(String start, String end) {
+        this.startDate = new DateHandler(start);
+        this.endDate = new DateHandler(end);
+    }
+
+    public DateHandler(Calendar calendar) {
+        this.currentCal = calendar;
+    }
+
+    public DateHandler(Dates dates) {
+        currentCal = Calendar.getInstance();
+        switch (dates) {
+            case TODAY:
+                break;
+            case IN_ONE_WEEK:
+                currentCal.add(Calendar.DAY_OF_MONTH, 6);
+                break;
+        }
     }
 
     public Calendar asCalendar() {
         return currentCal;
     }
 
-    static String asString(Calendar cal) {
-        return String.valueOf(cal.get(Calendar.YEAR)) +
+    public String asString() {
+        return String.valueOf(currentCal.get(Calendar.YEAR)) +
                 '-' +
-                (cal.get(Calendar.MONTH) + 1) +
+                (currentCal.get(Calendar.MONTH) + 1) +
                 '-' +
-                cal.get(Calendar.DAY_OF_MONTH);
+                currentCal.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static List<Calendar> fromTo(String fromStr, String toStr) {
-        Supplier<DateHandler> supplier = () -> new DateHandler(fromStr);
-        if (fromStr.equals(toStr)) {
-            return Collections.singletonList(supplier.get().currentCal);
+    public List<Calendar> fromTo() {
+        if (startDate == null || endDate == null) {
+            throw new UnsupportedOperationException();
         }
 
-        DateHandler to = new DateHandler(toStr);
-        long days = (to.currentCal.getTimeInMillis() - supplier.get().currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
+        long days = (endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
 
         return LongStream.rangeClosed(0, days)
                 .mapToObj(i -> {
-                    Calendar cal = supplier.get().currentCal;
+                    Calendar cal = (Calendar) startDate.currentCal.clone();
                     cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
                     return cal;
                 })
                 .collect(Collectors.toList());
     }
 
-    public static boolean containsToday(String start, String end) {
-        Calendar from = new DateHandler(start).currentCal;
-        Calendar to = new DateHandler(end).currentCal;
+    public boolean containsToday() {
+        if (startDate == null || endDate == null) {
+            throw new UnsupportedOperationException();
+        }
+
         Calendar today = Calendar.getInstance();
-        return from.get(Calendar.DAY_OF_MONTH) <= today.get(Calendar.DAY_OF_MONTH) &&
-                to.get(Calendar.DAY_OF_MONTH) >= today.get(Calendar.DAY_OF_MONTH);
+        return startDate.currentCal.get(Calendar.DAY_OF_MONTH) <= today.get(Calendar.DAY_OF_MONTH) &&
+                endDate.currentCal.get(Calendar.DAY_OF_MONTH) >= today.get(Calendar.DAY_OF_MONTH);
     }
-
-    public static String stringifyDate(int year, int month, int day) {
-        return Stream.of(year, month, day)
-                .map(String::valueOf)
-                .collect(Collectors.joining("-"));
-    }
-
-    public static String todayAsString() {
-        Calendar today = Calendar.getInstance();
-        return DateHandler.stringifyDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH) + 1, today.get(Calendar.DAY_OF_MONTH));
-    }
-
 }
