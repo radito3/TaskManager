@@ -2,11 +2,11 @@ package com.sap.exercise.commands.util;
 
 import java.util.function.BiFunction;
 
-public class TwoArgEvaluator implements Evaluator {
+public class TwoDateArgEvaluator implements Evaluator {
 
     private String arg1, arg2;
 
-    TwoArgEvaluator(String arg1, String arg2) {
+    TwoDateArgEvaluator(String arg1, String arg2) {
         this.arg1 = arg1;
         this.arg2 = arg2;
     }

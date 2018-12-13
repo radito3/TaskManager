@@ -42,7 +42,7 @@ public abstract class Notifications {
         throw new UnsupportedOperationException("Invalid notification type");
     }
 
-    static Runnable onDelete(Event event) {
+    public static Runnable onDelete(Event event) {
         return () -> {
             Thread thread;
             if ((thread = eventNotifications.get(event.getId())) != null) {

@@ -1,10 +1,11 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.handler.observers;
 
+import com.sap.exercise.handler.DateHandler;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,12 +20,7 @@ public class CreationObserver implements Observer {
 
         if (type == EventHandler.ActionType.CREATE) {
             Serializable id = (Serializable) objects[2];
-
-            Calendar today = Calendar.getInstance();
-            int year = today.get(Calendar.YEAR);
-            int month = today.get(Calendar.MONTH);
-            int day = today.get(Calendar.DAY_OF_MONTH);
-            String date = DateHandler.stringifyDate(year, month, day);
+            String date = DateHandler.todayAsString();
 
             handler.iterateEventsMap((cal, eventSet) -> {
                 if (DateUtils.isSameDay(DateHandler.fromTo(date, date).get(0), cal)) {

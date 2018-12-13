@@ -21,7 +21,7 @@ public class AddCommand implements Command {
     public void execute(String... args) {
         try {
             Event event = flagHandler(args);
-            BufferedReader reader = InputParser.getReader();
+            BufferedReader reader = new InputParser().getReader();
             EventWrapper builder = new EventWrapper(event);
 
             CommandUtils.interactiveInput(reader, builder);

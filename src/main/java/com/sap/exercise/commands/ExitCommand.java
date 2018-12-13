@@ -11,7 +11,7 @@ public class ExitCommand implements Command {
 
     @Override
     public void execute(String... args) {
-        InputParser.close();
+        new InputParser().close();
         System.exit(0);
     }
 }

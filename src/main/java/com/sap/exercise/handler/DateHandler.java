@@ -44,7 +44,7 @@ public class DateHandler {
                 cal.get(Calendar.DAY_OF_MONTH);
     }
 
-    static List<Calendar> fromTo(String fromStr, String toStr) {
+    public static List<Calendar> fromTo(String fromStr, String toStr) {
         Supplier<DateHandler> supplier = () -> new DateHandler(fromStr);
         if (fromStr.equals(toStr)) {
             return Collections.singletonList(supplier.get().currentCal);
@@ -62,7 +62,7 @@ public class DateHandler {
                 .collect(Collectors.toList());
     }
 
-    static boolean containsToday(String start, String end) {
+    public static boolean containsToday(String start, String end) {
         Calendar from = new DateHandler(start).currentCal;
         Calendar to = new DateHandler(end).currentCal;
         Calendar today = Calendar.getInstance();
@@ -74,6 +74,11 @@ public class DateHandler {
         return Stream.of(year, month, day)
                 .map(String::valueOf)
                 .collect(Collectors.joining("-"));
+    }
+
+    public static String todayAsString() {
+        Calendar today = Calendar.getInstance();
+        return DateHandler.stringifyDate(today.get(Calendar.YEAR), today.get(Calendar.MONTH) + 1, today.get(Calendar.DAY_OF_MONTH));
     }
 
 }

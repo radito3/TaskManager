@@ -7,28 +7,28 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class ArgumentEvaluator {
+public class DateArgumentEvaluator {
 
     private Evaluator evaluator;
 
-    public ArgumentEvaluator(String... args) {
+    public DateArgumentEvaluator(String... args) {
         Predicate<String> condition = String::isEmpty;
         Supplier<Stream<String>> argStream = () -> Stream.of(args).filter(condition.negate());
 
         switch (Math.toIntExact(argStream.get().count())) {
             case 0:
-                evaluator = new ZeroArgEvaluator();
+                evaluator = new ZeroDateArgEvaluator();
                 break;
             case 1:
                 String arg = argStream.get().findFirst().orElse("");
                 boolean end = arg.endsWith("-");
                 DateHandler handler = new DateHandler(arg);
-                evaluator = new OneArgEvaluator(handler.asString() + (end ? "-" : ""));
+                evaluator = new OneDateArgEvaluator(handler.asString() + (end ? "-" : ""));
                 break;
             case 2:
                 DateHandler handler1 = new DateHandler(args[0]);
                 DateHandler handler2 = new DateHandler(args[1]);
-                evaluator = new TwoArgEvaluator(handler1.asString(), handler2.asString());
+                evaluator = new TwoDateArgEvaluator(handler1.asString(), handler2.asString());
                 break;
         }
     }

@@ -6,11 +6,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.function.BiFunction;
 
-public class OneArgEvaluator implements Evaluator {
+public class OneDateArgEvaluator implements Evaluator {
 
     private String arg1, arg2;
 
-    OneArgEvaluator(String arg) {
+    OneDateArgEvaluator(String arg) {
         if (arg.endsWith("-")) {
             arg1 = getWeekTimeFrame()[0];
             arg2 = arg.substring(0, arg.length() - 1);

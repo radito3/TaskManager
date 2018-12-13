@@ -21,7 +21,7 @@ public class EditCommand implements Command {
             // Dido: I see some duplication in those 'execute' methods of the commands. Any ideas how to reuse those few lines of code?
             //No
             EventHandler handler = EventHandler.getInstance();
-            BufferedReader reader = InputParser.getReader();
+            BufferedReader reader = new InputParser().getReader();
 
             String name = CommandUtils.buildEventName(args);
             Event event = handler.getEventByTitle(name);

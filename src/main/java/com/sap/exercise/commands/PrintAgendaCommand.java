@@ -1,6 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.commands.util.ArgumentEvaluator;
+import com.sap.exercise.commands.util.DateArgumentEvaluator;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
@@ -21,7 +21,7 @@ public class PrintAgendaCommand implements Command {
             String[] times = CommandUtils.flagHandlerForTimeFrame(args);
             String start = times[0], end = times[1];
 
-            ArgumentEvaluator evaluator = new ArgumentEvaluator(start, end);
+            DateArgumentEvaluator evaluator = new DateArgumentEvaluator(start, end);
             Set<Event> events = evaluator.eval(EventHandler.getInstance()::getEventsInTimeFrame);
 
             if (events.isEmpty()) {

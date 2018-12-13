@@ -15,16 +15,19 @@ import java.util.stream.Stream;
 
 public class InputParser {
 
-    private static BufferedReader reader = new BufferedReader(new InputStreamReader(Application.Configuration.INPUT));
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(Application.Configuration.INPUT));
 
-    private static Map<String, Command> commands = Stream.of(
+    private final Map<String, Command> commands = Stream.of(
             new ExitCommand(), new AddCommand(), new EditCommand(), new Delete(), new PrintHelpCommand(),
             new PrintAgendaCommand(), new PrintCalendarCommand())
             .collect(Collectors.toMap(Command::getName, Function.identity()));
 
-    private static OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
+    private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
-    public static void run() {
+    public InputParser() {
+    }
+
+    public void run() {
         try {
             while (true) {
                 String input = reader.readLine();
@@ -42,7 +45,7 @@ public class InputParser {
         }
     }
 
-    private static void executeCommand(String[] userInput) {
+    private void executeCommand(String[] userInput) {
         String command = userInput[0];
         if (!commands.containsKey(command)) {
             printer.println("Invalid command");
@@ -51,11 +54,11 @@ public class InputParser {
         commands.get(command).execute(Arrays.copyOfRange(userInput, 1, userInput.length));
     }
 
-    public static BufferedReader getReader() {
+    public BufferedReader getReader() {
         return reader;
     }
 
-    public static void close() {
+    public void close() {
         try {
             reader.close();
         } catch (IOException e) {

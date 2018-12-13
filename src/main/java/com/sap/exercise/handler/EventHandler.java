@@ -17,6 +17,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.sap.exercise.handler.observers.CreationObserver;
+import com.sap.exercise.handler.observers.DeletionObserver;
+import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
+import com.sap.exercise.handler.observers.UpdateObserver;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.sap.exercise.db.DatabaseUtilFactory;
@@ -30,7 +34,7 @@ public class EventHandler extends Observable {
     private final ExecutorService service = Executors.newCachedThreadPool();
     private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
 
-    enum ActionType {
+    public enum ActionType {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
     }
 
@@ -49,11 +53,7 @@ public class EventHandler extends Observable {
 
     private void checkForUpcomingEvents() {
         service.submit(() -> {
-            Calendar today = Calendar.getInstance();
-            int year = today.get(Calendar.YEAR);
-            int month = today.get(Calendar.MONTH);
-            int day = today.get(Calendar.DAY_OF_MONTH);
-            String date = DateHandler.stringifyDate(year, month, day);
+            String date = DateHandler.todayAsString();
 
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
@@ -174,11 +174,11 @@ public class EventHandler extends Observable {
         return hasNewEntries;
     }
 
-    void submitRunnable(Runnable runnable) {
+    public void submitRunnable(Runnable runnable) {
         service.submit(runnable);
     }
 
-    void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
+    public void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);
     }
 }

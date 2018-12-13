@@ -12,7 +12,7 @@ public class Application {
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.FINE);
-        InputParser.run();
+        new InputParser().run();
     }
 
     public static class Configuration {

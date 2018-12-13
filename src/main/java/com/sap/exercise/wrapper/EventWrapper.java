@@ -3,7 +3,6 @@ package com.sap.exercise.wrapper;
 import com.sap.exercise.wrapper.fields.*;
 import com.sap.exercise.model.Event;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class EventWrapper {
                 return Arrays.asList(new TitleFieldInfo(event), new TimeOfFieldInfo(event), new AllDayFieldInfo(event),
                     new ToRepeatFieldInfo(event, false));
         }
-        return new ArrayList<>();
+        throw new UnsupportedOperationException("Invalid event type");
     }
 
     public Event getEvent() {
