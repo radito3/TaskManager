@@ -16,8 +16,8 @@ public class DateHandler {
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
     private Calendar currentCal = Calendar.getInstance();
-    private DateHandler startDate;
-    private DateHandler endDate;
+    private DateHandler startDate = new DateHandler(Dates.TODAY);
+    private DateHandler endDate = new DateHandler(Dates.IN_ONE_WEEK);
 
     public enum Dates {
         TODAY, IN_ONE_WEEK
@@ -65,10 +65,6 @@ public class DateHandler {
     }
 
     public List<Calendar> fromTo() {
-        if (startDate == null || endDate == null) {
-            throw new UnsupportedOperationException();
-        }
-
         long days = (endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
 
         return LongStream.rangeClosed(0, days)
@@ -81,10 +77,6 @@ public class DateHandler {
     }
 
     public boolean containsToday() {
-        if (startDate == null || endDate == null) {
-            throw new UnsupportedOperationException();
-        }
-
         Calendar today = Calendar.getInstance();
         int startDay = mapCalToDay(startDate.currentCal);
         int endDay = mapCalToDay(endDate.currentCal);
