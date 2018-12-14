@@ -1,5 +1,6 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.handler.EventHandler;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,6 @@ public class ExitCommandTest {
     @org.junit.Test
     public void exitTest() {
         ee.expectSystemExitWithStatus(0);
-        new ExitCommand().execute();
+        new ExitCommand().execute(new EventHandler());
     }
 }

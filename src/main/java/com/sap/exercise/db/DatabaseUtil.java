@@ -64,6 +64,7 @@ class DatabaseUtil {
         } finally {
             onError.run();
         }
+
         return value;
     }
 

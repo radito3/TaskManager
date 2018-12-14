@@ -18,7 +18,7 @@ public class AddCommand implements Command {
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
         try {
             Event event = flagHandler(args);
             BufferedReader reader = new InputParser().getReader();
@@ -26,7 +26,7 @@ public class AddCommand implements Command {
 
             CommandUtils.interactiveInput(reader, builder);
 
-            EventHandler.getInstance().create(builder.getEvent());
+            handler.create(builder.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

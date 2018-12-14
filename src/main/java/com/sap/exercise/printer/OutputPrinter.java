@@ -87,15 +87,15 @@ public class OutputPrinter {
         writer.println(RED + val + RESET);
     }
 
-    public void monthCalendar(int month, boolean withEvents) {
-        this.printCalendar(month, calendar.get(Calendar.YEAR), false, withEvents);
+    public void monthCalendar(EventHandler handler, int month, boolean withEvents) {
+        this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
 
-    public void yearCalendar(int year, boolean withEvents) {
+    public void yearCalendar(EventHandler handler, int year, boolean withEvents) {
         writer.println(StringUtils.leftPad(String.valueOf(year), 14));
         writer.println();
         for (int i = 0; i < 12; i++) {
-            this.printCalendar(i, year, true, withEvents);
+            this.printCalendar(handler, i, year, true, withEvents);
             writer.println();
         }
     }
@@ -117,7 +117,7 @@ public class OutputPrinter {
                 });
     }
 
-    private void printCalendar(int arg, int arg1, boolean wholeYear, boolean withEvents) {
+    private void printCalendar(EventHandler handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg1;
 
@@ -141,7 +141,7 @@ public class OutputPrinter {
         }
 
         if (withEvents) {
-            printWithEvents(month, weekdayIndex, numberOfMonthDays);
+            printWithEvents(handler, month, weekdayIndex, numberOfMonthDays);
         } else {
             for (int day = 1; day <= numberOfMonthDays; day++) {
                 PrinterUtils.printDay(writer, day, month, year, "");
@@ -158,12 +158,12 @@ public class OutputPrinter {
         writer.println();
     }
 
-    private void printWithEvents(int month, int weekdayIndex, int numOfMonthDays) {
+    private void printWithEvents(EventHandler handler, int month, int weekdayIndex, int numOfMonthDays) {
         Calendar today = Calendar.getInstance();
         int year = today.get(Calendar.YEAR);
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
-        Set<Event> events = EventHandler.getInstance().getEventsInTimeFrame(
+        Set<Event> events = handler.getEventsInTimeFrame(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numOfMonthDays
         );

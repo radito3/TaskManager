@@ -16,11 +16,8 @@ public class EditCommand implements Command {
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
         try {
-            // Dido: I see some duplication in those 'execute' methods of the commands. Any ideas how to reuse those few lines of code?
-            //No
-            EventHandler handler = EventHandler.getInstance();
             BufferedReader reader = new InputParser().getReader();
 
             String name = CommandUtils.buildEventName(args);

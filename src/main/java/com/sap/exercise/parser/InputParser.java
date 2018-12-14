@@ -2,32 +2,39 @@ package com.sap.exercise.parser;
 
 import com.sap.exercise.Application;
 import com.sap.exercise.commands.*;
+import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.printer.OutputPrinter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
 
 public class InputParser {
 
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(Application.Configuration.INPUT));
 
-    private final Map<String, Command> commands = Stream.of(
-            new ExitCommand(), new AddCommand(), new EditCommand(), new Delete(), new PrintHelpCommand(),
-            new PrintAgendaCommand(), new PrintCalendarCommand())
-            .collect(Collectors.toMap(Command::getName, Function.identity()));
+    private Map<String, Supplier<Command>> commands = new HashMap<>(7);
+
+    {
+        commands.put("add", AddCommand::new);
+        commands.put("edit", EditCommand::new);
+        commands.put("exit", ExitCommand::new);
+        commands.put("delete", Delete::new);
+        commands.put("help", PrintHelpCommand::new);
+        commands.put("agenda", PrintAgendaCommand::new);
+        commands.put("cal", PrintCalendarCommand::new);
+    }
 
     private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
     public InputParser() {
     }
 
-    public void run() {
+    public void run(EventHandler handler) {
         try {
             while (true) {
                 String input = reader.readLine();
@@ -36,7 +43,7 @@ public class InputParser {
                 }
                 String[] inputArgs = input.split("\\s+");
 
-                executeCommand(inputArgs);
+                executeCommand(handler, inputArgs);
             }
         } catch (IOException e) {
             printer.println(e.getMessage());
@@ -45,13 +52,14 @@ public class InputParser {
         }
     }
 
-    private void executeCommand(String[] userInput) {
+    private void executeCommand(EventHandler arg, String[] userInput) {
         String command = userInput[0];
         if (!commands.containsKey(command)) {
             printer.println("Invalid command");
             return;
         }
-        commands.get(command).execute(Arrays.copyOfRange(userInput, 1, userInput.length));
+        commands.get(command).get()
+                .execute(arg, Arrays.copyOfRange(userInput, 1, userInput.length));
     }
 
     public BufferedReader getReader() {

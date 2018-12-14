@@ -16,13 +16,13 @@ public class PrintAgendaCommand implements Command {
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
         try {
             String[] times = CommandUtils.flagHandlerForTimeFrame(args);
             String start = times[0], end = times[1];
 
             DateArgumentEvaluator evaluator = new DateArgumentEvaluator(start, end);
-            Set<Event> events = evaluator.eval(EventHandler.getInstance()::getEventsInTimeFrame);
+            Set<Event> events = evaluator.eval(handler::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");

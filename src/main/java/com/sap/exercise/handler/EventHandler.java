@@ -31,8 +31,6 @@ import com.sap.exercise.model.Event;
 
 public class EventHandler extends Observable {
 
-    private static EventHandler instance = new EventHandler();
-
     private final ExecutorService service = Executors.newCachedThreadPool();
     private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
 
@@ -47,10 +45,6 @@ public class EventHandler extends Observable {
         addObserver(new DeletionObserver());
         addObserver(new DeletionTimeFrameObserver());
         checkForUpcomingEvents();
-    }
-
-    public static EventHandler getInstance() {
-        return instance;
     }
 
     private void checkForUpcomingEvents() {

@@ -30,7 +30,7 @@ public class DeleteTest extends AbstractTest {
         CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
         Serializable id = crudOps.create(event);
 
-        new Delete().execute("test", "title");
+        new Delete().execute(handler, "test", "title");
         assertThrows(NullPointerException.class,
                 () -> crudOps.getObjById((Integer) id),
                 "Event has not been deleted");
@@ -45,7 +45,7 @@ public class DeleteTest extends AbstractTest {
         System.setOut(new PrintStream(out));
         Delete delete = new Delete();
 
-        delete.execute();
+        delete.execute(handler);
         System.out.flush();
         assertEquals("Event name not specified\n", out.toString());
         System.setOut(defaultOut);
@@ -59,7 +59,7 @@ public class DeleteTest extends AbstractTest {
         System.setOut(new PrintStream(out));
         Delete delete = new Delete();
 
-        delete.execute("!!@$");
+        delete.execute(handler, "!!@$");
         System.out.flush();
         assertEquals("Invalid event name\n", out.toString());
         System.setOut(defaultOut);

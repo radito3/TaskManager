@@ -2,6 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.DateHandler;
+import com.sap.exercise.handler.EventHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -15,7 +16,7 @@ public class PrintHelpCommand implements Command {
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
         try {
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.helpOptions(), args);
 

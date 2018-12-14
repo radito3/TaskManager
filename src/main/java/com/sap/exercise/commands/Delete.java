@@ -10,15 +10,16 @@ public class Delete implements Command {
 
     private Event event;
     private DateArgumentEvaluator evaluator;
-    private EventHandler handler = EventHandler.getInstance();
-    
+    private EventHandler handler;
+
     @Override
     public String getName() {
         return "delete";
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
+        this.handler = handler;
         try {
             String[] vars = CommandUtils.flagHandlerForTimeFrame(
                     args,
@@ -27,7 +28,7 @@ public class Delete implements Command {
             String start = vars[0],
                     end = vars[1],
                     eventName = vars[2];
-            event = handler.getEventByTitle(eventName);
+            event = this.handler.getEventByTitle(eventName);
 
             evaluator = new DateArgumentEvaluator(start, end);
             int result = evaluator.eval(this::deleteEvents);

@@ -1,6 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.commands.util.CommandUtils;
+import com.sap.exercise.handler.EventHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
@@ -14,7 +15,7 @@ public class PrintCalendarCommand implements Command {
     }
 
     @Override
-    public void execute(String... args) {
+    public void execute(EventHandler handler, String... args) {
         try {
             Calendar cal = Calendar.getInstance();
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.calendarOptions(), args);
@@ -25,14 +26,14 @@ public class PrintCalendarCommand implements Command {
 
             if (cmd.hasOption('3')) {
                 for (int i = -1; i < 2; i++) {
-                    printer.monthCalendar(cal.get(Calendar.MONTH) + i, cmd.hasOption('e'));
+                    printer.monthCalendar(handler, cal.get(Calendar.MONTH) + i, cmd.hasOption('e'));
                     printer.println();
                 }
             } else if (cmd.hasOption('y')) {
                 int year = cmd.getOptionValues('y') == null ? cal.get(Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
-                printer.yearCalendar(year, cmd.hasOption('e'));
+                printer.yearCalendar(handler, year, cmd.hasOption('e'));
             } else {
-                printer.monthCalendar(cal.get(Calendar.MONTH), cmd.hasOption('e'));
+                printer.monthCalendar(handler, cal.get(Calendar.MONTH), cmd.hasOption('e'));
             }
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
