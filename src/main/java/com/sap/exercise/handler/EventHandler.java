@@ -17,6 +17,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.sap.exercise.db.CRUDOperationsNew;
+import com.sap.exercise.db.CRUDOps;
 import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.handler.observers.DeletionObserver;
 import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
@@ -38,7 +40,7 @@ public class EventHandler extends Observable {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
     }
 
-    EventHandler() {
+    public EventHandler() {
         service.submit(DatabaseUtilFactory::createDbClient);
         addObserver(new CreationObserver());
         addObserver(new UpdateObserver());
@@ -63,11 +65,14 @@ public class EventHandler extends Observable {
     }
 
     public void create(Event event) {
-        Serializable id = CRUDOperations.create(event);
-        service.submit(() -> CRUDOperations.create(new CalendarEvents((Integer) id, event.getTimeOf())));
+        CRUDOps<Event> crudOps1 = new CRUDOperationsNew<>(Event.class);
+        CRUDOps<CalendarEvents> crudOps2 = new CRUDOperationsNew<>(CalendarEvents.class);
+
+        Serializable id = crudOps1.create(event);
+        service.submit(() -> crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            service.submit(() -> CRUDOperations.create(eventsList((Integer) id, event)));
+            service.submit(() -> crudOps2.create(eventsList((Integer) id, event)));
         }
 
         setChanged();
@@ -100,26 +105,27 @@ public class EventHandler extends Observable {
     }
 
     public void update(Event event) {
-        service.submit(() -> CRUDOperations.update(event));
+        service.submit(() -> new CRUDOperationsNew<>(Event.class).update(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.UPDATE });
         checkForUpcomingEvents();
     }
 
     public void delete(Event event) {
-        service.submit(() -> CRUDOperations.delete(event));
+        service.submit(() -> new CRUDOperationsNew<>(Event.class).delete(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE });
     }
 
     public void deleteInTimeFrame(Event event, String start, String end) {
-        service.submit(() -> CRUDOperations.deleteEventsInTimeFrame(event, start, end));
+        service.submit(() -> new CRUDOperationsNew<>(Event.class).deleteEventsInTimeFrame(event, start, end));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE_TIME_FRAME, new String[] {start, end} });
     }
 
     public Event getEventByTitle(String title) {
-        return CRUDOperations.getEventByTitle(title)
+        return new CRUDOperationsNew<>(Event.class)
+                .getObjByProperty("Title", title)
                 .orElseThrow(() -> new NullPointerException("Invalid event name"));
     }
 
@@ -154,13 +160,17 @@ public class EventHandler extends Observable {
     }
 
     private boolean setEventsInTable(String start, String end) {
-        Map<Calendar, Set<Event>> map = CRUDOperations.getEventsInTimeFrame(start, end).stream()
+        CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
+
+        Map<Calendar, Set<Event>> map = crudOps.getEventsInTimeFrame(start, end)
+                .stream()
                 .map(calEvents -> {
-                    Event event = CRUDOperations.getObjById(Event.class, calEvents.getEventId());
+                    Event event = crudOps.getObjById(calEvents.getEventId());
                     event.setTimeOf(calEvents.getDate());
                     return event;
                 })
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
+
         boolean hasNewEntries = false;
 
         for (Calendar date : new DateHandler(start, end).fromTo()) {

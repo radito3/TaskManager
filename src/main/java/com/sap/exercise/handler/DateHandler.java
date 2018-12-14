@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -85,7 +86,14 @@ public class DateHandler {
         }
 
         Calendar today = Calendar.getInstance();
-        return startDate.currentCal.get(Calendar.DAY_OF_MONTH) <= today.get(Calendar.DAY_OF_MONTH) &&
-                endDate.currentCal.get(Calendar.DAY_OF_MONTH) >= today.get(Calendar.DAY_OF_MONTH);
+        int startDay = mapCalToDay(startDate.currentCal);
+        int endDay = mapCalToDay(endDate.currentCal);
+        int todayDay = mapCalToDay(today);
+
+        return startDay <= todayDay && endDay >= todayDay;
+    }
+
+    private int mapCalToDay(Calendar calendar) {
+        return Optional.of(calendar).map(c -> c.get(Calendar.DAY_OF_MONTH)).get();
     }
 }

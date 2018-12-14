@@ -1,6 +1,5 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.db;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.AbstractModel;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
@@ -14,21 +13,23 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+//will be deleted
+@Deprecated
 public class CRUDOperations {
 
     public static <T extends AbstractModel> Serializable create(T obj) {
         return get(s -> s.save(obj));
     }
 
-    static <T extends AbstractModel> void create(final Collection<T> collection) {
+    public static <T extends AbstractModel> void create(final Collection<T> collection) {
         process(s -> collection.forEach(s::save));
     }
 
-    static <T extends AbstractModel> void update(T obj) {
+    public static <T extends AbstractModel> void update(T obj) {
         process(s -> s.update(obj));
     }
 
-    static <T extends AbstractModel> void delete(T obj) {
+    public static <T extends AbstractModel> void delete(T obj) {
         process(s -> s.delete(obj));
     }
 
@@ -54,23 +55,18 @@ public class CRUDOperations {
         }
     }
 
-    static Optional<Event> getEventByTitle(String title) {
-        return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\' LIMIT 1;", Event.class)
+    public static Optional<Event> getEventByTitle(String title) {
+        return get(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'" + title + "\' LIMIT 1;", Event.class)
                         .uniqueResultOptional());
     }
 
-    static List<CalendarEvents> getEventsInTimeFrame(String start, String end) {
-        return DatabaseUtilFactory.getDbClient().getObject(s ->
-                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
-                        "\' AND Date <= \'" + end + "\';", CalendarEvents.class)
-                        .getResultList());
+    public static List<CalendarEvents> getEventsInTimeFrame(String start, String end) {
+        return get(s -> s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
+                        "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList());
     }
 
-    static void deleteEventsInTimeFrame(Event event, String start, String end) {
-        DatabaseUtilFactory.getDbClient().processObject(s ->
-                s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
-                        " AND Date >= \'" + start + "\' AND Date <= \'" + end + "\';")
-                        .executeUpdate());
+    public static void deleteEventsInTimeFrame(Event event, String start, String end) {
+        process(s -> s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
+                        " AND Date >= \'" + start + "\' AND Date <= \'" + end + "\';").executeUpdate());
     }
 }

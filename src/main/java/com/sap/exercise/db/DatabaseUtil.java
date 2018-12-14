@@ -12,7 +12,7 @@ import org.hibernate.service.ServiceRegistry;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DatabaseUtil {
+class DatabaseUtil {
 
     private SessionFactory factory;
 
@@ -29,11 +29,11 @@ public class DatabaseUtil {
         factory = configuration.buildSessionFactory(registry);
     }
 
-    public synchronized void processObject(Consumer<Session> consumer) {
+    synchronized void processObject(Consumer<Session> consumer) {
         process(consumer, null);
     }
 
-    public synchronized <T> T getObject(Function<Session, T> function) {
+    synchronized <T> T getObject(Function<Session, T> function) {
         return process(null, function);
     }
 
