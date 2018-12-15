@@ -12,4 +12,7 @@ public interface Command {
 
     void execute(EventHandler handler, String... args);
 
+    static void onInvalidCommand() {
+        printer.println("Invalid command");
+    }
 }

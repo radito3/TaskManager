@@ -10,11 +10,18 @@ import java.io.OutputStream;
 
 public class Application {
 
+    private static InputParser parser;
+
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.WARN);
         EventHandler handler = new EventHandler();
-        new InputParser().run(handler);
+        parser = new InputParser();
+        parser.run(handler);
+    }
+
+    public static InputParser getParser() {
+        return parser;
     }
 
     public static class Configuration {

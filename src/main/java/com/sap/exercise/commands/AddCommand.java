@@ -1,10 +1,10 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.Application;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.commands.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.parser.InputParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
@@ -21,7 +21,7 @@ public class AddCommand implements Command {
     public void execute(EventHandler handler, String... args) {
         try {
             Event event = flagHandler(args);
-            BufferedReader reader = new InputParser().getReader();
+            BufferedReader reader = Application.getParser();
             EventWrapper builder = new EventWrapper(event);
 
             CommandUtils.interactiveInput(reader, builder);
