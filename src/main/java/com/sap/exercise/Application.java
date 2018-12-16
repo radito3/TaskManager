@@ -1,15 +1,17 @@
 package com.sap.exercise;
 
-import com.sap.exercise.handler.EventHandler;
-import com.sap.exercise.parser.InputParser;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import com.sap.exercise.handler.EventHandler;
+import com.sap.exercise.parser.InputParser;
+
 public class Application {
 
+    // effectively static singleton
     private static InputParser parser;
 
     public static void main(String[] args) {

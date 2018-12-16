@@ -11,6 +11,7 @@ public interface FieldInfo {
 
     // Dido : name methods as verbs / actions - the behavior this object 'does'/'acts' , not 'is'
     // Rangel: Like this?
+    // Dido: cool :)
     void handleArg(String arg);
 
 }

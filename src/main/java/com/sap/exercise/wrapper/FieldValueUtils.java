@@ -25,6 +25,8 @@ public class FieldValueUtils {
 
     // Dido:knowledge about the actual 'repeatable' values is in multiple places - in the RepeatableType enum and in the following method
     // Rangel: Has this fixed the issue?
+    // Dido: not really - modifying the enum would still require adaptations in those regexes. Why not move the entire method boyd to the
+    // enunm and not just delegate to it?
     public static Event.RepeatableType valueOfRepeatable(String input) {
         if (input.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
             return Event.RepeatableType.valueOf(input.trim().toUpperCase());

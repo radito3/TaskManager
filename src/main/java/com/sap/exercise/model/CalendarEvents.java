@@ -15,7 +15,6 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "CalendarEvents")
-// Is the mapping to Event 1:1 ? If so, why is this entity extracted from Event?
 public class CalendarEvents extends AbstractModel implements Serializable {
 
     @Id

@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Observable;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
@@ -17,20 +17,22 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.sap.exercise.db.CRUDOperationsNew;
 import com.sap.exercise.db.CRUDOps;
+import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.handler.observers.DeletionObserver;
 import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
 import com.sap.exercise.handler.observers.UpdateObserver;
-import org.apache.commons.lang3.time.DateUtils;
-
-import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 
 public class EventHandler extends Observable {
 
+    // creation and (lifecycle) management of this thread pool should not be done in this class, as this object is shared with other
+    // classes, and the current class already has one other responsibility
     private final ExecutorService service = Executors.newCachedThreadPool();
     private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
 
@@ -178,6 +180,7 @@ public class EventHandler extends Observable {
         return hasNewEntries;
     }
 
+    // this is an additional responsibility of that class - one is managing event operations, the other - scheduling runnables
     public void submitRunnable(Runnable runnable) {
         service.submit(runnable);
     }

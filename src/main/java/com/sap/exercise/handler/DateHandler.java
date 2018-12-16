@@ -1,8 +1,5 @@
 package com.sap.exercise.handler;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
@@ -10,6 +7,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+
+//if you had a 'generic utils' package, this class would look fine there. It does not have much to do with the controller (EventHandler) and with the notifications
 public class DateHandler {
 
     public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
