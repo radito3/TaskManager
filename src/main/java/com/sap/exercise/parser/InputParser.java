@@ -40,20 +40,22 @@ public class InputParser extends BufferedReader {
                 }
                 String[] inputArgs = input.split("\\s+");
 
-                executeCommand(handler, inputArgs);
+                if (executeCommand(handler, inputArgs) != 0) {
+                    break;
+                }
             }
         } catch (IOException e) {
             Logger.getLogger(InputParser.class).error("Input reading error", e);
         }
     }
 
-    private void executeCommand(EventHandler arg, String[] userInput) {
+    private int executeCommand(EventHandler arg, String[] userInput) {
         String command = userInput[0];
         if (!commands.containsKey(command)) {
             Command.onInvalidCommand();
-            return;
+            return 0;
         }
-        commands.get(command).get()
+        return commands.get(command).get()
                 .execute(arg, Arrays.copyOfRange(userInput, 1, userInput.length));
     }
 }

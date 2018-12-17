@@ -16,7 +16,7 @@ public class PrintAgendaCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             String[] times = CommandUtils.flagHandlerForTimeFrame(args);
             String start = times[0], end = times[1];
@@ -32,6 +32,7 @@ public class PrintAgendaCommand implements Command {
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 
 }

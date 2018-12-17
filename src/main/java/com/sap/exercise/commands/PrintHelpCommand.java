@@ -16,7 +16,7 @@ public class PrintHelpCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.helpOptions(), args);
 
@@ -62,6 +62,7 @@ public class PrintHelpCommand implements Command {
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 
 }

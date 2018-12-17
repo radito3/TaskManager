@@ -10,7 +10,7 @@ public interface Command {
 
     String getName();
 
-    void execute(EventHandler handler, String... args);
+    int execute(EventHandler handler, String... args);
 
     static void onInvalidCommand() {
         printer.println("Invalid command");

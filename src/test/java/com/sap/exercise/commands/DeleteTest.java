@@ -1,7 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.AbstractTest;
-import com.sap.exercise.db.CRUDOperationsNew;
+import com.sap.exercise.db.CRUDOperations;
 import com.sap.exercise.db.CRUDOps;
 import com.sap.exercise.model.Event;
 import org.junit.jupiter.api.Disabled;
@@ -27,7 +27,7 @@ public class DeleteTest extends AbstractTest {
     @DisplayName("Delete command functionality test")
     public void deleteCommandTest() {
         Event event = new Event("test title");
-        CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
+        CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
         Serializable id = crudOps.create(event);
 
         new Delete().execute(handler, "test", "title");

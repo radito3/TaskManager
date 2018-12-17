@@ -15,7 +15,7 @@ public class PrintCalendarCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             Calendar cal = Calendar.getInstance();
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.calendarOptions(), args);
@@ -38,5 +38,6 @@ public class PrintCalendarCommand implements Command {
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 }

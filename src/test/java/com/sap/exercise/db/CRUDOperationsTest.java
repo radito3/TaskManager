@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("CRUD Operations tests")
-public class CRUDOperationsNewTest extends AbstractTest {
+public class CRUDOperationsTest extends AbstractTest {
 
     @Test
     @DisplayName("Creation and reading test")
     public void createAndReadTest() {
         User user = new User();
-        CRUDOps<User> crudOps = new CRUDOperationsNew<>(User.class);
+        CRUDOps<User> crudOps = new CRUDOperations<>(User.class);
         Serializable id = crudOps.create(user);
 
         assertAll("Object integrity assertions",
@@ -37,14 +37,14 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @Test
     @DisplayName("Creation of no objects test")
     public void createNoObjTest() {
-        assertDoesNotThrow(() -> new CRUDOperationsNew<>(User.class).create(new ArrayList<>()));
+        assertDoesNotThrow(() -> new CRUDOperations<>(User.class).create(new ArrayList<>()));
     }
 
     @Test
     @DisplayName("Updating test")
     public void updateTest()  {
         User user = new User();
-        CRUDOps<User> crudOps = new CRUDOperationsNew<>(User.class);
+        CRUDOps<User> crudOps = new CRUDOperations<>(User.class);
         Serializable id = crudOps.create(user);
 
         user.setUserName("new name");
@@ -61,7 +61,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @DisplayName("Deletion test")
     public void deleteTest() {
         User user = new User();
-        CRUDOps<User> crudOps = new CRUDOperationsNew<>(User.class);
+        CRUDOps<User> crudOps = new CRUDOperations<>(User.class);
         Serializable id = crudOps.create(user);
 
         crudOps.delete(user);
@@ -74,7 +74,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @DisplayName("Getting object identified by title test")
     public void getObjectByTitleTest() {
         Event event = new Event("test");
-        CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
+        CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
         crudOps.create(event);
 
         Event event1 = crudOps.getObjByProperty("Title", "test").get();
@@ -86,7 +86,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @Test
     @DisplayName("Invalid name for title test")
     public void invalidNameTest() {
-        assertFalse(new CRUDOperationsNew<>(Event.class).getObjByProperty("Title", "").isPresent(),
+        assertFalse(new CRUDOperations<>(Event.class).getObjByProperty("Title", "").isPresent(),
                 "An event is returned with invalid title");
     }
 
@@ -94,7 +94,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @DisplayName("Getting object identified by id test")
     public void getObjectByIdTest() {
         User user = new User();
-        CRUDOps<User> crudOps = new CRUDOperationsNew<>(User.class);
+        CRUDOps<User> crudOps = new CRUDOperations<>(User.class);
         Serializable id = crudOps.create(user);
         user.setId((Integer) id);
 
@@ -107,7 +107,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @DisplayName("Trying to get object with invalid id test")
     public void invalidIdTest() {
         assertThrows(NullPointerException.class,
-                () -> new CRUDOperationsNew<>(User.class).getObjById(-1),
+                () -> new CRUDOperations<>(User.class).getObjById(-1),
                 "Getting object with invalid id doesn't throw error");
     }
 
@@ -120,7 +120,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
         event.setTimeOf(new GregorianCalendar(2010, Calendar.JANUARY, 1));
         handler.create(event);
 
-        List<CalendarEvents> events = new CRUDOperationsNew<>(Event.class).getEventsInTimeFrame("2010-01-01", "2010-01-30");
+        List<CalendarEvents> events = new CRUDOperations<>(Event.class).getEventsInTimeFrame("2010-01-01", "2010-01-30");
         assertEquals(30, events.size(), "Events list doesn't contain all event repetitions");
         handler.delete(event);
     }
@@ -128,7 +128,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @Test
     @DisplayName("Getting events in invalid time frame test")
     public void invalidTimeFrameGetTest() {
-        assertEquals(0, new CRUDOperationsNew<>(Event.class).getEventsInTimeFrame("2018-01-01", "2017-01-01").size(),
+        assertEquals(0, new CRUDOperations<>(Event.class).getEventsInTimeFrame("2018-01-01", "2017-01-01").size(),
                 "Invalid time frame returns non-empty list");
     }
 
@@ -136,7 +136,7 @@ public class CRUDOperationsNewTest extends AbstractTest {
     @DisplayName("Deleting events in time frame test test")
     @Disabled("Not working yet")
     public void deleteEventsInTimeFrameTest() {
-        CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
+        CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
         Event event = new Event("for_testing");
         event.setToRepeat(Event.RepeatableType.DAILY);
         event.setTimeOf(new GregorianCalendar(2010, Calendar.JANUARY, 1));

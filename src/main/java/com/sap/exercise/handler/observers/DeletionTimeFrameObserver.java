@@ -23,12 +23,12 @@ public class DeletionTimeFrameObserver implements Observer {
             String[] timeFrame = (String[]) objects[2];
             DateHandler dateHandler = new DateHandler(timeFrame[0], timeFrame[1]);
 
-            handler.submitRunnable(() -> {
+            handler.getThPool().submitRunnable(() -> {
                 if (dateHandler.containsToday()) {
-                    handler.submitRunnable(Notifications.onDelete(event));
+                    handler.getThPool().submitRunnable(Notifications.onDelete(event));
                 }
             });
-            handler.submitRunnable(() -> {
+            handler.getThPool().submitRunnable(() -> {
                 for (Calendar cal : dateHandler.fromTo()) {
                     handler.iterateEventsMap((date, eventSet) -> {
                         if (DateUtils.isSameDay(cal, date)) {

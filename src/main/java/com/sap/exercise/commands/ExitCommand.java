@@ -14,12 +14,15 @@ public class ExitCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             Application.getParser().close();
         } catch (IOException e) {
             Logger.getLogger(ExitCommand.class).error("Error on closing input stream", e);
         }
-        System.exit(0);
+        handler.getThPool().close();
+        System.clearProperty("db-instance");
+//        System.gc();
+        return 1;
     }
 }

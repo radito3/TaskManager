@@ -3,6 +3,7 @@ package com.sap.exercise.handler;
 import com.sap.exercise.Application;
 import com.sap.exercise.model.Event;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.log4j.Logger;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -38,7 +39,9 @@ public class EmailNotificationHandler extends Notifications implements Runnable 
 
                 notifyByEmail();
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException e) {
+                Logger.getLogger(EmailNotificationHandler.class).debug("Notification deleted", e);
+            }
         }
     }
 
@@ -57,7 +60,7 @@ public class EmailNotificationHandler extends Notifications implements Runnable 
                 msg.setText("Event description: " + event.getDescription(), "utf-8", "plain");
                 Transport.send(msg, "me@example.com", "my-password");
             } catch (MessagingException mex) {
-                printer.error("Send failed, exception: " + mex.toString());
+                Logger.getLogger(EmailNotificationHandler.class).error("Message sending error", mex);
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.model.Event;
+import org.apache.log4j.Logger;
 
 import javax.swing.JOptionPane;
 
@@ -22,7 +23,9 @@ public class PopupNotificationHandler extends Notifications implements Runnable 
 
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder", JOptionPane.PLAIN_MESSAGE);
 
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException e) {
+                Logger.getLogger(PopupNotificationHandler.class).debug("Notification deleted", e);
+            }
         }
     }
 }

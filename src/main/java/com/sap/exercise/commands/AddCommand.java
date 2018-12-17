@@ -18,7 +18,7 @@ public class AddCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             Event event = flagHandler(args);
             BufferedReader reader = Application.getParser();
@@ -31,6 +31,7 @@ public class AddCommand implements Command {
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 
     private Event flagHandler(String[] args) throws ParseException {

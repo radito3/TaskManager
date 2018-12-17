@@ -16,7 +16,7 @@ public class EditCommand implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         try {
             BufferedReader reader = Application.getParser();
 
@@ -31,6 +31,7 @@ public class EditCommand implements Command {
         } catch (NullPointerException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 
 }

@@ -18,7 +18,7 @@ public class Delete implements Command {
     }
 
     @Override
-    public void execute(EventHandler handler, String... args) {
+    public int execute(EventHandler handler, String... args) {
         this.handler = handler;
         try {
             String[] vars = CommandUtils.flagHandlerForTimeFrame(
@@ -37,6 +37,7 @@ public class Delete implements Command {
         } catch (NullPointerException | IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
         }
+        return 0;
     }
 
     private int deleteEvents(String start, String end) {

@@ -2,7 +2,6 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.Application;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.Serializable;
@@ -13,8 +12,6 @@ import java.util.Map;
 public abstract class Notifications {
 
     protected static final Map<Serializable, Thread> eventNotifications = new Hashtable<>();
-
-    protected static final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
 
     protected long timeTo;
     protected Event event;

@@ -9,15 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Observable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.sap.exercise.db.CRUDOperationsNew;
+import com.sap.exercise.db.CRUDOperations;
 import com.sap.exercise.db.CRUDOps;
 import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.handler.observers.DeletionObserver;
@@ -31,7 +29,7 @@ import com.sap.exercise.model.Event;
 
 public class EventHandler extends Observable {
 
-    private final ExecutorService service = Executors.newCachedThreadPool();
+    private final ThreadPoolHandler thPool = new ThreadPoolHandler();
     private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
 
     public enum ActionType {
@@ -39,7 +37,7 @@ public class EventHandler extends Observable {
     }
 
     public EventHandler() {
-        service.submit(DatabaseUtilFactory::createDbClient);
+        thPool.submitRunnable(DatabaseUtilFactory::createDbClient);
         addObserver(new CreationObserver());
         addObserver(new UpdateObserver());
         addObserver(new DeletionObserver());
@@ -48,25 +46,25 @@ public class EventHandler extends Observable {
     }
 
     private void checkForUpcomingEvents() {
-        service.submit(() -> {
+        thPool.submitRunnable(() -> {
             String date = new DateHandler(DateHandler.Dates.TODAY).asString();
 
             Set<Event> events = getEventsInTimeFrame(date, date);
             if (!events.isEmpty()) {
-                events.forEach(event -> service.submit(Notifications.newNotificationHandler(event)));
+                events.forEach(event -> thPool.submitRunnable(Notifications.newNotificationHandler(event)));
             }
         });
     }
 
     public void create(Event event) {
-        CRUDOps<Event> crudOps1 = new CRUDOperationsNew<>(Event.class);
-        CRUDOps<CalendarEvents> crudOps2 = new CRUDOperationsNew<>(CalendarEvents.class);
+        CRUDOps<Event> crudOps1 = new CRUDOperations<>(Event.class);
+        CRUDOps<CalendarEvents> crudOps2 = new CRUDOperations<>(CalendarEvents.class);
 
         Serializable id = crudOps1.create(event);
-        service.submit(() -> crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf())));
+        thPool.submitCallable(() -> crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf())));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            service.submit(() -> crudOps2.create(eventsList((Integer) id, event)));
+            thPool.submitRunnable(() -> crudOps2.create(eventsList((Integer) id, event)));
         }
 
         setChanged();
@@ -99,26 +97,26 @@ public class EventHandler extends Observable {
     }
 
     public void update(Event event) {
-        service.submit(() -> new CRUDOperationsNew<>(Event.class).update(event));
+        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).update(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.UPDATE });
         checkForUpcomingEvents();
     }
 
     public void delete(Event event) {
-        service.submit(() -> new CRUDOperationsNew<>(Event.class).delete(event));
+        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).delete(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE });
     }
 
     public void deleteInTimeFrame(Event event, String start, String end) {
-        service.submit(() -> new CRUDOperationsNew<>(Event.class).deleteEventsInTimeFrame(event, start, end));
+        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).deleteEventsInTimeFrame(event, start, end));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE_TIME_FRAME, new String[] {start, end} });
     }
 
     public Event getEventByTitle(String title) {
-        return new CRUDOperationsNew<>(Event.class)
+        return new CRUDOperations<>(Event.class)
                 .getObjByProperty("Title", title)
                 .orElseThrow(() -> new NullPointerException("Invalid event name"));
     }
@@ -154,7 +152,7 @@ public class EventHandler extends Observable {
     }
 
     private boolean setEventsInTable(String start, String end) {
-        CRUDOps<Event> crudOps = new CRUDOperationsNew<>(Event.class);
+        CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
 
         Map<Calendar, Set<Event>> map = crudOps.getEventsInTimeFrame(start, end)
                 .stream()
@@ -178,8 +176,8 @@ public class EventHandler extends Observable {
         return hasNewEntries;
     }
 
-    public void submitRunnable(Runnable runnable) {
-        service.submit(runnable);
+    public ThreadPoolHandler getThPool() {
+        return thPool;
     }
 
     public void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
