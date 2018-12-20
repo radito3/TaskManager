@@ -14,11 +14,11 @@ import javax.swing.JOptionPane;
 import java.util.Date;
 import java.util.Properties;
 
-public class EmailNotificationHandler extends Notifications implements Runnable {
+public class EmailNotification extends AbstractNotification {
 
     private boolean isValidEmail;
 
-    EmailNotificationHandler(Event event) {
+    EmailNotification(Event event) {
         super(event);
 
         EmailValidator validator = EmailValidator.getInstance(true);
@@ -32,20 +32,7 @@ public class EmailNotificationHandler extends Notifications implements Runnable 
     }
 
     @Override
-    public void run() {
-        if (event != null) {
-            try {
-                Thread.sleep(timeTo < 0 ? 0 : timeTo);
-
-                notifyByEmail();
-
-            } catch (InterruptedException e) {
-                Logger.getLogger(EmailNotificationHandler.class).debug("Notification deleted", e);
-            }
-        }
-    }
-
-    private void notifyByEmail() {
+    public void send() {
         if (isValidEmail) {
             Properties props = new Properties();
             props.put("mail.smtp.host", "my-mail-server");
@@ -55,12 +42,12 @@ public class EmailNotificationHandler extends Notifications implements Runnable 
                 MimeMessage msg = new MimeMessage(session);
                 msg.setFrom("me@example.com");
                 msg.setRecipients(Message.RecipientType.TO, Application.Configuration.USER_EMAIL);
-                msg.setSubject("Event reminder: " + event.getTitle());
+                msg.setSubject("Event reminder: " + this.event.getTitle());
                 msg.setSentDate(new Date());
-                msg.setText("Event description: " + event.getDescription(), "utf-8", "plain");
+                msg.setText("Event description: " + this.event.getDescription(), "utf-8", "plain");
                 Transport.send(msg, "me@example.com", "my-password");
             } catch (MessagingException mex) {
-                Logger.getLogger(EmailNotificationHandler.class).error("Message sending error", mex);
+                Logger.getLogger(EmailNotification.class).error("Message sending error", mex);
             }
         }
     }

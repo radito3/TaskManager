@@ -17,11 +17,14 @@ public class CRUDOperations<T extends AbstractModel> implements CRUDOps<T> {
     private Class<T> tClass;
     private Map<Class<? extends AbstractModel>, String> modelNames = new HashMap<>(3);
 
-    public CRUDOperations(Class<T> tClass) {
-        this.tClass = tClass;
+    {
         modelNames.put(Event.class, "Eventt");
         modelNames.put(CalendarEvents.class, "CalendarEvents");
         modelNames.put(User.class, "User");
+    }
+
+    public CRUDOperations(Class<T> tClass) {
+        this.tClass = tClass;
     }
 
     @Override

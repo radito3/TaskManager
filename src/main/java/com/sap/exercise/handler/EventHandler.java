@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.Observable;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,22 +37,14 @@ public class EventHandler extends Observable {
 
     public EventHandler() {
         thPool.submitRunnable(DatabaseUtilFactory::createDbClient);
+
         addObserver(new CreationObserver());
         addObserver(new UpdateObserver());
         addObserver(new DeletionObserver());
         addObserver(new DeletionTimeFrameObserver());
-        checkForUpcomingEvents();
-    }
 
-    private void checkForUpcomingEvents() {
-        thPool.submitRunnable(() -> {
-            String date = new DateHandler(DateHandler.Dates.TODAY).asString();
-
-            Set<Event> events = getEventsInTimeFrame(date, date);
-            if (!events.isEmpty()) {
-                events.forEach(event -> thPool.submitRunnable(Notifications.newNotificationHandler(event)));
-            }
-        });
+        String date = new DateHandler(DateHandler.Dates.TODAY).asString();
+        thPool.submitRunnable(() -> setEventsInTable(date, date));
     }
 
     public void create(Event event) {
@@ -69,7 +60,6 @@ public class EventHandler extends Observable {
 
         setChanged();
         notifyObservers(new Object[] { event, ActionType.CREATE, id });
-        checkForUpcomingEvents();
     }
 
     private List<CalendarEvents> eventsList(Integer eventId, Event event) {
@@ -86,10 +76,9 @@ public class EventHandler extends Observable {
     }
 
     private List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
-        Supplier<Calendar> calSupplier = () -> (Calendar) event.getTimeOf().clone();
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {
-                    Calendar calendar = calSupplier.get();
+                    Calendar calendar = (Calendar) event.getTimeOf().clone();
                     calendar.add(field, i);
                     return new CalendarEvents(eventId, calendar);
                 })
@@ -100,7 +89,6 @@ public class EventHandler extends Observable {
         thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).update(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.UPDATE });
-        checkForUpcomingEvents();
     }
 
     public void delete(Event event) {
@@ -132,8 +120,7 @@ public class EventHandler extends Observable {
             String startIndex = nullDates.get(0),
                     endIndex = nullDates.get(nullDates.size() - 1);
             if (setEventsInTable(startIndex, endIndex)) {
-                new DateHandler(startIndex, endIndex).fromTo()
-                        .forEach(handleDates(events, date -> {}));
+                new DateHandler(startIndex, endIndex).fromTo().forEach(handleDates(events, date -> {}));
             }
         }
 
@@ -169,6 +156,14 @@ public class EventHandler extends Observable {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
                     eventsMap.put(date, entry.getValue());
+
+                    entry.getValue().forEach(event -> {
+                        if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), event.getTimeOf())) {
+                            event.startNotification();
+                            thPool.submitRunnable(event.getNotification());
+                        }
+                    });
+
                     hasNewEntries = true;
                 }
             }
@@ -182,5 +177,13 @@ public class EventHandler extends Observable {
 
     public void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);
+    }
+
+    public void putInMap(Calendar calendar, Set<Event> events) {
+        eventsMap.put(calendar, events);
+    }
+
+    public Set<Event> getFromMap(Calendar calendar) {
+        return eventsMap.get(calendar);
     }
 }

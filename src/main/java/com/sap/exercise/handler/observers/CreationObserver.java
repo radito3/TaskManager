@@ -6,8 +6,12 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 public class CreationObserver implements Observer {
 
@@ -20,13 +24,20 @@ public class CreationObserver implements Observer {
 
         if (type == EventHandler.ActionType.CREATE) {
             Serializable id = (Serializable) objects[2];
+            event.setId((Integer) id);
 
-            handler.iterateEventsMap((cal, eventSet) -> {
-                if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
-                    event.setId((Integer) id);
-                    eventSet.add(event);
-                }
-            });
+            Calendar cal = event.getTimeOf();
+            if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
+                event.startNotification();
+                handler.getThPool().submitRunnable(event.getNotification());
+            }
+
+            Set<Event> events;
+            if ((events = handler.getFromMap(cal)) != null) {
+                events.add(event);
+            } else {
+                handler.putInMap(cal, new HashSet<>(Collections.singleton(event)));
+            }
         }
     }
 }

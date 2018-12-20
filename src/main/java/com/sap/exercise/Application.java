@@ -18,7 +18,7 @@ public class Application {
         EventHandler handler = new EventHandler();
         parser = new InputParser();
         parser.run(handler);
-//        System.exit(0);
+        System.exit(0);
     }
 
     public static InputParser getParser() {

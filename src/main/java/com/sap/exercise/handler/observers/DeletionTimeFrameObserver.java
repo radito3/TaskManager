@@ -2,7 +2,6 @@ package com.sap.exercise.handler.observers;
 
 import com.sap.exercise.handler.DateHandler;
 import com.sap.exercise.handler.EventHandler;
-import com.sap.exercise.handler.Notifications;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -25,7 +24,7 @@ public class DeletionTimeFrameObserver implements Observer {
 
             handler.getThPool().submitRunnable(() -> {
                 if (dateHandler.containsToday()) {
-                    handler.getThPool().submitRunnable(Notifications.onDelete(event));
+                    handler.getThPool().submitRunnable(event::deleteNotification);
                 }
             });
             handler.getThPool().submitRunnable(() -> {
