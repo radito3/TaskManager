@@ -5,6 +5,7 @@ import com.sap.exercise.handler.NotificationFactory;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -17,21 +18,35 @@ public class Event extends AbstractModel implements Serializable {
     }
 
     public enum RepeatableType {
-        NONE, DAILY, WEEKLY, MONTHLY, YEARLY;
+        NONE("n|none"),
+        DAILY("d|daily"),
+        WEEKLY("w|weekly"),
+        MONTHLY("m|monthly"),
+        YEARLY("y|yearly");
 
-        public static RepeatableType getRepeatableFromAlias(String input) {
-            switch (input) {
-                case "d":
-                    return DAILY;
-                case "w":
-                    return WEEKLY;
-                case "m":
-                    return MONTHLY;
-                case "y":
-                    return YEARLY;
-                default:
-                    return NONE;
+        private String regex;
+
+        RepeatableType(String regex) {
+            this.regex = regex;
+        }
+
+        public String toRegex() {
+            return this.regex;
+        }
+
+        public static String getRegex() {
+            return String.join("|", Arrays.stream(RepeatableType.values())
+                    .map(RepeatableType::toRegex)
+                    .toArray(String[]::new));
+        }
+
+        public static RepeatableType getRepeatable(String value) {
+            for (RepeatableType rt : RepeatableType.values()) {
+                if (value.toLowerCase().matches(rt.regex)) {
+                    return rt;
+                }
             }
+            return NONE;
         }
     }
 

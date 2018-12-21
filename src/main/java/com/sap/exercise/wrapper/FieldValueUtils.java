@@ -23,16 +23,11 @@ public class FieldValueUtils {
         return Integer.valueOf(input.trim());
     }
 
-    // Dido:knowledge about the actual 'repeatable' values is in multiple places - in the RepeatableType enum and in the following method
-    // Rangel: Has this fixed the issue?
     public static Event.RepeatableType valueOfRepeatable(String input) {
-        if (input.toLowerCase().matches("^\\s*none|daily|weekly|monthly|yearly\\s*$")) {
-            return Event.RepeatableType.valueOf(input.trim().toUpperCase());
+        if (!input.toLowerCase().matches("^\\s*" + Event.RepeatableType.getRegex() + "\\s*$")) {
+            throw new IllegalArgumentException("Invalid input");
         }
-        if (input.toLowerCase().matches("^\\s*n|d|w|m|y\\s*$")) {
-            return Event.RepeatableType.getRepeatableFromAlias(input.trim().toLowerCase());
-        }
-        throw new IllegalArgumentException("Invalid input");
+        return Event.RepeatableType.getRepeatable(input.trim());
     }
 
     public static String valueOfStr(String input) {
