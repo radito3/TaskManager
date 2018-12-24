@@ -16,12 +16,9 @@ public abstract class AbstractNotification implements Notification {
         Calendar timeOf = event.getTimeOf();
         Calendar now = Calendar.getInstance();
 
-        this.timeTo = event.getAllDay() ? 0 : (timeOf.getTimeInMillis() - now.getTimeInMillis())
-                - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
-        if (this.timeTo < 0) {
-            this.timeTo = 0;
-        }
+        long time = (timeOf.getTimeInMillis() - now.getTimeInMillis()) - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
+        this.timeTo = (event.getAllDay() || time < 0) ? 0 : time;
         this.event = event;
     }
 

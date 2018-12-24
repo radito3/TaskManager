@@ -36,7 +36,7 @@ public class EventHandler extends Observable {
     }
 
     public EventHandler() {
-        thPool.submitRunnable(DatabaseUtilFactory::createDbClient);
+        thPool.submit(DatabaseUtilFactory::createDbClient);
 
         addObserver(new CreationObserver());
         addObserver(new UpdateObserver());
@@ -44,7 +44,7 @@ public class EventHandler extends Observable {
         addObserver(new DeletionTimeFrameObserver());
 
         String date = new DateHandler(DateHandler.Dates.TODAY).asString();
-        thPool.submitRunnable(() -> setEventsInTable(date, date));
+        thPool.submit(() -> setEventsInTable(date, date));
     }
 
     public void create(Event event) {
@@ -52,10 +52,10 @@ public class EventHandler extends Observable {
         CRUDOps<CalendarEvents> crudOps2 = new CRUDOperations<>(CalendarEvents.class);
 
         Serializable id = crudOps1.create(event);
-        thPool.submitCallable(() -> crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf())));
+        crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf()));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            thPool.submitRunnable(() -> crudOps2.create(eventsList((Integer) id, event)));
+            thPool.submit(() -> crudOps2.create(eventsList((Integer) id, event)));
         }
 
         setChanged();
@@ -86,19 +86,19 @@ public class EventHandler extends Observable {
     }
 
     public void update(Event event) {
-        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).update(event));
+        thPool.submit(() -> new CRUDOperations<>(Event.class).update(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.UPDATE });
     }
 
     public void delete(Event event) {
-        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).delete(event));
+        thPool.submit(() -> new CRUDOperations<>(Event.class).delete(event));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE });
     }
 
     public void deleteInTimeFrame(Event event, String start, String end) {
-        thPool.submitRunnable(() -> new CRUDOperations<>(Event.class).deleteEventsInTimeFrame(event, start, end));
+        thPool.submit(() -> new CRUDOperations<>(Event.class).deleteEventsInTimeFrame(event, start, end));
         setChanged();
         notifyObservers(new Object[] { event, ActionType.DELETE_TIME_FRAME, new String[] {start, end} });
     }
@@ -160,7 +160,7 @@ public class EventHandler extends Observable {
                     entry.getValue().forEach(event -> {
                         if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), event.getTimeOf())) {
                             event.startNotification();
-                            thPool.submitRunnable(event.getNotification());
+                            thPool.submit(event.getNotification());
                         }
                     });
 

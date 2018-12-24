@@ -23,7 +23,13 @@ public interface CRUDOps<T extends AbstractModel> extends GetFromDB, ProcessDB {
 
     Optional<T> getObjByProperty(String property, String value);
 
-    List<CalendarEvents> getEventsInTimeFrame(String start, String end);
+    default List<CalendarEvents> getEventsInTimeFrame(String start, String end) {
+        return get(s -> s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
+                "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList());
+    }
 
-    void deleteEventsInTimeFrame(Event event, String start, String end);
+    default void deleteEventsInTimeFrame(Event event, String start, String end) {
+        process(s -> s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
+                " AND Date >= \'" + start + "\' AND Date <= \'" + end + "\';").executeUpdate());
+    }
 }

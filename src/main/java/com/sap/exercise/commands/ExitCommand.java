@@ -22,7 +22,6 @@ public class ExitCommand implements Command {
         }
         handler.getThPool().close();
         System.clearProperty("db-instance");
-//        System.gc();
         return 1;
     }
 }

@@ -8,7 +8,6 @@ import com.sap.exercise.model.User;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,17 +55,5 @@ public class CRUDOperations<T extends AbstractModel> implements CRUDOps<T> {
     public Optional<T> getObjByProperty(String property, String value) {
         return get(s -> s.createNativeQuery("SELECT * FROM " + modelNames.get(tClass) + " WHERE " + property + " = \'"
                 + value + "\' LIMIT 1;", tClass).uniqueResultOptional());
-    }
-
-    @Override
-    public List<CalendarEvents> getEventsInTimeFrame(String start, String end) {
-        return get(s -> s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
-                "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList());
-    }
-
-    @Override
-    public void deleteEventsInTimeFrame(Event event, String start, String end) {
-        process(s -> s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = " + event.getId() +
-                " AND Date >= \'" + start + "\' AND Date <= \'" + end + "\';").executeUpdate());
     }
 }

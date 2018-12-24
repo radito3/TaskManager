@@ -18,7 +18,7 @@ public class UpdateObserver implements Observer {
         if (type == EventHandler.ActionType.UPDATE) {
             event.deleteNotification();
             event.startNotification();
-            handler.getThPool().submitRunnable(event.getNotification());
+            handler.getThPool().submit(event.getNotification());
 
             handler.iterateEventsMap((cal, set) -> {
                 if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {

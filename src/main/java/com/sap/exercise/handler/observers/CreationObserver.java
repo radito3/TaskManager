@@ -29,7 +29,7 @@ public class CreationObserver implements Observer {
             Calendar cal = event.getTimeOf();
             if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
                 event.startNotification();
-                handler.getThPool().submitRunnable(event.getNotification());
+                handler.getThPool().submit(event.getNotification());
             }
 
             Set<Event> events;
