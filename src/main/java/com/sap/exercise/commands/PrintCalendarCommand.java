@@ -1,6 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.commands.util.CommandUtils;
+import com.sap.exercise.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;

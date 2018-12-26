@@ -1,4 +1,4 @@
-package com.sap.exercise.commands.util;
+package com.sap.exercise.util;
 
 import java.util.function.BiFunction;
 

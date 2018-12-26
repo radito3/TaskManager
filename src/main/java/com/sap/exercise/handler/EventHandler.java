@@ -20,6 +20,7 @@ import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.handler.observers.DeletionObserver;
 import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
 import com.sap.exercise.handler.observers.UpdateObserver;
+import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;
 
 import com.sap.exercise.db.DatabaseUtilFactory;

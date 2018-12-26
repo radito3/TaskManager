@@ -1,4 +1,4 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -6,7 +6,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -57,11 +56,10 @@ public class DateHandler {
     }
 
     public String asString() {
-        return String.valueOf(currentCal.get(Calendar.YEAR)) +
-                '-' +
-                (currentCal.get(Calendar.MONTH) + 1) +
-                '-' +
-                currentCal.get(Calendar.DAY_OF_MONTH);
+        return String.format("%d-%d-%d",
+                currentCal.get(Calendar.YEAR),
+                (currentCal.get(Calendar.MONTH) + 1),
+                currentCal.get(Calendar.DAY_OF_MONTH));
     }
 
     public List<Calendar> fromTo() {
@@ -81,19 +79,6 @@ public class DateHandler {
     }
 
     public boolean containsToday() {
-        if (startDate == null || endDate == null) {
-            throw new UnsupportedOperationException();
-        }
-
-        Calendar today = Calendar.getInstance();
-        int startDay = mapCalToDay(startDate.currentCal);
-        int endDay = mapCalToDay(endDate.currentCal);
-        int todayDay = mapCalToDay(today);
-
-        return startDay <= todayDay && endDay >= todayDay;
-    }
-
-    private int mapCalToDay(Calendar calendar) {
-        return Optional.of(calendar).map(c -> c.get(Calendar.DAY_OF_MONTH)).get();
+        return fromTo().stream().anyMatch(date -> DateUtils.isSameDay(date, Calendar.getInstance()));
     }
 }

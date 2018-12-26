@@ -1,4 +1,4 @@
-package com.sap.exercise.commands.util;
+package com.sap.exercise.util;
 
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.FieldInfo;

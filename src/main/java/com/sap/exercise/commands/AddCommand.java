@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.Application;
 import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.commands.util.CommandUtils;
+import com.sap.exercise.util.CommandUtils;
 import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;

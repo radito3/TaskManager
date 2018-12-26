@@ -1,7 +1,7 @@
 package com.sap.exercise.wrapper.fields;
 
 import com.sap.exercise.wrapper.FieldInfo;
-import com.sap.exercise.handler.DateHandler;
+import com.sap.exercise.util.DateHandler;
 import com.sap.exercise.model.Event;
 
 import java.util.Objects;
