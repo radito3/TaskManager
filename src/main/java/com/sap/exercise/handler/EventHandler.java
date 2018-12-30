@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Observable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ import com.sap.exercise.model.Event;
 public class EventHandler extends Observable {
 
     private final ThreadPoolHandler thPool = new ThreadPoolHandler();
-    private final Map<Calendar, Set<Event>> eventsMap = new Hashtable<>();
+    private final ConcurrentMap<Calendar, Set<Event>> eventsMap = new ConcurrentHashMap<>();
 
     public enum ActionType {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
@@ -142,19 +142,19 @@ public class EventHandler extends Observable {
     private boolean setEventsInTable(String start, String end) {
         CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
 
-        Map<Calendar, Set<Event>> map = crudOps.getEventsInTimeFrame(start, end)
+        ConcurrentMap<Calendar, Set<Event>> map = crudOps.getEventsInTimeFrame(start, end)
                 .stream()
                 .map(calEvents -> {
                     Event event = crudOps.getObjById(calEvents.getEventId());
                     event.setTimeOf(calEvents.getDate());
                     return event;
                 })
-                .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
+                .collect(Collectors.groupingBy(Event::getTimeOf, ConcurrentHashMap::new, Collectors.toSet()));
 
         boolean hasNewEntries = false;
 
         for (Calendar date : new DateHandler(start, end).fromTo()) {
-            for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
+            for (ConcurrentMap.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
                     eventsMap.put(date, entry.getValue());
 

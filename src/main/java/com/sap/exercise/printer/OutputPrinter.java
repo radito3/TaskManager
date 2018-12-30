@@ -83,10 +83,6 @@ public class OutputPrinter {
         writer.print(val);
     }
 
-    public void error(String val) {
-        writer.println(RED + val + RESET);
-    }
-
     public void monthCalendar(EventHandler handler, int month, boolean withEvents) {
         this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
@@ -102,6 +98,7 @@ public class OutputPrinter {
 
     public void printEvents(Set<Event> events) {
         Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
+
         PrinterUtils.mapAndSort(writer, eventFormatters, events)
                 .forEach(entry -> {
                     Date date = entry.getKey().getTime();

@@ -5,6 +5,7 @@ import com.sap.exercise.wrapper.FieldInfo;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class CommandUtils {
                     field.handleArg(input);
             }
         } catch (IOException e) {
-            Command.printer.error("Error: " + e.getMessage());
+            Logger.getLogger(CommandUtils.class).error("Input reading error", e);
         }
     }
 

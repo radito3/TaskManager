@@ -19,33 +19,28 @@ import java.util.stream.Stream;
 class PrinterUtils {
 
     static void printDay(PrintStream writer, int day, int month, int year, String format) {
-        if (isToday(day, month, year)) {
+        Calendar today = Calendar.getInstance();
+        Calendar toCheck = new GregorianCalendar(year, month - 1, day);
+
+        if (DateUtils.isSameDay(today, toCheck)) {
             writer.printf(OutputPrinter.INVERT + "%1$2d" + OutputPrinter.RESET, day);
         } else {
             writer.printf(format + "%1$2d" + OutputPrinter.RESET, day);
         }
     }
 
-    private static boolean isToday(int day, int month, int year) {
-        Calendar today = Calendar.getInstance();
-        Calendar toCheck = new GregorianCalendar(year, month - 1, day);
-        return DateUtils.isSameDay(today, toCheck);
-    }
-
     static Stream<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
         return IntStream.rangeClosed(1, numOfMonthDays)
                 .mapToObj(i -> (Calendar) new GregorianCalendar(year, month - 1, i))
-                .collect(Collectors.toMap(Function.identity(), valueMapper(events)))
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        (date) -> {
+                            events.removeIf(event -> !DateUtils.isSameDay(date, event.getTimeOf()));
+                            return events;
+                        }))
                 .entrySet()
                 .stream()
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
-    }
-
-    private static Function<Calendar, Set<Event>> valueMapper(Set<Event> events) {
-        return (date) ->
-                events.stream()
-                        .filter(event -> DateUtils.isSameDay(date, event.getTimeOf()))
-                        .collect(Collectors.toSet());
     }
 
     static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
