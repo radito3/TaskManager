@@ -23,8 +23,9 @@ public class CommandUtils {
 
                 input = checkMandatoryField(input, reader, field);
 
-                if (!input.isEmpty())
+                if (!input.isEmpty()) {
                     field.handleArg(input);
+                }
             }
         } catch (IOException e) {
             Logger.getLogger(CommandUtils.class).error("Input reading error", e);

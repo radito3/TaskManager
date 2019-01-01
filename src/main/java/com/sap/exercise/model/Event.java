@@ -1,7 +1,7 @@
 package com.sap.exercise.model;
 
-import com.sap.exercise.handler.Notification;
-import com.sap.exercise.handler.NotificationFactory;
+import com.sap.exercise.notifications.Notification;
+import com.sap.exercise.notifications.NotificationFactory;
 
 import javax.persistence.*;
 import java.io.Serializable;

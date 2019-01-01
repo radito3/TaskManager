@@ -7,9 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Observable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -30,7 +28,7 @@ import com.sap.exercise.model.Event;
 public class EventHandler extends Observable {
 
     private final ThreadPoolHandler thPool = new ThreadPoolHandler();
-    private final ConcurrentMap<Calendar, Set<Event>> eventsMap = new ConcurrentHashMap<>();
+    private final EventsMapHandler mapHandler = new EventsMapHandler();
 
     public enum ActionType {
         CREATE, UPDATE, DELETE, DELETE_TIME_FRAME
@@ -131,7 +129,7 @@ public class EventHandler extends Observable {
     private Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (date) -> {
             Set<Event> ev;
-            if ((ev = eventsMap.get(date)) == null) {
+            if ((ev = mapHandler.getFromMap(date)) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -149,14 +147,14 @@ public class EventHandler extends Observable {
                     event.setTimeOf(calEvents.getDate());
                     return event;
                 })
-                .collect(Collectors.groupingBy(Event::getTimeOf, ConcurrentHashMap::new, Collectors.toSet()));
+                .collect(Collectors.groupingByConcurrent(Event::getTimeOf, Collectors.toSet()));
 
         boolean hasNewEntries = false;
 
         for (Calendar date : new DateHandler(start, end).fromTo()) {
             for (ConcurrentMap.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
-                    eventsMap.put(date, entry.getValue());
+                    mapHandler.putInMap(date, entry.getValue());
 
                     entry.getValue().forEach(event -> {
                         if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), event.getTimeOf())) {
@@ -176,15 +174,7 @@ public class EventHandler extends Observable {
         return thPool;
     }
 
-    public void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
-        eventsMap.forEach(biConsumer);
-    }
-
-    public void putInMap(Calendar calendar, Set<Event> events) {
-        eventsMap.put(calendar, events);
-    }
-
-    public Set<Event> getFromMap(Calendar calendar) {
-        return eventsMap.get(calendar);
+    public EventsMapHandler getMapHandler() {
+        return mapHandler;
     }
 }

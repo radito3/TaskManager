@@ -1,4 +1,4 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.notifications;
 
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;

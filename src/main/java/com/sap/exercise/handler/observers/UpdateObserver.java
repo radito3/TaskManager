@@ -20,7 +20,7 @@ public class UpdateObserver implements Observer {
             event.startNotification();
             handler.getThPool().submit(event.getNotification());
 
-            handler.iterateEventsMap((cal, set) -> {
+            handler.getMapHandler().iterateEventsMap((cal, set) -> {
                 if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
                     set.add(event);
                 }

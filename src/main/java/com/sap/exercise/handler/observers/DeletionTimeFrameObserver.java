@@ -29,7 +29,7 @@ public class DeletionTimeFrameObserver implements Observer {
             });
             handler.getThPool().submit(() -> {
                 for (Calendar cal : dateHandler.fromTo()) {
-                    handler.iterateEventsMap((date, eventSet) -> {
+                    handler.getMapHandler().iterateEventsMap((date, eventSet) -> {
                         if (DateUtils.isSameDay(cal, date)) {
                             eventSet.removeIf(event1 -> event1.getId().equals(event.getId()));
                         }

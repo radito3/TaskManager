@@ -33,10 +33,10 @@ public class CreationObserver implements Observer {
             }
 
             Set<Event> events;
-            if ((events = handler.getFromMap(cal)) != null) {
+            if ((events = handler.getMapHandler().getFromMap(cal)) != null) {
                 events.add(event);
             } else {
-                handler.putInMap(cal, new HashSet<>(Collections.singleton(event)));
+                handler.getMapHandler().putInMap(cal, new HashSet<>(Collections.singleton(event)));
             }
         }
     }
