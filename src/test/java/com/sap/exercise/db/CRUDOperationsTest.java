@@ -118,11 +118,11 @@ public class CRUDOperationsTest extends AbstractTest {
         Event event = new Event("for_testing");
         event.setToRepeat(Event.RepeatableType.DAILY);
         event.setTimeOf(new GregorianCalendar(2010, Calendar.JANUARY, 1));
-        handler.create(event);
+//        handler.create(event);
 
         List<CalendarEvents> events = new CRUDOperations<>(Event.class).getEventsInTimeFrame("2010-01-01", "2010-01-30");
         assertEquals(30, events.size(), "Events list doesn't contain all event repetitions");
-        handler.delete(event);
+//        handler.delete(event);
     }
 
     @Test
@@ -143,14 +143,14 @@ public class CRUDOperationsTest extends AbstractTest {
 
         Serializable id = crudOps.create(event);
         crudOps.delete(event);
-        handler.create(event);
+//        handler.create(event);
         event.setId((Integer) id + 1); //not good
 
         crudOps.deleteEventsInTimeFrame(event, "2010-01-15", "2010-01-30");
 
         List<CalendarEvents> events = crudOps.getEventsInTimeFrame("2010-01-01", "2010-01-30");
         assertEquals(15, events.size(), "Events list doesn't contain correct amount of event repetitions");
-        handler.delete(event);
+//        handler.delete(event);
     }
 
     @Test

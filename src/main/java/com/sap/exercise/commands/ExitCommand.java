@@ -1,7 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.Application;
-import com.sap.exercise.handler.EventHandler;
+import com.sap.exercise.handler.ExitHandler;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -9,18 +9,13 @@ import java.io.IOException;
 public class ExitCommand implements Command {
 
     @Override
-    public String getName() {
-        return "exit";
-    }
-
-    @Override
-    public int execute(EventHandler handler, String... args) {
+    public int execute(String... args) {
         try {
             Application.getParser().close();
         } catch (IOException e) {
             Logger.getLogger(ExitCommand.class).error("Error on closing input stream", e);
         }
-        handler.getThPool().close();
+        new ExitHandler().execute();
         System.clearProperty("db-instance");
         return 1;
     }

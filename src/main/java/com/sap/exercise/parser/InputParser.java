@@ -2,7 +2,6 @@ package com.sap.exercise.parser;
 
 import com.sap.exercise.Application;
 import com.sap.exercise.commands.*;
-import com.sap.exercise.handler.EventHandler;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -31,7 +30,7 @@ public class InputParser extends BufferedReader {
         super(new InputStreamReader(Application.Configuration.INPUT));
     }
 
-    public void run(EventHandler handler) {
+    public void run() {
         try {
             while (true) {
                 String input = this.readLine();
@@ -40,7 +39,7 @@ public class InputParser extends BufferedReader {
                 }
                 String[] inputArgs = input.split("\\s+");
 
-                if (executeCommand(handler, inputArgs) != 0) {
+                if (executeCommand(inputArgs) != 0) {
                     break;
                 }
             }
@@ -49,13 +48,13 @@ public class InputParser extends BufferedReader {
         }
     }
 
-    private int executeCommand(EventHandler arg, String[] userInput) {
+    private int executeCommand(String[] userInput) {
         String command = userInput[0];
         if (!commands.containsKey(command)) {
             Command.onInvalidCommand();
             return 0;
         }
         return commands.get(command).get()
-                .execute(arg, Arrays.copyOfRange(userInput, 1, userInput.length));
+                .execute(Arrays.copyOfRange(userInput, 1, userInput.length));
     }
 }

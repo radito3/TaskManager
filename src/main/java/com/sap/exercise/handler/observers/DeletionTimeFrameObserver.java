@@ -1,7 +1,8 @@
 package com.sap.exercise.handler.observers;
 
+import com.sap.exercise.handler.AbstractEventsHandler;
+import com.sap.exercise.handler.EventDeletorTF;
 import com.sap.exercise.util.DateHandler;
-import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -15,11 +16,10 @@ public class DeletionTimeFrameObserver implements Observer {
     public void update(Observable observable, Object o) {
         Object[] objects = (Object[]) o;
         Event event = (Event) objects[0];
-        EventHandler handler = (EventHandler) observable;
-        EventHandler.ActionType type = (EventHandler.ActionType) objects[1];
+        AbstractEventsHandler<?> handler = (AbstractEventsHandler<?>) observable;
 
-        if (type == EventHandler.ActionType.DELETE_TIME_FRAME) {
-            String[] timeFrame = (String[]) objects[2];
+        if (handler.getActionType() == EventDeletorTF.DeletionTFType.DELETE_TIME_FRAME) {
+            String[] timeFrame = (String[]) objects[1];
             DateHandler dateHandler = new DateHandler(timeFrame[0], timeFrame[1]);
 
             handler.getThPool().submit(() -> {

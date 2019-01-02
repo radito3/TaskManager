@@ -1,8 +1,8 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.handler.*;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.util.CommandUtils;
-import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
 
@@ -10,16 +10,9 @@ public class Delete implements Command {
 
     private Event event;
     private DateArgumentEvaluator evaluator;
-    private EventHandler handler;
 
     @Override
-    public String getName() {
-        return "delete";
-    }
-
-    @Override
-    public int execute(EventHandler handler, String... args) {
-        this.handler = handler;
+    public int execute(String... args) {
         try {
             String[] vars = CommandUtils.flagHandlerForTimeFrame(
                     args,
@@ -28,7 +21,7 @@ public class Delete implements Command {
             String start = vars[0],
                     end = vars[1],
                     eventName = vars[2];
-            event = this.handler.getEventByTitle(eventName);
+            event = new EventGetter().getEventByTitle(eventName);
 
             evaluator = new DateArgumentEvaluator(start, end);
             int result = evaluator.eval(this::deleteEvents);
@@ -42,10 +35,10 @@ public class Delete implements Command {
 
     private int deleteEvents(String start, String end) {
         if (event.getToRepeat() == Event.RepeatableType.NONE || evaluator.numOfArgs() == 0) {
-            handler.delete(event);
+            new EventDeletor().execute(event);
             return 0;
         }
-        handler.deleteInTimeFrame(event, start, end);
+        new EventDeletorTF().execute(event, start, end);
         return 1;
     }
 }

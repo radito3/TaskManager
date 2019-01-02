@@ -1,6 +1,5 @@
 package com.sap.exercise;
 
-import com.sap.exercise.handler.EventHandler;
 import com.sap.exercise.parser.InputParser;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -15,9 +14,8 @@ public class Application {
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.WARN);
-        EventHandler handler = new EventHandler();
         parser = new InputParser();
-        parser.run(handler);
+        parser.run();
         System.exit(0);
     }
 

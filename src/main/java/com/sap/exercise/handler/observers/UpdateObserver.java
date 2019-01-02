@@ -1,6 +1,7 @@
 package com.sap.exercise.handler.observers;
 
-import com.sap.exercise.handler.EventHandler;
+import com.sap.exercise.handler.AbstractEventsHandler;
+import com.sap.exercise.handler.EventUpdater;
 import com.sap.exercise.model.Event;
 
 import java.util.Observable;
@@ -12,10 +13,9 @@ public class UpdateObserver implements Observer {
     public void update(Observable observable, Object o) {
         Object[] objects = (Object[]) o;
         Event event = (Event) objects[0];
-        EventHandler handler = (EventHandler) observable;
-        EventHandler.ActionType type = (EventHandler.ActionType) objects[1];
+        AbstractEventsHandler<?> handler = (AbstractEventsHandler<?>) observable;
 
-        if (type == EventHandler.ActionType.UPDATE) {
+        if (handler.getActionType() == EventUpdater.UpdateType.UPDATE) {
             event.deleteNotification();
             event.startNotification();
             handler.getThPool().submit(event.getNotification());
