@@ -1,21 +1,17 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
-
 import java.util.Observable;
 import java.util.Observer;
 
 public abstract class AbstractEventsHandler<T> extends Observable implements EventsHandler<T> {
 
-    protected final ThreadPoolHandler thPool = new ThreadPoolHandler();
-    protected final EventsMapHandler mapHandler = new EventsMapHandler();
+    protected final ThreadPoolHandler thPool;
+    protected final EventsMapHandler mapHandler;
 
-    {
-        thPool.submit(DatabaseUtilFactory::createDbClient);
-    }
-
-    AbstractEventsHandler(Observer o) {
+    AbstractEventsHandler(Observer o, ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
         addObserver(o);
+        this.thPool = thPool;
+        this.mapHandler = mapHandler;
     }
 
     public ThreadPoolHandler getThPool() {

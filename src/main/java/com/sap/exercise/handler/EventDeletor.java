@@ -15,8 +15,8 @@ public class EventDeletor extends AbstractEventsHandler<Event> implements Events
         }
 
     }
-    public EventDeletor() {
-        super(new DeletionObserver());
+    public EventDeletor(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
+        super(new DeletionObserver(), thPool, mapHandler);
     }
 
     @Override

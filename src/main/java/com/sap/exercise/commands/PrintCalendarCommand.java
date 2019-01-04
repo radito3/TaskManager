@@ -1,6 +1,9 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventGetter;
+import com.sap.exercise.handler.EventsGetterHandler;
+import com.sap.exercise.handler.EventsMapHandler;
+import com.sap.exercise.handler.ThreadPoolHandler;
 import com.sap.exercise.util.CommandUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
@@ -9,12 +12,20 @@ import java.util.Calendar;
 
 public class PrintCalendarCommand implements Command {
 
+    private ThreadPoolHandler thPool;
+    private EventsMapHandler mapHandler;
+
+    public PrintCalendarCommand(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
+        this.thPool = thPool;
+        this.mapHandler = mapHandler;
+    }
+
     @Override
     public int execute(String... args) {
         try {
             Calendar cal = Calendar.getInstance();
             CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.calendarOptions(), args);
-            EventGetter handler = new EventGetter();
+            EventsGetterHandler handler = new EventGetter(thPool, mapHandler);
 
             if (cmd.getOptions().length > 2 || CommandUtils.optionsSizeWithoutEvents(cmd) > 1) {
                 throw new IllegalArgumentException("Invalid number of arguments");

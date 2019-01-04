@@ -1,6 +1,6 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.handler.EventGetter;
+import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,11 +83,11 @@ public class OutputPrinter {
         writer.print(val);
     }
 
-    public void monthCalendar(EventGetter handler, int month, boolean withEvents) {
+    public void monthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
         this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
 
-    public void yearCalendar(EventGetter handler, int year, boolean withEvents) {
+    public void yearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
         writer.println(StringUtils.leftPad(String.valueOf(year), 14));
         writer.println();
         for (int i = 0; i < 12; i++) {
@@ -114,7 +114,7 @@ public class OutputPrinter {
                 });
     }
 
-    private void printCalendar(EventGetter handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
+    private void printCalendar(EventsGetterHandler handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg < 0 ? (arg + 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg < 0 ? arg1 - 1 : arg1;
 
@@ -155,7 +155,7 @@ public class OutputPrinter {
         writer.println();
     }
 
-    private void printWithEvents(EventGetter handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
+    private void printWithEvents(EventsGetterHandler handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
         Set<Event> events = handler.getEventsInTimeFrame(

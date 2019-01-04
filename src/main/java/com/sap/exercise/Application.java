@@ -9,18 +9,10 @@ import java.io.OutputStream;
 
 public class Application {
 
-    private static InputParser parser;
-
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.WARN);
-        parser = new InputParser();
-        parser.run();
-        System.exit(0);
-    }
-
-    public static InputParser getParser() {
-        return parser;
+        new InputParser().run();
     }
 
     public static class Configuration {

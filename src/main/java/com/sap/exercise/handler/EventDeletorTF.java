@@ -11,12 +11,12 @@ public class EventDeletorTF extends AbstractEventsHandler<Event> implements Even
 
         @Override
         public DeletionTFType getType() {
-            return DELETE_TIME_FRAME;
+            return valueOf(name());
         }
     }
 
-    public EventDeletorTF() {
-        super(new DeletionTimeFrameObserver());
+    public EventDeletorTF(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
+        super(new DeletionTimeFrameObserver(), thPool, mapHandler);
     }
 
     @Override

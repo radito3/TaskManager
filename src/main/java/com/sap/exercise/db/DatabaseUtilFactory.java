@@ -20,4 +20,9 @@ public class DatabaseUtilFactory {
             return db;
         }
     }
+
+    public static void close() {
+        db.close();
+        db = null;
+    }
 }

@@ -68,4 +68,7 @@ class DatabaseUtil {
         return value;
     }
 
+    synchronized void close() {
+        factory.close();
+    }
 }

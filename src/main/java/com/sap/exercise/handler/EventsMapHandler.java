@@ -2,17 +2,18 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.model.Event;
 
+import java.io.Closeable;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 
-public class EventsMapHandler {
+public class EventsMapHandler implements Closeable {
 
     private final ConcurrentMap<Calendar, Set<Event>> eventsMap;
 
-    EventsMapHandler() {
+    public EventsMapHandler() {
         eventsMap = new ConcurrentHashMap<>();
     }
 
@@ -26,5 +27,10 @@ public class EventsMapHandler {
 
     public Set<Event> getFromMap(Calendar calendar) {
         return eventsMap.get(calendar);
+    }
+
+    @Override
+    public void close() {
+        eventsMap.clear();
     }
 }

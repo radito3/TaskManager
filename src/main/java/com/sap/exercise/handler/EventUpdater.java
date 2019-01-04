@@ -11,12 +11,12 @@ public class EventUpdater extends AbstractEventsHandler<Event> implements Events
 
         @Override
         public UpdateType getType() {
-            return UPDATE;
+            return valueOf(name());
         }
     }
 
-    public EventUpdater() {
-        super(new UpdateObserver());
+    public EventUpdater(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
+        super(new UpdateObserver(), thPool, mapHandler);
     }
 
     @Override

@@ -10,18 +10,18 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DatabaseUtilTest extends AbstractTest {
-
-    @Test
-    @DisplayName("Db modification test")
-    public void processObjectTest() {
-        DatabaseUtil client = new DatabaseUtil();
-        Event event = new Event();
-        client.processObject((Session s) -> s.save(event));
-        assertAll("Retrieved object integrity assertions",
-                () -> assertNotNull(client.getObject(s -> s.get(Event.class, event.getId())), "Object retrieved from db is null"),
-                () -> assertEquals(client.getObject(s -> s.get(Event.class, event.getId())), event, "Object retrieved from db is incorrect")
-        );
-    }
+//
+//    @Test
+//    @DisplayName("Db modification test")
+//    public void processObjectTest() {
+//        DatabaseUtil client = new DatabaseUtil();
+//        Event event = new Event();
+//        client.processObject((Session s) -> s.save(event));
+//        assertAll("Retrieved object integrity assertions",
+//                () -> assertNotNull(client.getObject(s -> s.get(Event.class, event.getId())), "Object retrieved from db is null"),
+//                () -> assertEquals(client.getObject(s -> s.get(Event.class, event.getId())), event, "Object retrieved from db is incorrect")
+//        );
+//    }
 
     @Test
     @DisplayName("Getting invalid object from db test")

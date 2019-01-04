@@ -19,12 +19,12 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
         @Override
         public CreationType getType() {
-            return CREATE;
+            return valueOf(name());
         }
     }
 
-    public EventCreator() {
-        super(new CreationObserver());
+    public EventCreator(ThreadPoolHandler thPool, EventsMapHandler map) {
+        super(new CreationObserver(), thPool, map);
     }
 
     @Override

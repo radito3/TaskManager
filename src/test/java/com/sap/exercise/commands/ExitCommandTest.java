@@ -21,10 +21,10 @@ public class ExitCommandTest {
 //    }
 
 //    @org.junit.Test
-    @Test
-    @Disabled("Application::parser is uninitialized -> NPE")
-    public void exitTest() {
-        ee.expectSystemExitWithStatus(0);
-        new ExitCommand().execute();
-    }
+//    @Test
+//    @Disabled("Application::parser is uninitialized -> NPE")
+//    public void exitTest() {
+//        ee.expectSystemExitWithStatus(0);
+//        new ExitCommand().execute();
+//    }
 }

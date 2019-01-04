@@ -1,18 +1,18 @@
 package com.sap.exercise.handler;
 
-import org.apache.log4j.Logger;
+import com.sap.exercise.db.DatabaseUtilFactory;
 
 import java.io.Closeable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class ThreadPoolHandler implements Closeable {
 
     private ExecutorService service;
 
-    ThreadPoolHandler() {
+    public ThreadPoolHandler() {
         service = Executors.newCachedThreadPool();
+        service.submit(DatabaseUtilFactory::createDbClient);
     }
 
     public void submit(Runnable runnable) {
@@ -22,10 +22,5 @@ public class ThreadPoolHandler implements Closeable {
     @Override
     public void close() {
         service.shutdown();
-        try {
-            service.awaitTermination(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Logger.getLogger(ThreadPoolHandler.class).error("Thread pool termination error", e);
-        }
     }
 }

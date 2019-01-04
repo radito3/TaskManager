@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 public class EventGetter extends AbstractEventsHandler<Event> implements EventsGetterHandler {
 
-    public EventGetter() {
-        super((obs, o) -> {});
+    public EventGetter(ThreadPoolHandler th, EventsMapHandler map) {
+        super((obs, o) -> {}, th, map);
     }
 
     @Override
