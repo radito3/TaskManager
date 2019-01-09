@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.db.DatabaseClientHolder;
 
 import java.io.Closeable;
 import java.util.concurrent.ExecutorService;
@@ -12,7 +12,7 @@ public class ThreadPoolHandler implements Closeable {
 
     public ThreadPoolHandler() {
         service = Executors.newCachedThreadPool();
-        service.submit(DatabaseUtilFactory::createDbClient);
+        service.submit(DatabaseClientHolder::createDbClient);
     }
 
     public void submit(Runnable runnable) {

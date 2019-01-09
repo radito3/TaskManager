@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -19,7 +20,14 @@ public class DateHandler {
     private DateHandler endDate;
 
     public enum Dates {
-        TODAY, IN_ONE_WEEK
+        TODAY(cal -> {}),
+        IN_ONE_WEEK(cal -> cal.add(Calendar.DAY_OF_MONTH, 6));
+
+        private Consumer<Calendar> cons;
+
+        Dates(Consumer<Calendar> cons) {
+            this.cons = cons;
+        }
     }
 
     public DateHandler(String text) {
@@ -41,14 +49,7 @@ public class DateHandler {
     }
 
     public DateHandler(Dates dates) {
-        currentCal = Calendar.getInstance();
-        switch (dates) {
-            case TODAY:
-                break;
-            case IN_ONE_WEEK:
-                currentCal.add(Calendar.DAY_OF_MONTH, 6);
-                break;
-        }
+        dates.cons.accept(this.currentCal);
     }
 
     public Calendar asCalendar() {

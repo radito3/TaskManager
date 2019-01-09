@@ -11,7 +11,7 @@ public interface ProcessDB {
 
     default void process(Consumer<Session> consumer) {
         try {
-            DatabaseUtilFactory.getDbClient().processObject(consumer);
+            DatabaseClientHolder.getDbClient().processObject(consumer);
         } catch (HibernateException | IllegalStateException | RollbackException e) {
             System.setProperty("db-instance", "false");
             Logger.getLogger(ProcessDB.class).error("Database processing error", e);

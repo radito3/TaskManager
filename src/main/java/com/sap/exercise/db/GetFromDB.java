@@ -11,7 +11,7 @@ public interface GetFromDB {
 
     default <T> T get(Function<Session, T> function) {
         try {
-            return DatabaseUtilFactory.getDbClient().getObject(function);
+            return DatabaseClientHolder.getDbClient().getObject(function);
         } catch (HibernateException | IllegalStateException | RollbackException e) {
             System.setProperty("db-instance", "false");
             Logger.getLogger(GetFromDB.class).error("Getting object from database error", e);

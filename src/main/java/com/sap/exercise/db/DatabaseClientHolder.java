@@ -1,15 +1,15 @@
 package com.sap.exercise.db;
 
-public class DatabaseUtilFactory {
+public class DatabaseClientHolder {
 
-    private static volatile DatabaseUtil db;
+    private static DatabaseUtil db;
 
     public static void createDbClient() {
         db = new DatabaseUtil();
         System.setProperty("db-instance", "true");
     }
 
-    public static DatabaseUtil getDbClient() {
+    static DatabaseUtil getDbClient() {
         boolean set = System.getProperty("db-instance") != null &&
                 System.getProperty("db-instance").equals("true");
 
@@ -22,6 +22,7 @@ public class DatabaseUtilFactory {
     }
 
     public static void close() {
+        System.clearProperty("db-instance");
         db.close();
         db = null;
     }
