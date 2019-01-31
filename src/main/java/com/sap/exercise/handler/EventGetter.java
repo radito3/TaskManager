@@ -25,6 +25,8 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     public Event getEventByTitle(String var) {
         return new CRUDOperations<>(Event.class)
                 .getObjByProperty("Title", var)
+                //TODO do not throw null pointer exception - this is missuse of the type.
+                //Try with NoSuchElement exception
                 .orElseThrow(() -> new NullPointerException("Invalid event name"));
     }
 

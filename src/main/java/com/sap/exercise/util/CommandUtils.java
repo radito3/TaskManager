@@ -11,7 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Function;
-
+//TODO this class should be in the commands package - it contains very speciffic knowledge about the interface, which is otherwise encapsulated in the commands. 
+//TODI - I also see no reason for this class to be static, than *baybe* some performance benefits - less GC & heap footprint. 
 public class CommandUtils {
 
     public static void interactiveInput(BufferedReader reader, EventWrapper builder) {
@@ -53,7 +54,7 @@ public class CommandUtils {
     public static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
         return new DefaultParser().parse(options, args, false);
     }
-
+    //TODO The knowledge in the following methods is very speciffic to the (Add/PrintCalendar/*)Command classes. It should be encapsulated within or `close` to those classes
     public static Options addOptions() {
         Option task = Option.builder("t")
                 .required(false)

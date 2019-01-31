@@ -28,6 +28,8 @@ public class CRUDOperations<T extends AbstractModel> implements CRUDOps<T> {
 
     @Override
     public Serializable create(T obj) {
+        //TODO - this does not sound good - a create method calls a get method to do some 'getting'?
+        //Think about better names - maybe the get is not actually a get, if it does mutation on the state. 
         return get(s -> s.save(obj));
     }
 

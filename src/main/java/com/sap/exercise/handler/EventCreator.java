@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 
 public class EventCreator extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
 
+    //TODO what is the idea behind this?
     public enum CreationType implements ActionType<CreationType> {
         CREATE;
 
@@ -34,17 +35,22 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
     @Override
     public void execute(Event event) {
+        //TODO naming
         CRUDOps<Event> crudOps1 = new CRUDOperations<>(Event.class);
         CRUDOps<CalendarEvents> crudOps2 = new CRUDOperations<>(CalendarEvents.class);
 
+        //TODO - those three will be executed in individual transactions.
+        //More over - if the first fails, the second one will still be attempted?
         Serializable id = crudOps1.create(event);
         crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf()));
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
+            //TODO Why is only this DB change executed asynchroneously? 
             thPool.submit(() -> crudOps2.create(eventsList((Integer) id, event)));
         }
 
         setChanged();
+        //TODO it makes more sence for the observers to be notified asynchroneously. 
         notifyObservers(new Object[] { event, id });
     }
 
