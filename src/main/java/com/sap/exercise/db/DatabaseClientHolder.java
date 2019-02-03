@@ -10,13 +10,8 @@ public class DatabaseClientHolder {
     }
 
     static DatabaseUtil getDbClient() {
-        //TODO What better is the db-instance property compared to a null check?
-        boolean set = System.getProperty("db-instance") != null &&
-                System.getProperty("db-instance").equals("true");
-
-        if (!set) {
-             createDbClient();
-            
+        if (System.getProperty("db-instance") == null) {
+            createDbClient();
         }
         return db;
     }

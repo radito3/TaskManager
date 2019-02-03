@@ -13,9 +13,8 @@ public interface GetFromDB {
         try {
             return DatabaseClientHolder.getDbClient().getObject(function);
         } catch (HibernateException | IllegalStateException | RollbackException e) {
-            System.setProperty("db-instance", "false");
             Logger.getLogger(GetFromDB.class).error("Getting object from database error", e);
-            //TODO maybe call DatabaseClientHolder.close()? Otherwise you're messing with the 'db-instance' of the resource's life cycle  without releasing the resource.
+            DatabaseClientHolder.close();
         }
         throw new UnsupportedOperationException();
     }

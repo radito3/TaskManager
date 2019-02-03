@@ -9,6 +9,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -40,17 +41,12 @@ class DatabaseUtil {
     private <T> T process(Consumer<Session> consumer, Function<Session, T> function) {
         Transaction transaction = null;
         T value = null;
-        Runnable onError = () -> {};
 
         try (Session session = factory.openSession()) {
             transaction = session.beginTransaction();
 
             if (function != null) {
                 value = function.apply(session);
-                if (value == null) {
-                    onError = () -> { throw new NullPointerException("Object does not exist"); };
-                    //Todo - this is the limit of my perception tolerance - if you go one level deeper - please do refactor. 
-                }
             } else {
                 consumer.accept(session);
             }
@@ -62,11 +58,9 @@ class DatabaseUtil {
                 transaction.rollback();
             }
             throw e;
-        } finally {
-            onError.run();
         }
 
-        return value;
+        return Objects.requireNonNull(value, "Object does not exist");
     }
 
     synchronized void close() {

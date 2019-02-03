@@ -1,13 +1,14 @@
 package com.sap.exercise.commands;
 
 import java.io.BufferedReader;
+import java.util.NoSuchElementException;
 
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.EventUpdater;
 import com.sap.exercise.handler.EventsMapHandler;
 import com.sap.exercise.handler.ThreadPoolHandler;
 import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.util.CommandUtils;
+import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
 
 public class EditCommand implements Command {
@@ -27,13 +28,13 @@ public class EditCommand implements Command {
         try {
             String name = CommandUtils.buildEventName(args);
             Event event = new EventGetter(thPool, mapHandler).getEventByTitle(name);
-            EventWrapper builder = new EventWrapper(event);
+            EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
 
-            CommandUtils.interactiveInput(reader, builder);
+            CommandUtils.interactiveInput(reader, wrapper);
 
-            new EventUpdater(thPool, mapHandler).execute(builder.getEvent());
+            new EventUpdater(thPool, mapHandler).execute(wrapper.getEvent());
             printer.println("\nEvent updated");
-        } catch (NullPointerException | IllegalArgumentException e) {
+        } catch (NullPointerException | NoSuchElementException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
         return 0;

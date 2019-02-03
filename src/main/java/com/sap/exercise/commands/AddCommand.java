@@ -4,14 +4,16 @@ import com.sap.exercise.handler.EventCreator;
 import com.sap.exercise.handler.EventsMapHandler;
 import com.sap.exercise.handler.ThreadPoolHandler;
 import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.util.CommandUtils;
+import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.io.BufferedReader;
 
-public class AddCommand implements Command {
+public class AddCommand implements Command, CommandOptions {
 
     private BufferedReader reader;
     private ThreadPoolHandler thPool;
@@ -23,16 +25,18 @@ public class AddCommand implements Command {
         this.mapHandler = mapHandler;
     }
 
+    AddCommand() {
+    }
+
     @Override
     public int execute(String... args) {
         try {
             Event event = flagHandler(args);
-            //Todo read about the builder design pattern, and check if it really is applied in this case or the namign is misleading 
-            EventWrapper builder = new EventWrapper(event);
+            EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
 
-            CommandUtils.interactiveInput(reader, builder);
+            CommandUtils.interactiveInput(reader, wrapper);
 
-            new EventCreator(thPool, mapHandler).execute(builder.getEvent());
+            new EventCreator(thPool, mapHandler).execute(wrapper.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
@@ -41,7 +45,7 @@ public class AddCommand implements Command {
     }
 
     private Event flagHandler(String[] args) throws ParseException {
-        CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.addOptions(), args);
+        CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
 
         if (cmd.getOptions().length > 1) {
             throw new IllegalArgumentException("Invalid number of arguments");
@@ -54,5 +58,25 @@ public class AddCommand implements Command {
             return new Event("", Event.EventType.GOAL);
         } 
         return new Event("", Event.EventType.TASK);
+    }
+
+    @Override
+    public Options getOptions() {
+        Option task = Option.builder("t")
+                .required(false)
+                .longOpt("task")
+                .desc("Create a Task (default)")
+                .build();
+        Option reminder = Option.builder("r")
+                .required(false)
+                .longOpt("reminder")
+                .desc("Create a Reminder")
+                .build();
+        Option goal = Option.builder("g")
+                .required(false)
+                .longOpt("goal")
+                .desc("Create a Goal")
+                .build();
+        return new Options().addOption(task).addOption(reminder).addOption(goal);
     }
 }

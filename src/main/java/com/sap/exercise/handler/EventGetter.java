@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
@@ -25,9 +26,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     public Event getEventByTitle(String var) {
         return new CRUDOperations<>(Event.class)
                 .getObjByProperty("Title", var)
-                //TODO do not throw null pointer exception - this is missuse of the type.
-                //Try with NoSuchElement exception
-                .orElseThrow(() -> new NullPointerException("Invalid event name"));
+                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
     }
 
     @Override

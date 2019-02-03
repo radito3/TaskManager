@@ -1,18 +1,18 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.util.CommandUtils;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-public class PrintHelpCommand implements Command {
+public class PrintHelpCommand implements Command, CommandOptions {
 
     @Override
     public int execute(String... args) {
         try {
-            CommandLine cmd = CommandUtils.getParsedCmd(CommandUtils.helpOptions(), args);
+            CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
 
             if (cmd.getOptions().length > 1) {
                 throw new IllegalArgumentException("Invalid number of arguments");
@@ -25,7 +25,7 @@ public class PrintHelpCommand implements Command {
             if (cmd.hasOption("ad")) {
                 header = "\nCreate an event\n\n";
                 footer = "\nNote: Only one of the options can be present";
-                formatter.printHelp("add", header, CommandUtils.addOptions(), footer, true);
+                formatter.printHelp("add", header, new AddCommand().getOptions(), footer, true);
 
             } else if (cmd.hasOption('e')) {
                 header = "\nEdit an event";
@@ -43,7 +43,7 @@ public class PrintHelpCommand implements Command {
             } else if (cmd.hasOption('c')) {
                 header = "\nDisplay a calendar\n\n";
                 footer = "\nNote: Only one of the options can be present";
-                formatter.printHelp("calendar", header, CommandUtils.calendarOptions(), footer, true);
+                formatter.printHelp("calendar", header, new PrintCalendarCommand().getOptions(), footer, true);
 
             } else {
                 printer.println("Available options for help:\n" +
@@ -59,4 +59,28 @@ public class PrintHelpCommand implements Command {
         return 0;
     }
 
+    @Override
+    public Options getOptions() {
+        Option add = Option.builder("ad")
+                .required(false)
+                .longOpt("add")
+                .build();
+        Option edit = Option.builder("e")
+                .required(false)
+                .longOpt("edit")
+                .build();
+        Option delete = Option.builder("d")
+                .required(false)
+                .longOpt("delete")
+                .build();
+        Option agenda = Option.builder("ag")
+                .required(false)
+                .longOpt("agenda")
+                .build();
+        Option calendar = Option.builder("c")
+                .required(false)
+                .longOpt("calendar")
+                .build();
+        return new Options().addOption(add).addOption(edit).addOption(delete).addOption(agenda).addOption(calendar);
+    }
 }

@@ -5,7 +5,6 @@ import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.handler.EventsMapHandler;
 import com.sap.exercise.handler.ThreadPoolHandler;
 import com.sap.exercise.util.DateArgumentEvaluator;
-import com.sap.exercise.util.CommandUtils;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
 
