@@ -15,6 +15,7 @@ public interface ProcessDB {
         } catch (HibernateException | IllegalStateException | RollbackException e) {
             System.setProperty("db-instance", "false");
             Logger.getLogger(ProcessDB.class).error("Database processing error", e);
+            //TODO - the error is not communicated to the calling method, which expects for the work to be done and changes applied. It will continue and act as it is and cause errors
         }
     }
 }

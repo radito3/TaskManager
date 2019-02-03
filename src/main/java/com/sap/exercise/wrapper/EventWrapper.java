@@ -1,11 +1,13 @@
 package com.sap.exercise.wrapper;
-
+//TODO - package name does not communicate nothing about it's responsibilities 
 import com.sap.exercise.wrapper.fields.*;
 import com.sap.exercise.model.Event;
 
 import java.util.Arrays;
 import java.util.List;
 
+//If you want to utilize polynmorphysm, you should have 3 inheritors to that class, each returning the fields speciffic for it's event type. And one other e.g. factory class creating the proper inheritor object for the proper event given. 
+//Otherwise this class is just as experessive as a static implementation. 
 public class EventWrapper {
 
     private Event event;

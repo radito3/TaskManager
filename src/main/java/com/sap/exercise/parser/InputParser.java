@@ -17,9 +17,13 @@ import java.util.function.Supplier;
 public class InputParser extends BufferedReader {
 
     private Map<String, Supplier<Command>> commands = new HashMap<>(7);
+    //TODO The name thPool reveals nothing more about the purpose of that object
     private ThreadPoolHandler thPool = new ThreadPoolHandler();
+    //TODO nor does mapHandler
+    //(15 minutes later) I see - it would be much clearer if you rename the class or at least the variable referencing it to something including 'model' as in MVC
+    //Handler is misleading as handler fails to communicate the fact tat the object contains important state - the model
     private EventsMapHandler mapHandler = new EventsMapHandler();
-
+ 
     {
         commands.put("add", () -> new AddCommand(this, thPool, mapHandler));
         commands.put("edit", () -> new EditCommand(this, thPool, mapHandler));

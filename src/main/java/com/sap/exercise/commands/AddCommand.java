@@ -27,6 +27,7 @@ public class AddCommand implements Command {
     public int execute(String... args) {
         try {
             Event event = flagHandler(args);
+            //Todo read about the builder design pattern, and check if it really is applied in this case or the namign is misleading 
             EventWrapper builder = new EventWrapper(event);
 
             CommandUtils.interactiveInput(reader, builder);
@@ -48,10 +49,10 @@ public class AddCommand implements Command {
 
         if (cmd.hasOption('r')) {
             return new Event("", Event.EventType.REMINDER);
-        } else if (cmd.hasOption('g')) {
+        } 
+        if (cmd.hasOption('g')) {
             return new Event("", Event.EventType.GOAL);
-        } else {
-            return new Event("", Event.EventType.TASK);
-        }
+        } 
+        return new Event("", Event.EventType.TASK);
     }
 }

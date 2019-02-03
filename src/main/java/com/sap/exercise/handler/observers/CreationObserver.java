@@ -21,7 +21,7 @@ public class CreationObserver implements Observer {
         Object[] objects = (Object[]) o;
         Event event = (Event) objects[0];
         AbstractEventsHandler<?> handler = (AbstractEventsHandler<?>) observable;
-
+        //TODO remove that if, not only this is the only Action type, but the expression can be negated and the whole indentation of the body omitted 
         if (handler.getActionType() == EventCreator.CreationType.CREATE) {
             Serializable id = (Serializable) objects[1];
             event.setId((Integer) id);

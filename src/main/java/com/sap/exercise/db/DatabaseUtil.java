@@ -49,6 +49,7 @@ class DatabaseUtil {
                 value = function.apply(session);
                 if (value == null) {
                     onError = () -> { throw new NullPointerException("Object does not exist"); };
+                    //Todo - this is the limit of my perception tolerance - if you go one level deeper - please do refactor. 
                 }
             } else {
                 consumer.accept(session);
