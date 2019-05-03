@@ -13,15 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-//needs refactoring
-public class InputParser extends BufferedReader {
+public class InputParser {
 
     private Map<String, Supplier<Command>> commands = new HashMap<>(7);
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(Application.Configuration.INPUT));
 
     public InputParser() {
-        super(new InputStreamReader(Application.Configuration.INPUT));
-        commands.put("add", () -> new AddCommand(this));
-        commands.put("edit", () -> new EditCommand(this));
+        commands.put("add", () -> new AddCommand(reader));
+        commands.put("edit", () -> new EditCommand(reader));
         commands.put("exit", ExitCommand::new);
         commands.put("delete", Delete::new);
         commands.put("help", PrintHelpCommand::new);
@@ -32,7 +31,7 @@ public class InputParser extends BufferedReader {
     public void run() {
         try {
             while (true) {
-                String input = readLine();
+                String input = reader.readLine();
                 if (input.trim().isEmpty()) {
                     continue;
                 }
@@ -46,7 +45,7 @@ public class InputParser extends BufferedReader {
             Logger.getLogger(InputParser.class).error("Input reading error", e);
         } finally {
             try {
-                close();
+                reader.close();
             } catch (IOException e) {
                 Logger.getLogger(InputParser.class).error("Stream closing error", e);
             }
