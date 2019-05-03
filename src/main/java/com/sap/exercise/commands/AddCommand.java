@@ -1,8 +1,6 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventCreator;
-import com.sap.exercise.handler.EventsMapHandler;
-import com.sap.exercise.handler.ThreadPoolHandler;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
@@ -16,13 +14,9 @@ import java.io.BufferedReader;
 public class AddCommand implements Command, CommandOptions {
 
     private BufferedReader reader;
-    private ThreadPoolHandler thPool;
-    private EventsMapHandler mapHandler;
 
-    public AddCommand(BufferedReader reader, ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
+    public AddCommand(BufferedReader reader) {
         this.reader = reader;
-        this.thPool = thPool;
-        this.mapHandler = mapHandler;
     }
 
     AddCommand() {
@@ -37,7 +31,7 @@ public class AddCommand implements Command, CommandOptions {
 
             input.parseInput();
 
-            new EventCreator(thPool, mapHandler).execute(wrapper.getEvent());
+            new EventCreator().execute(wrapper.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());

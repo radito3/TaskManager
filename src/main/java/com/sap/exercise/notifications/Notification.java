@@ -1,10 +1,6 @@
 package com.sap.exercise.notifications;
 
-public interface Notification extends Runnable {
+public interface Notification {
 
     void send();
-
-    void setCallingThread();
-
-    void delete();
 }

@@ -14,8 +14,8 @@ import java.util.stream.IntStream;
 
 public class EventCreator extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
 
-    public EventCreator(ThreadPoolHandler thPool, EventsMapHandler map) {
-        super(new CreationObserver(), thPool, map);
+    public EventCreator() {
+        super(new CreationObserver());
     }
 
     @Override
@@ -31,7 +31,7 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             //TODO Why is only this DB change executed asynchroneously? 
-            thPool.submit(() -> crudOps2.create(eventsList((Integer) id, event)));
+            SharedResourcesFactory.getService().execute(() -> crudOps2.create(eventsList((Integer) id, event)));
         }
 
         setChanged();

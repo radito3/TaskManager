@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 public class EventGetter extends AbstractEventsHandler<Event> implements EventsGetterHandler {
 
-    public EventGetter(ThreadPoolHandler th, EventsMapHandler map) {
-        super((obs, o) -> {}, th, map);
+    public EventGetter() {
+        super((obs, o) -> {});
     }
 
     @Override
@@ -51,7 +51,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     private Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (date) -> {
             Set<Event> ev;
-            if ((ev = mapHandler.getFromMap(date)) == null) {
+            if ((ev = SharedResourcesFactory.getMapHandler().getFromMap(date)) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -76,15 +76,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
         for (Calendar date : new DateHandler(start, end).fromTo()) {
             for (ConcurrentMap.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
-                    mapHandler.putInMap(date, entry.getValue());
-
-                    entry.getValue().forEach(event -> {
-                        if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), event.getTimeOf())) {
-                            event.startNotification();
-                            thPool.submit(event.getNotification());
-                        }
-                    });
-
+                    SharedResourcesFactory.getMapHandler().putInMap(date, entry.getValue());
                     hasNewEntries = true;
                 }
             }

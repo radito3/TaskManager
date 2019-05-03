@@ -9,7 +9,6 @@ import java.io.OutputStream;
 
 public class Application {
 
-    //TODO refactor notification system -> implement a polling system to check periodically for upcoming events
     //TODO db package needs refactoring
     //may refactor wrapper package
     //TODO refactor input parser

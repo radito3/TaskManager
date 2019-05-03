@@ -2,8 +2,7 @@ package com.sap.exercise.parser;
 
 import com.sap.exercise.Application;
 import com.sap.exercise.commands.*;
-import com.sap.exercise.handler.EventsMapHandler;
-import com.sap.exercise.handler.ThreadPoolHandler;
+import com.sap.exercise.handler.SharedResourcesFactory;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -18,29 +17,23 @@ import java.util.function.Supplier;
 public class InputParser extends BufferedReader {
 
     private Map<String, Supplier<Command>> commands = new HashMap<>(7);
-    //TODO The name thPool reveals nothing more about the purpose of that object
-    private ThreadPoolHandler thPool = new ThreadPoolHandler();
-    //TODO nor does mapHandler
-    //(15 minutes later) I see - it would be much clearer if you rename the class or at least the variable referencing it to something including 'model' as in MVC
-    //Handler is misleading as handler fails to communicate the fact tat the object contains important state - the model
-    private EventsMapHandler mapHandler = new EventsMapHandler();
 
     public InputParser() {
         super(new InputStreamReader(Application.Configuration.INPUT));
-        commands.put("add", () -> new AddCommand(this, thPool, mapHandler));
-        commands.put("edit", () -> new EditCommand(this, thPool, mapHandler));
+        commands.put("add", () -> new AddCommand(this));
+        commands.put("edit", () -> new EditCommand(this));
         commands.put("exit", ExitCommand::new);
-        commands.put("delete", () -> new Delete(thPool, mapHandler));
+        commands.put("delete", Delete::new);
         commands.put("help", PrintHelpCommand::new);
-        commands.put("agenda", () -> new PrintAgendaCommand(thPool, mapHandler));
-        commands.put("cal", () -> new PrintCalendarCommand(thPool, mapHandler));
+        commands.put("agenda", PrintAgendaCommand::new);
+        commands.put("cal", PrintCalendarCommand::new);
     }
 
     public void run() {
         try {
             while (true) {
                 String input = this.readLine();
-                if (input.matches("\\s*|\\r|\\t*|\\n")) {
+                if (input.trim().isEmpty()) {
                     continue;
                 }
                 String[] inputArgs = input.split("\\s+");
@@ -57,15 +50,14 @@ public class InputParser extends BufferedReader {
             } catch (IOException e) {
                 Logger.getLogger(InputParser.class).error("Stream closing error", e);
             }
-            thPool.close();
-            mapHandler.close();
+            SharedResourcesFactory.shutdown();
         }
     }
 
     private int executeCommand(String[] userInput) {
         String command = userInput[0];
         if (!commands.containsKey(command)) {
-            Command.onInvalidCommand();
+            Command.printer.println("Invalid command");
             return 0;
         }
         return commands.get(command).get()

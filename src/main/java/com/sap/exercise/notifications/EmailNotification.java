@@ -14,13 +14,13 @@ import javax.swing.JOptionPane;
 import java.util.Date;
 import java.util.Properties;
 
-public class EmailNotification extends AbstractNotification {
+public class EmailNotification implements Notification {
 
     private boolean isValidEmail;
+    private Event event;
 
     EmailNotification(Event event) {
-        super(event);
-
+        this.event = event;
         EmailValidator validator = EmailValidator.getInstance(true);
 
         if (!validator.isValid(Application.Configuration.USER_EMAIL)) {
@@ -42,9 +42,9 @@ public class EmailNotification extends AbstractNotification {
                 MimeMessage msg = new MimeMessage(session);
                 msg.setFrom("me@example.com");
                 msg.setRecipients(Message.RecipientType.TO, Application.Configuration.USER_EMAIL);
-                msg.setSubject("Event reminder: " + this.event.getTitle());
+                msg.setSubject("Event reminder: " + event.getTitle());
                 msg.setSentDate(new Date());
-                msg.setText("Event description: " + this.event.getDescription(), "utf-8", "plain");
+                msg.setText("Event description: " + event.getDescription(), "utf-8", "plain");
                 Transport.send(msg, "me@example.com", "my-password");
             } catch (MessagingException mex) {
                 Logger.getLogger(EmailNotification.class).error("Message sending error", mex);

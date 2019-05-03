@@ -4,17 +4,19 @@ import com.sap.exercise.model.Event;
 
 import javax.swing.JOptionPane;
 
-public class PopupNotification extends AbstractNotification {
+public class PopupNotification implements Notification {
+
+    private Event event;
 
     PopupNotification(Event event) {
-        super(event);
+        this.event = event;
     }
 
     @Override
     public void send() {
-        int duration = this.event.getDuration();
-        boolean daysOrMinutes = this.event.getAllDay();
-        String body = this.event.getTitle() + "\nDuration: " + duration + (daysOrMinutes ? " days" : " minutes");
+        int duration = event.getDuration();
+        boolean daysOrMinutes = event.getAllDay();
+        String body = event.getTitle() + "\nDuration: " + duration + (daysOrMinutes ? " days" : " minutes");
 
         JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder", JOptionPane.PLAIN_MESSAGE);
     }

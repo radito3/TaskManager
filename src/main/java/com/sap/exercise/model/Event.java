@@ -1,8 +1,5 @@
 package com.sap.exercise.model;
 
-import com.sap.exercise.notifications.Notification;
-import com.sap.exercise.notifications.NotificationFactory;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -84,9 +81,6 @@ public class Event extends AbstractModel implements Serializable {
     @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
     @Enumerated(EnumType.STRING)
     private RepeatableType toRepeat;
-
-    @Transient
-    private transient Notification notification;
 
     public Event() {
         this("default title");
@@ -207,21 +201,6 @@ public class Event extends AbstractModel implements Serializable {
 
     public void setToRepeat(RepeatableType toRepeat) {
         this.toRepeat = toRepeat;
-    }
-
-    public void startNotification() {
-        notification = NotificationFactory.newNotification(this);
-    }
-
-    public void deleteNotification() {
-        if (notification != null) {
-            notification.delete();
-        }
-    }
-
-    public Notification getNotification() {
-        notification.setCallingThread();
-        return notification;
     }
 
     @Override
