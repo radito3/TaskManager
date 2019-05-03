@@ -18,6 +18,7 @@ public final class AsyncExecutionsService implements Closeable {
 
     private final ScheduledExecutorService se = Executors.newScheduledThreadPool(2);
     private final Set<Event> sentNotificationsEvents = new HashSet<>();
+    private final static Calendar TODAY = Calendar.getInstance();
 
     AsyncExecutionsService() {
         se.execute(DatabaseClientHolder::createDbClient);
@@ -33,10 +34,7 @@ public final class AsyncExecutionsService implements Closeable {
         Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.asString(), today.asString());
 
         todayEvents.forEach(event -> {
-            Calendar timeOf = event.getTimeOf();
-            Calendar now = Calendar.getInstance();
-
-            long time = (timeOf.getTimeInMillis() - now.getTimeInMillis())
+            long time = (event.getTimeOf().getTimeInMillis() - TODAY.getTimeInMillis())
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
             if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event)) {

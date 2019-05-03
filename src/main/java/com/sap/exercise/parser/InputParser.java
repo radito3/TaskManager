@@ -32,7 +32,7 @@ public class InputParser extends BufferedReader {
     public void run() {
         try {
             while (true) {
-                String input = this.readLine();
+                String input = readLine();
                 if (input.trim().isEmpty()) {
                     continue;
                 }

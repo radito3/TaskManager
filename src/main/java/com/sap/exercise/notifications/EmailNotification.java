@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import java.util.Date;
 import java.util.Properties;
 
-public class EmailNotification implements Notification {
+class EmailNotification implements Notification {
 
     private boolean isValidEmail;
     private Event event;

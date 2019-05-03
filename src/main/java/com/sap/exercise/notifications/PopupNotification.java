@@ -4,7 +4,7 @@ import com.sap.exercise.model.Event;
 
 import javax.swing.JOptionPane;
 
-public class PopupNotification implements Notification {
+class PopupNotification implements Notification {
 
     private Event event;
 
