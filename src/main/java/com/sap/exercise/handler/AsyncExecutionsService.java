@@ -21,7 +21,7 @@ public final class AsyncExecutionsService implements Closeable {
 
     AsyncExecutionsService() {
         se.execute(DatabaseClientHolder::createDbClient);
-        se.scheduleAtFixedRate(this::pollForNotifications, 0L,10L, TimeUnit.SECONDS);
+        se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS);
     }
 
     public void execute(Runnable task) {
@@ -46,5 +46,6 @@ public final class AsyncExecutionsService implements Closeable {
     @Override
     public void close() {
         se.shutdown();
+        sentNotificationsEvents.clear();
     }
 }
