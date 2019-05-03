@@ -96,9 +96,4 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     public void execute(Event var) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public ActionType<?> getActionType() {
-        return null;
-    }
 }

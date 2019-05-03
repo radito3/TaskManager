@@ -4,20 +4,16 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.PrintStream;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 class PrinterUtils {
+
+    private PrinterUtils() {
+    }
 
     static void printDay(PrintStream writer, int day, int month, int year, String format) {
         Calendar today = Calendar.getInstance();
@@ -30,19 +26,22 @@ class PrinterUtils {
         }
     }
 
-    static Stream<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
-        return IntStream.rangeClosed(1, numOfMonthDays)
-                .mapToObj(i -> (Calendar) new GregorianCalendar(year, month - 1, i))
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        (date) -> {
-                            Set<Event> events1 = new HashSet<>(events);
-                            events1.removeIf(event -> !DateUtils.isSameDay(date, event.getTimeOf()));
-                            return events1;
-                        }))
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
+    static Set<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
+        Set<Map.Entry<Calendar, Set<Event>>> result =
+                new TreeSet<>(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
+        result.addAll(
+                IntStream.rangeClosed(1, numOfMonthDays)
+                        .mapToObj(i -> (Calendar) new GregorianCalendar(year, month - 1, i))
+                        .collect(Collectors.toMap(
+                                Function.identity(),
+                                (Calendar date) -> {
+                                    Set<Event> filteredEvents = new HashSet<>(events);
+                                    filteredEvents.removeIf(event -> !DateUtils.isSameDay(date, event.getTimeOf()));
+                                    return filteredEvents;
+                                }))
+                        .entrySet()
+        );
+        return Collections.unmodifiableSet(result);
     }
 
     static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
@@ -67,6 +66,7 @@ class PrinterUtils {
                 });
     }
 
+    //TODO needs complete overhaul
     static class Formatter {
         private boolean allDay = false;
         private boolean multipleEvents = false;

@@ -14,23 +14,8 @@ import java.util.stream.IntStream;
 
 public class EventCreator extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
 
-    //TODO what is the idea behind this?
-    public enum CreationType implements ActionType<CreationType> {
-        CREATE;
-
-        @Override
-        public CreationType getType() {
-            return valueOf(name());
-        }
-    }
-
     public EventCreator(ThreadPoolHandler thPool, EventsMapHandler map) {
         super(new CreationObserver(), thPool, map);
-    }
-
-    @Override
-    public ActionType<CreationType> getActionType() {
-        return CreationType.CREATE.getType();
     }
 
     @Override

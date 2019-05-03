@@ -6,15 +6,6 @@ import com.sap.exercise.model.Event;
 
 public class EventDeletorTF extends AbstractEventsHandler<Event> implements EventsDeletionTFHandler {
 
-    public enum DeletionTFType implements ActionType<DeletionTFType> {
-        DELETE_TIME_FRAME;
-
-        @Override
-        public DeletionTFType getType() {
-            return valueOf(name());
-        }
-    }
-
     public EventDeletorTF(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
         super(new DeletionTimeFrameObserver(), thPool, mapHandler);
     }
@@ -29,10 +20,5 @@ public class EventDeletorTF extends AbstractEventsHandler<Event> implements Even
     @Override
     public void execute(Event var) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ActionType<?> getActionType() {
-        return DeletionTFType.DELETE_TIME_FRAME.getType();
     }
 }

@@ -6,15 +6,6 @@ import com.sap.exercise.model.Event;
 
 public class EventUpdater extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
 
-    public enum UpdateType implements ActionType<UpdateType> {
-        UPDATE;
-
-        @Override
-        public UpdateType getType() {
-            return valueOf(name());
-        }
-    }
-
     public EventUpdater(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
         super(new UpdateObserver(), thPool, mapHandler);
     }
@@ -24,10 +15,5 @@ public class EventUpdater extends AbstractEventsHandler<Event> implements Events
         thPool.submit(() -> new CRUDOperations<>(Event.class).update(event));
         setChanged();
         notifyObservers(new Object[] { event });
-    }
-
-    @Override
-    public ActionType<?> getActionType() {
-        return UpdateType.UPDATE.getType();
     }
 }

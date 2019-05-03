@@ -5,6 +5,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -15,9 +16,10 @@ public class DateHandler {
     public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
-    private Calendar currentCal = Calendar.getInstance();
     private DateHandler startDate;
     private DateHandler endDate;
+    private final Calendar today = Calendar.getInstance();
+    private Calendar currentCal = new GregorianCalendar();
 
     public enum Dates {
         TODAY(cal -> {}),
@@ -80,6 +82,6 @@ public class DateHandler {
     }
 
     public boolean containsToday() {
-        return fromTo().stream().anyMatch(date -> DateUtils.isSameDay(date, Calendar.getInstance()));
+        return fromTo().stream().anyMatch(date -> DateUtils.isSameDay(date, today));
     }
 }

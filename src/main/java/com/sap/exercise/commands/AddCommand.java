@@ -33,8 +33,9 @@ public class AddCommand implements Command, CommandOptions {
         try {
             Event event = flagHandler(args);
             EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
+            InteractiveInput input = new InteractiveInput(reader, wrapper);
 
-            CommandUtils.interactiveInput(reader, wrapper);
+            input.parseInput();
 
             new EventCreator(thPool, mapHandler).execute(wrapper.getEvent());
             printer.println("\nEvent created");

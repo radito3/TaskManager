@@ -9,6 +9,12 @@ import java.io.OutputStream;
 
 public class Application {
 
+    //TODO refactor notification system -> implement a polling system to check periodically for upcoming events
+    //TODO db package needs refactoring
+    //may refactor wrapper package
+    //TODO refactor input parser
+    //TODO NEED MORE ISOLATED MODULES - NEED TO DECOUPLE CURRENT ONES
+
     public static void main(String[] args) {
         Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         Logger.getLogger("javax.mail").setLevel(Level.WARN);

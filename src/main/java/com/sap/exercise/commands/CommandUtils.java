@@ -1,46 +1,13 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.wrapper.FieldInfo;
-import com.sap.exercise.printer.OutputPrinter;
 import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Function;
 
 class CommandUtils {
 
-    static void interactiveInput(BufferedReader reader, EventWrapper wrapper) {
-        try {
-            for (FieldInfo field : wrapper.getFields()) {
-                Command.printer.print(field.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
-
-                String input = reader.readLine();
-
-                input = checkMandatoryField(input, reader, field);
-
-                if (!input.isEmpty()) {
-                    field.handleArg(input);
-                }
-            }
-        } catch (IOException e) {
-            Logger.getLogger(CommandUtils.class).error("Input reading error", e);
-        }
-    }
-
-    private static String checkMandatoryField(String input, BufferedReader reader, FieldInfo fInfo) throws IOException {
-        if (fInfo.isMandatory() && input.isEmpty()) {
-            do {
-                Command.printer.println("Field is mandatory!");
-                Command.printer.print(fInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
-
-                input = reader.readLine();
-            } while (input.isEmpty());
-        }
-        return input;
+    private CommandUtils() {
     }
 
     static String buildEventName(String[] input) {
@@ -86,7 +53,9 @@ class CommandUtils {
     }
 
     private static String[] timeFrameFlagHandler(CommandLine cmd, Function<CommandLine, String> func) {
-        String startTime = "", endTime = "", eventName = func.apply(cmd);
+        String startTime = "",
+                endTime = "",
+                eventName = func.apply(cmd);
 
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');

@@ -1,7 +1,6 @@
 package com.sap.exercise.handler.observers;
 
 import com.sap.exercise.handler.AbstractEventsHandler;
-import com.sap.exercise.handler.EventCreator;
 import com.sap.exercise.util.DateHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
@@ -21,23 +20,20 @@ public class CreationObserver implements Observer {
         Object[] objects = (Object[]) o;
         Event event = (Event) objects[0];
         AbstractEventsHandler<?> handler = (AbstractEventsHandler<?>) observable;
-        //TODO remove that if, not only this is the only Action type, but the expression can be negated and the whole indentation of the body omitted 
-        if (handler.getActionType() == EventCreator.CreationType.CREATE) {
-            Serializable id = (Serializable) objects[1];
-            event.setId((Integer) id);
+        Serializable id = (Serializable) objects[1];
+        event.setId((Integer) id);
 
-            Calendar cal = event.getTimeOf();
-            if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
-                event.startNotification();
-                handler.getThPool().submit(event.getNotification());
-            }
+        Calendar cal = event.getTimeOf();
+        if (DateUtils.isSameDay(new DateHandler(DateHandler.Dates.TODAY).asCalendar(), cal)) {
+            event.startNotification();
+            handler.getThPool().submit(event.getNotification());
+        }
 
-            Set<Event> events;
-            if ((events = handler.getMapHandler().getFromMap(cal)) != null) {
-                events.add(event);
-            } else {
-                handler.getMapHandler().putInMap(cal, new HashSet<>(Collections.singleton(event)));
-            }
+        Set<Event> events;
+        if ((events = handler.getMapHandler().getFromMap(cal)) != null) {
+            events.add(event);
+        } else {
+            handler.getMapHandler().putInMap(cal, new HashSet<>(Collections.singleton(event)));
         }
     }
 }

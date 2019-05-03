@@ -6,6 +6,9 @@ import com.sap.exercise.model.Event;
 
 public class FieldValueUtils {
 
+    private FieldValueUtils() {
+    }
+
     public static Boolean valueOfBool(String input) {
         if (input.toLowerCase().matches("^\\s*y|yes\\s*$")) {
             return true;

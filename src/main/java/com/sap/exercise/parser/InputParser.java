@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+//needs refactoring
 public class InputParser extends BufferedReader {
 
     private Map<String, Supplier<Command>> commands = new HashMap<>(7);
@@ -23,8 +24,9 @@ public class InputParser extends BufferedReader {
     //(15 minutes later) I see - it would be much clearer if you rename the class or at least the variable referencing it to something including 'model' as in MVC
     //Handler is misleading as handler fails to communicate the fact tat the object contains important state - the model
     private EventsMapHandler mapHandler = new EventsMapHandler();
- 
-    {
+
+    public InputParser() {
+        super(new InputStreamReader(Application.Configuration.INPUT));
         commands.put("add", () -> new AddCommand(this, thPool, mapHandler));
         commands.put("edit", () -> new EditCommand(this, thPool, mapHandler));
         commands.put("exit", ExitCommand::new);
@@ -32,10 +34,6 @@ public class InputParser extends BufferedReader {
         commands.put("help", PrintHelpCommand::new);
         commands.put("agenda", () -> new PrintAgendaCommand(thPool, mapHandler));
         commands.put("cal", () -> new PrintCalendarCommand(thPool, mapHandler));
-    }
-
-    public InputParser() {
-        super(new InputStreamReader(Application.Configuration.INPUT));
     }
 
     public void run() {

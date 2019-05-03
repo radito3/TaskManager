@@ -6,15 +6,6 @@ import com.sap.exercise.model.Event;
 
 public class EventDeletor extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
 
-    public enum DeletionType implements ActionType<DeletionType> {
-        DELETE;
-
-        @Override
-        public DeletionType getType() {
-            return valueOf(name());
-        }
-
-    }
     public EventDeletor(ThreadPoolHandler thPool, EventsMapHandler mapHandler) {
         super(new DeletionObserver(), thPool, mapHandler);
     }
@@ -24,10 +15,5 @@ public class EventDeletor extends AbstractEventsHandler<Event> implements Events
         thPool.submit(() -> new CRUDOperations<>(Event.class).delete(event));
         setChanged();
         notifyObservers(new Object[] { event });
-    }
-
-    @Override
-    public ActionType<?> getActionType() {
-        return DeletionType.DELETE.getType();
     }
 }

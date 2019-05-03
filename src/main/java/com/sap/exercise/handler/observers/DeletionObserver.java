@@ -1,7 +1,6 @@
 package com.sap.exercise.handler.observers;
 
 import com.sap.exercise.handler.AbstractEventsHandler;
-import com.sap.exercise.handler.EventDeletor;
 import com.sap.exercise.model.Event;
 
 import java.util.Observable;
@@ -15,11 +14,9 @@ public class DeletionObserver implements Observer {
         Event event = (Event) objects[0];
         AbstractEventsHandler<?> handler = (AbstractEventsHandler<?>) observable;
 
-        if (handler.getActionType() == EventDeletor.DeletionType.DELETE) {
-            handler.getThPool().submit(event::deleteNotification);
-            handler.getThPool().submit(() -> handler.getMapHandler().iterateEventsMap((cal, set) ->
-                    set.removeIf(event1 -> event1.getId().equals(event.getId()))
-            ));
-        }
+        handler.getThPool().submit(event::deleteNotification);
+        handler.getThPool().submit(() -> handler.getMapHandler().iterateEventsMap((cal, set) ->
+                set.removeIf(event1 -> event1.getId().equals(event.getId()))
+        ));
     }
 }

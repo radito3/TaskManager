@@ -29,8 +29,9 @@ public class EditCommand implements Command {
             String name = CommandUtils.buildEventName(args);
             Event event = new EventGetter(thPool, mapHandler).getEventByTitle(name);
             EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
+            InteractiveInput input = new InteractiveInput(reader, wrapper);
 
-            CommandUtils.interactiveInput(reader, wrapper);
+            input.parseInput();
 
             new EventUpdater(thPool, mapHandler).execute(wrapper.getEvent());
             printer.println("\nEvent updated");
