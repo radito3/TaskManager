@@ -14,6 +14,6 @@ public class EventDeletor extends AbstractEventsHandler<Event> implements Events
     public void execute(Event event) {
         SharedResourcesFactory.getService().execute(() -> new CRUDOperations<>(Event.class).delete(event));
         setChanged();
-        notifyObservers(new Object[] { event });
+        notifyObservers(event);
     }
 }

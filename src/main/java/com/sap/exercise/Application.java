@@ -10,8 +10,6 @@ import java.io.OutputStream;
 public class Application {
 
     //TODO db package needs refactoring
-    //may refactor wrapper package
-    //TODO refactor input parser
     //TODO NEED MORE ISOLATED MODULES - NEED TO DECOUPLE CURRENT ONES
 
     public static void main(String[] args) {

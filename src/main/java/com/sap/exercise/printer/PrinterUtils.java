@@ -5,10 +5,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 class PrinterUtils {
 
@@ -29,41 +26,61 @@ class PrinterUtils {
     static Set<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
         Set<Map.Entry<Calendar, Set<Event>>> result =
                 new TreeSet<>(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
-        result.addAll(
-                IntStream.rangeClosed(1, numOfMonthDays)
-                        .mapToObj(i -> (Calendar) new GregorianCalendar(year, month - 1, i))
-                        .collect(Collectors.toMap(
-                                Function.identity(),
-                                (Calendar date) -> {
-                                    Set<Event> filteredEvents = new HashSet<>(events);
-                                    filteredEvents.removeIf(event -> !DateUtils.isSameDay(date, event.getTimeOf()));
-                                    return filteredEvents;
-                                }))
-                        .entrySet()
-        );
-        return Collections.unmodifiableSet(result);
+        Set<Event> copiedEvents = new HashSet<>(events);
+
+        for (int i = 1; i <= numOfMonthDays; i++) {
+            Calendar key = new GregorianCalendar(year, month - 1, i);
+            Set<Event> val =  new HashSet<>();
+            for (Event ev : copiedEvents) {
+                if (DateUtils.isSameDay(key, ev.getTimeOf())) {
+                    val.add(ev);
+                }
+            }
+
+            result.add(new Map.Entry<Calendar, Set<Event>>() {
+                @Override
+                public Calendar getKey() {
+                    return key;
+                }
+
+                @Override
+                public Set<Event> getValue() {
+                    return val;
+                }
+
+                @Override
+                public Set<Event> setValue(Set<Event> value) {
+                    throw new UnsupportedOperationException("Entry is immutable");
+                }
+            });
+        }
+        return result;
     }
 
-    static Stream<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
-        return events.stream()
-                .collect(Collectors.groupingBy(Event::getTimeOf))
-                .entrySet()
-                .stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)))
-                .peek(entry -> {
-                    List<Event> eventList = entry.getValue();
+    static Set<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
+        Set<Map.Entry<Calendar, List<Event>>> result =
+                new TreeSet<>(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
 
-                    for (int i = 0; i < eventList.size(); i++) {
-                        Formatter formatter = new Formatter(writer);
-                        formatter.setMultipleEvents(eventList.size() != 1);
-                        if (i == 0) {
-                            formatter.setFirst();
-                        }
-                        formatter.setAllDay(eventList.get(i).getAllDay());
-                        formatter.setType(eventList.get(i).getTypeOf());
-                        eventFormatters.put(eventList.get(i), formatter);
-                    }
-                });
+        result.addAll(events.stream()
+                .collect(Collectors.groupingBy(Event::getTimeOf))
+                .entrySet());
+
+        result.forEach(entry -> {
+            List<Event> eventList = entry.getValue();
+
+            for (int i = 0; i < eventList.size(); i++) {
+                Formatter formatter = new Formatter(writer);
+                formatter.setMultipleEvents(eventList.size() != 1);
+                if (i == 0) {
+                    formatter.setFirst();
+                }
+                formatter.setAllDay(eventList.get(i).getAllDay());
+                formatter.setType(eventList.get(i).getTypeOf());
+                eventFormatters.put(eventList.get(i), formatter);
+            }
+        });
+
+        return result;
     }
 
     //TODO needs complete overhaul

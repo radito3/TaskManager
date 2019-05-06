@@ -10,8 +10,7 @@ public class DeletionObserver implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        Object[] objects = (Object[]) o;
-        Event event = (Event) objects[0];
+        Event event = (Event) o;
 
         SharedResourcesFactory.getService().execute(() ->
                 SharedResourcesFactory.getMapHandler().iterateEventsMap(

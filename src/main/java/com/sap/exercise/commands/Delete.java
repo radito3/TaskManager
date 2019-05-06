@@ -3,7 +3,6 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.EventDeletor;
 import com.sap.exercise.handler.EventDeletorTF;
 import com.sap.exercise.handler.EventGetter;
-//import com.sap.exercise.handler.EventsHandler;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.ParseException;
@@ -14,7 +13,6 @@ public class Delete implements Command {
 
     private Event event;
     private DateArgumentEvaluator evaluator;
-//    private EventsHandler<?> handler;//for after refactoring of handlers
 
     @Override
     public int execute(String... args) {

@@ -18,7 +18,6 @@ public class DateHandler {
 
     private DateHandler startDate;
     private DateHandler endDate;
-    private final Calendar today = Calendar.getInstance();
     private Calendar currentCal = new GregorianCalendar();
 
     public enum Dates {
@@ -79,9 +78,5 @@ public class DateHandler {
                     return cal;
                 })
                 .collect(Collectors.toList());
-    }
-
-    public boolean containsToday() {
-        return fromTo().stream().anyMatch(date -> DateUtils.isSameDay(date, today));
     }
 }

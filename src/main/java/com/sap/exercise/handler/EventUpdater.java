@@ -15,6 +15,6 @@ public class EventUpdater extends AbstractEventsHandler<Event> implements Events
         SharedResourcesFactory.getService()
                 .execute(() -> new CRUDOperations<>(Event.class).update(event));
         setChanged();
-        notifyObservers(new Object[] { event });
+        notifyObservers(event);
     }
 }
