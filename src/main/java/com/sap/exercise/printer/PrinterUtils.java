@@ -57,26 +57,22 @@ class PrinterUtils {
         return result;
     }
 
-    static Set<Map.Entry<Calendar, List<Event>>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
-        Set<Map.Entry<Calendar, List<Event>>> result =
-                new TreeSet<>(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_YEAR)));
+    static Map<Calendar, List<Event>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
+        Map<Calendar, List<Event>> result = new TreeMap<>(Comparator.comparingInt(cal -> cal.get(Calendar.DAY_OF_YEAR)));
 
-        result.addAll(events.stream()
-                .collect(Collectors.groupingBy(Event::getTimeOf))
-                .entrySet());
+        result.putAll(events.stream().collect(Collectors.groupingBy(Event::getTimeOf)));
 
-        result.forEach(entry -> {
-            List<Event> eventList = entry.getValue();
-
-            for (int i = 0; i < eventList.size(); i++) {
+        result.forEach((cal, list) -> {
+            for (int i = 0; i < list.size(); i++) {
                 Formatter formatter = new Formatter(writer);
-                formatter.setMultipleEvents(eventList.size() != 1);
+                formatter.setMultipleEvents(list.size() != 1);
                 if (i == 0) {
                     formatter.setFirst();
                 }
-                formatter.setAllDay(eventList.get(i).getAllDay());
-                formatter.setType(eventList.get(i).getTypeOf());
-                eventFormatters.put(eventList.get(i), formatter);
+                formatter.setAllDay(list.get(i).getAllDay());
+                formatter.setType(list.get(i).getTypeOf());
+
+                eventFormatters.put(list.get(i), formatter);
             }
         });
 

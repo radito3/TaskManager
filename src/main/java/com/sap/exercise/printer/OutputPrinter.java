@@ -100,11 +100,11 @@ public class OutputPrinter {
         Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
 
         PrinterUtils.mapAndSort(writer, eventFormatters, events)
-                .forEach(entry -> {
-                    Date date = entry.getKey().getTime();
+                .forEach((calendar, eventList) -> {
+                    Date date = calendar.getTime();
                     writer.print(YELLOW + date.toString().substring(0, 10) + RESET);
 
-                    entry.getValue().forEach(event -> {
+                    eventList.forEach(event -> {
                         eventFormatters.get(event).printTime(date);
                         eventFormatters.get(event).printTitle(event.getTitle());
                         writer.println();
