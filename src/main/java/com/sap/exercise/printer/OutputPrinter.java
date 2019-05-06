@@ -164,11 +164,11 @@ public class OutputPrinter {
         );
 
         PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
-                .forEach(entry -> {
-                    Calendar date = entry.getKey();
-                    Set<Event> eventSet = entry.getValue();
-
-                    PrinterUtils.printDay(writer, date.get(Calendar.DAY_OF_MONTH), month, date.get(Calendar.YEAR),
+                .forEach((calendar, eventSet) -> {
+                    PrinterUtils.printDay(writer,
+                            calendar.get(Calendar.DAY_OF_MONTH),
+                            month,
+                            calendar.get(Calendar.YEAR),
                             eventSet.isEmpty() ? "" : (CYAN_BACKGROUND + BLACK));
 
                     weekdayInd.incrementAndGet();

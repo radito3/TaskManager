@@ -23,9 +23,8 @@ class PrinterUtils {
         }
     }
 
-    static Set<Map.Entry<Calendar, Set<Event>>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
-        Set<Map.Entry<Calendar, Set<Event>>> result =
-                new TreeSet<>(Comparator.comparingInt(entry -> entry.getKey().get(Calendar.DAY_OF_MONTH)));
+    static Map<Calendar, Set<Event>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
+        Map<Calendar, Set<Event>> result = new TreeMap<>(Comparator.comparingInt(cal -> cal.get(Calendar.DAY_OF_MONTH)));
         Set<Event> copiedEvents = new HashSet<>(events);
 
         for (int i = 1; i <= numOfMonthDays; i++) {
@@ -36,24 +35,9 @@ class PrinterUtils {
                     val.add(ev);
                 }
             }
-
-            result.add(new Map.Entry<Calendar, Set<Event>>() {
-                @Override
-                public Calendar getKey() {
-                    return key;
-                }
-
-                @Override
-                public Set<Event> getValue() {
-                    return val;
-                }
-
-                @Override
-                public Set<Event> setValue(Set<Event> value) {
-                    throw new UnsupportedOperationException("Entry is immutable");
-                }
-            });
+            result.put(key, val);
         }
+
         return result;
     }
 
