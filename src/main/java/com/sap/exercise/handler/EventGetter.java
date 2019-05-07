@@ -1,7 +1,8 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.CRUDOperations;
-import com.sap.exercise.db.CRUDOps;
+import com.sap.exercise.db.DatabaseUtil;
+import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;
@@ -24,8 +25,12 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
 
     @Override
     public Event getEventByTitle(String var) {
-        return new CRUDOperations<>(Event.class)
-                .getObjByProperty("Title", var)
+        DatabaseUtil db = DatabaseUtilFactory.getDb();
+        db.beginTransaction();
+
+        return db.getObjectWithRetry(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'"
+                + var + "\' LIMIT 1;", Event.class)
+                .uniqueResultOptional(), 3)
                 .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
     }
 
@@ -60,12 +65,17 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     }
 
     private boolean setEventsInTable(String start, String end) {
-        CRUDOps<Event> crudOps = new CRUDOperations<>(Event.class);
+        DatabaseUtil db = DatabaseUtilFactory.getDb();
+        db.beginTransaction();
 
-        ConcurrentMap<Calendar, Set<Event>> map = crudOps.getEventsInTimeFrame(start, end)
-                .stream()
+        List<CalendarEvents> list = db.getObjectWithRetry(s ->
+                s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
+                "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList(), 3);
+
+        ConcurrentMap<Calendar, Set<Event>> map = list.stream()
                 .map(calEvents -> {
-                    Event event = crudOps.getObjById(calEvents.getEventId());
+                    db.beginTransaction();
+                    Event event = db.getObjectWithRetry(s -> s.get(Event.class, calEvents.getEventId()), 2);
                     event.setTimeOf(calEvents.getDate());
                     return event;
                 })

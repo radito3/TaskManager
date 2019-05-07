@@ -2,8 +2,8 @@ package com.sap.exercise.handler;
 
 public class SharedResourcesFactory {
 
-    private static AsyncExecutionsService service;
-    private static EventsMapHandler mapHandler;
+    private static AsyncExecutionsService service = new AsyncExecutionsService();
+    private static EventsMapHandler mapHandler = new EventsMapHandler();
 
     public static AsyncExecutionsService getService() {
         if (service == null) {

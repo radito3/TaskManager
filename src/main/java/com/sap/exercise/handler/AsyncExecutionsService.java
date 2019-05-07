@@ -1,13 +1,11 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseClientHolder;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.notifications.NotificationFactory;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.Closeable;
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -20,7 +18,6 @@ public final class AsyncExecutionsService implements Closeable {
     private final Set<Event> sentNotificationsEvents = new HashSet<>();
 
     AsyncExecutionsService() {
-        se.execute(DatabaseClientHolder::createDbClient);
         se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS);
     }
 

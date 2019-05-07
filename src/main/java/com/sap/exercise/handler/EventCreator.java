@@ -1,7 +1,7 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.CRUDOperations;
-import com.sap.exercise.db.CRUDOps;
+import com.sap.exercise.db.DatabaseUtil;
+import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
@@ -20,18 +20,26 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
     @Override
     public void execute(Event event) {
-        //TODO naming
-        CRUDOps<Event> crudOps1 = new CRUDOperations<>(Event.class);
-        CRUDOps<CalendarEvents> crudOps2 = new CRUDOperations<>(CalendarEvents.class);
+        DatabaseUtil db = DatabaseUtilFactory.getDb();
+        db.beginTransaction();
+        Serializable id;
+        try {
+            id = db.getObjectWithRetry(session -> session.save(event), 3);
+        } catch (NullPointerException e) {
+            throw new RuntimeException("Event entity can not be created");
+        }
 
-        //TODO - those three will be executed in individual transactions.
-        //More over - if the first fails, the second one will still be attempted?
-        Serializable id = crudOps1.create(event);
-        crudOps2.create(new CalendarEvents((Integer) id, event.getTimeOf()));
+        db.beginTransaction();
+        db.addOperation(s -> s.save(new CalendarEvents((Integer) s.save(event), event.getTimeOf())));
+        db.commitTransaction();
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            //TODO Why is only this DB change executed asynchroneously? 
-            SharedResourcesFactory.getService().execute(() -> crudOps2.create(eventsList((Integer) id, event)));
+            SharedResourcesFactory.getService().execute(() -> {
+                db.beginTransaction();
+                eventsList((Integer) id, event)
+                    .forEach(calEvents -> db.addOperation(s -> s.save(calEvents)));
+                db.commitTransaction();
+            });
         }
 
         setChanged();
