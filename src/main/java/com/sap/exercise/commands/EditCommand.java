@@ -20,14 +20,15 @@ public class EditCommand implements Command {
     @Override
     public int execute(String... args) {
         try {
+            // Take a look at first comment inside execute method of AddCommand class
             String name = CommandUtils.buildEventName(args);
             Event event = new EventGetter().getEventByTitle(name);
-            EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
-            InteractiveInput input = new InteractiveInput(reader, wrapper);
+            EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
+            InteractiveInput input = new InteractiveInput(reader, eventWrapper);
 
             input.parseInput();
 
-            new EventUpdater().execute(wrapper.getEvent());
+            new EventUpdater().execute(eventWrapper.getEvent());
             printer.println("\nEvent updated");
         } catch (NullPointerException | NoSuchElementException | IllegalArgumentException e) {
             printer.println(e.getMessage());

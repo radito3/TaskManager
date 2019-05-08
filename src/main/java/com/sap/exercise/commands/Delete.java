@@ -9,6 +9,8 @@ import org.apache.commons.cli.ParseException;
 
 import java.util.NoSuchElementException;
 
+// The name is not consistent with the other commands, all of them end with Command (AddCommand, EditCommand, etc.).
+// There shouldn't be any specific reason this one does not
 public class Delete implements Command {
 
     private Event event;
@@ -17,6 +19,7 @@ public class Delete implements Command {
     @Override
     public int execute(String... args) {
         try {
+            // Take a look at first comment inside execute method of AddCommand class
             String[] vars = CommandUtils.flagHandlerForTimeFrame(
                     args,
                     cmd -> CommandUtils.buildEventName(cmd.getArgs())
