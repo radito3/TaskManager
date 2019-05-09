@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public final class AsyncExecutionsService implements Closeable {
 
     private final ScheduledExecutorService se = Executors.newScheduledThreadPool(2);
-    private final Set<Event> sentNotificationsEvents = new HashSet<>();
+    private final Set<Integer> sentNotificationsEvents = new HashSet<>();
 
     AsyncExecutionsService() {
         se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS);
@@ -25,6 +25,7 @@ public final class AsyncExecutionsService implements Closeable {
         se.execute(task);
     }
 
+    //TODO move this method to Notification factory
     private synchronized void pollForNotifications() {
         DateHandler today = new DateHandler(DateHandler.Dates.TODAY);
         Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.asString(), today.asString());
@@ -33,9 +34,9 @@ public final class AsyncExecutionsService implements Closeable {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
-            if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event)) {
+            if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
                 NotificationFactory.newNotification(event).send();
-                sentNotificationsEvents.add(event);
+                sentNotificationsEvents.add(event.getId());
             }
         });
     }
