@@ -43,6 +43,7 @@ class InteractiveInput {
             checkMandatoryField(reader, fieldInfo);
         } catch (IOException e) {
             Logger.getLogger(getClass()).error("Input reading error", e);
+            printer.println("Error on read. Please try again");
             error = true;
         } finally {
             if (error)

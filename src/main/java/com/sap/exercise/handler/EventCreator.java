@@ -6,9 +6,9 @@ import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,24 +21,18 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
     @Override
     public void execute(Event event) {
         DatabaseUtil db = DatabaseUtilFactory.getDb();
-        db.beginTransaction();
-        Serializable id;
-        try {
-            id = db.getObjectWithRetry(session -> session.save(event), 3);
-        } catch (NullPointerException e) {
-            throw new RuntimeException("Event entity can not be created");
-        }
-
-        db.beginTransaction();
-        db.addOperation(s -> s.save(new CalendarEvents((Integer) s.save(event), event.getTimeOf())));
-        db.commitTransaction();
+        AtomicInteger id = new AtomicInteger();
+        db.beginTransaction()
+                .addOperation(s -> id.set((Integer) s.save(event)))
+                .addOperation(s -> s.save(new CalendarEvents(id.get(), event.getTimeOf())))
+                .commit();
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             SharedResourcesFactory.getService().execute(() -> {
-                db.beginTransaction();
-                eventsList((Integer) id, event)
-                    .forEach(calEvents -> db.addOperation(s -> s.save(calEvents)));
-                db.commitTransaction();
+                DatabaseUtil.TransactionBuilder transaction = db.beginTransaction();
+                eventsList(id.get(), event)
+                    .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
+                transaction.commit();
             });
         }
 

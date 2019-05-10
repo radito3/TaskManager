@@ -11,7 +11,11 @@ import java.util.function.BiConsumer;
 
 public final class EventsMapHandler implements Closeable {
 
-    private final ConcurrentMap<Calendar, Set<Event>> eventsMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Calendar, Set<Event>> eventsMap;
+
+    EventsMapHandler() {
+        eventsMap = new ConcurrentHashMap<>();
+    }
 
     public void iterateEventsMap(BiConsumer<Calendar, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);

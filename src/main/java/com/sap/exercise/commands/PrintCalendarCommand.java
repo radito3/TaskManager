@@ -41,7 +41,7 @@ public class PrintCalendarCommand extends AbstractCommand implements Command {
         return 0;
     }
 
-    private Options getOptions() {
+    static Options getOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")

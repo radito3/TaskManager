@@ -10,14 +10,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import java.io.Closeable;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DatabaseUtil implements Closeable {
 
     private SessionFactory factory;
-    private Session currentSession;
 
     DatabaseUtil() {
         Configuration configuration = new Configuration()
@@ -32,56 +31,55 @@ public class DatabaseUtil implements Closeable {
         factory = configuration.buildSessionFactory(registry);
     }
 
-    public synchronized void beginTransaction() {
-        currentSession = factory.getCurrentSession();
-        currentSession.beginTransaction();
-        currentSession.getTransaction().setTimeout(15);
+    public synchronized TransactionBuilder beginTransaction() {
+        return new TransactionBuilder(factory.getCurrentSession());
     }
 
-    public synchronized void addOperation(Consumer<Session> consumer) {
-        if (currentSession.getTransaction() == null) {
-            throw new IllegalStateException("Transaction not started");
-        }
-        try {
-            consumer.accept(currentSession);
-        } catch (HibernateException e) {
-            currentSession.getTransaction().rollback();
-            Logger.getLogger(getClass()).error("Object operations error", e);
-        }
-    }
+    public static class TransactionBuilder {
 
-    public synchronized <T> T getObjectWithRetry(Function<Session, T> function, int times) {
-        if (currentSession.getTransaction() == null) {
-            throw new IllegalStateException("Transaction not started");
+        private Session currentSession;
+        private Set<Object> results;
+
+        private TransactionBuilder(Session session) {
+            currentSession = session;
+            currentSession.beginTransaction();
+            currentSession.getTransaction().setTimeout(15);
         }
-        T obj = null;
-        boolean failed = false;
-        try {
-            obj = function.apply(currentSession);
-        } catch (HibernateException e) {
-            if (times <= 0) {
+
+        public synchronized TransactionBuilder addOperation(Consumer<Session> consumer) {
+            try {
+                consumer.accept(currentSession);
+            } catch (HibernateException e) {
                 currentSession.getTransaction().rollback();
-                Logger.getLogger(getClass()).error("Object retrieval error", e);
-                failed = true;
-            } else {
-                return getObjectWithRetry(function, --times);
+                if (results != null)
+                    results.clear();
+                Logger.getLogger(getClass()).error("Object operations error", e);
             }
+            return this;
         }
-        if (!failed) {
-            commitTransaction();
-            return Objects.requireNonNull(obj, "Object does not exist");
-        }
-        throw new NullPointerException("Object could not be retrieved");
-    }
 
-    public synchronized void commitTransaction() {
-        if (currentSession.getTransaction() == null) {
-            throw new IllegalStateException("Transaction not started");
+        public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
+            if (results == null)
+                results = new LinkedHashSet<>();
+            try {
+                results.add(function.apply(currentSession));
+            } catch (HibernateException e) {
+                currentSession.getTransaction().rollback();
+                results.clear();
+                Logger.getLogger(getClass()).error("Object retrieval error", e);
+            }
+            return this;
         }
-        try {
-            currentSession.getTransaction().commit();
-        } catch (HibernateException e) {
-            Logger.getLogger(getClass()).error("Transaction commit error", e);
+
+        public Set<Object> commit() {
+            try {
+                currentSession.getTransaction().commit();
+            } catch (HibernateException e) {
+                if (results != null)
+                    results.clear();
+                Logger.getLogger(getClass()).error("Transaction commit error", e);
+            }
+            return results;
         }
     }
 

@@ -43,8 +43,8 @@ public class PrintHelpCommand extends AbstractCommand implements Command {
 
             } else if (cmd.hasOption('c')) {
                 header = "\nDisplay a calendar\n\n";
-                footer = "\nNote: Only one of the options can be present";
-                helpFormatter.printHelp("calendar", header, getOptions(), footer, true);
+                footer = "\nNote: Only one of the options can be present (excluding --events)";
+                helpFormatter.printHelp("calendar", header, PrintCalendarCommand.getOptions(), footer, true);
 
             } else {
                 printer.println("Available options for help:\n" +
