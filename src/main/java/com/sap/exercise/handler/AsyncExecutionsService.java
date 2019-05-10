@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class AsyncExecutionsService implements Closeable {
 
-    private final ScheduledExecutorService se = Executors.newScheduledThreadPool(2); // 'se' is not very meaningful
-    private final Set<Event> sentNotificationsEvents = new HashSet<>();
+    private final ScheduledExecutorService se = Executors.newScheduledThreadPool(2);
+    private final Set<Integer> sentNotificationsEvents = new HashSet<>();
 
     AsyncExecutionsService() {
         se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS); // Do you think this should be started inside this
@@ -28,7 +28,7 @@ public final class AsyncExecutionsService implements Closeable {
         se.execute(task);
     }
 
-    // See the comment above. This method is responsible for notifications, why would it reside inside an executor
+
     private synchronized void pollForNotifications() {
         DateHandler today = new DateHandler(DateHandler.Dates.TODAY);
         Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.asString(), today.asString());
@@ -37,9 +37,9 @@ public final class AsyncExecutionsService implements Closeable {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
-            if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event)) {
+            if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
                 NotificationFactory.newNotification(event).send();
-                sentNotificationsEvents.add(event); // Your cache keeps growing without any clean up leading to a potential leak? Could the passed events be cleaned up in some way?
+                sentNotificationsEvents.add(event.getId());
             }
         });
     }
