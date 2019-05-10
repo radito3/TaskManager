@@ -25,13 +25,21 @@ public class AddCommand implements Command, CommandOptions {
     @Override
     public int execute(String... args) {
         try {
+        	// This does 'parsing' of args inside an execute method. Shouldn't the execute method be responsible only for executing?
+        	// What do you think about introducing CommandParser (read top comment at InputParser)
+        	// which would be responsible to parse the input from the user to a Command object (operating on a parsed Event object - composition).
+        	// This way you can make a generic CommandParser or even extend the CommandParser and make a parser for each command.
+        	// CommandParser could also include the 'InteractiveInput' parsing functionality here.
+        	// Potentially, you'd end up with a CommandParser which provides a Command you can directly execute().
+        	// Complying with separation of concerns.
+        	// Do you think this would improve the current design?
             Event event = flagHandler(args);
-            EventWrapper wrapper = EventWrapperFactory.getEventWrapper(event);
-            InteractiveInput input = new InteractiveInput(reader, wrapper);
+            EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
+            InteractiveInput input = new InteractiveInput(reader, eventWrapper);
 
             input.parseInput();
 
-            new EventCreator().execute(wrapper.getEvent());
+            new EventCreator().execute(eventWrapper.getEvent());
             printer.println("\nEvent created");
         } catch (IllegalArgumentException | ParseException e) {
             printer.println(e.getMessage());
@@ -39,7 +47,11 @@ public class AddCommand implements Command, CommandOptions {
         return 0;
     }
 
-    private Event flagHandler(String[] args) throws ParseException {
+	// The name of this method is confusing at first read. flagHandler is a noun,
+	// does not contain a verb?
+    private Event flagHandler(String[] args) throws ParseException { // The method does several things (parse the input to a
+                                                                     // command then it handles different options).
+                                                                     // Do you think this could be split up to allow Separation of concerns?
         CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
 
         if (cmd.getOptions().length > 1) {
@@ -57,21 +69,21 @@ public class AddCommand implements Command, CommandOptions {
 
     @Override
     public Options getOptions() {
-        Option task = Option.builder("t")
+        Option taskOption = Option.builder("t")
                 .required(false)
                 .longOpt("task")
                 .desc("Create a Task (default)")
                 .build();
-        Option reminder = Option.builder("r")
+        Option reminderOption = Option.builder("r")
                 .required(false)
                 .longOpt("reminder")
                 .desc("Create a Reminder")
                 .build();
-        Option goal = Option.builder("g")
+        Option goalOption = Option.builder("g")
                 .required(false)
                 .longOpt("goal")
                 .desc("Create a Goal")
                 .build();
-        return new Options().addOption(task).addOption(reminder).addOption(goal);
+        return new Options().addOption(taskOption).addOption(reminderOption).addOption(goalOption);
     }
 }

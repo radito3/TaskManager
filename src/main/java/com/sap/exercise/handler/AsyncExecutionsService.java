@@ -18,14 +18,17 @@ public final class AsyncExecutionsService implements Closeable {
     private final Set<Integer> sentNotificationsEvents = new HashSet<>();
 
     AsyncExecutionsService() {
-        se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS);
+        se.scheduleAtFixedRate(this::pollForNotifications, 0L, 10L, TimeUnit.SECONDS); // Do you think this should be started inside this
+                                                                                       // 'Service'? I'd assume the service would be responsible
+                                                                                       // to take input for what to execute, not start some tasks
+                                                                                       // on its own. Perhaps something else should be responsible for starting this repetitive 'execution'
     }
 
     public void execute(Runnable task) {
         se.execute(task);
     }
 
-    //TODO move this method to Notification factory
+
     private synchronized void pollForNotifications() {
         DateHandler today = new DateHandler(DateHandler.Dates.TODAY);
         Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.asString(), today.asString());

@@ -15,9 +15,10 @@ public class PrintCalendarCommand implements Command, CommandOptions {
     @Override
     public int execute(String... args) {
         try {
-            Calendar cal = Calendar.getInstance();
+            // Take a look at first comment inside execute method of AddCommand class
+            Calendar calendar = Calendar.getInstance();
             CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
-            EventsGetterHandler handler = new EventGetter();
+            EventsGetterHandler eventsGetterHandler = new EventGetter(); // Do not be afraid to make descriptive variable names
 
             if (cmd.getOptions().length > 2 || optionsSizeWithoutEvents(cmd) > 1) {
                 throw new IllegalArgumentException("Invalid number of arguments");
@@ -25,14 +26,14 @@ public class PrintCalendarCommand implements Command, CommandOptions {
 
             if (cmd.hasOption('3')) {
                 for (int i = -1; i < 2; i++) {
-                    printer.monthCalendar(handler, cal.get(Calendar.MONTH) + i, cmd.hasOption('e'));
+                    printer.monthCalendar(eventsGetterHandler, calendar.get(Calendar.MONTH) + i, cmd.hasOption('e'));
                     printer.println();
                 }
             } else if (cmd.hasOption('y')) {
-                int year = cmd.getOptionValues('y') == null ? cal.get(Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
-                printer.yearCalendar(handler, year, cmd.hasOption('e'));
+                int year = cmd.getOptionValues('y') == null ? calendar.get(Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
+                printer.yearCalendar(eventsGetterHandler, year, cmd.hasOption('e'));
             } else {
-                printer.monthCalendar(handler, cal.get(Calendar.MONTH), cmd.hasOption('e'));
+                printer.monthCalendar(eventsGetterHandler, calendar.get(Calendar.MONTH), cmd.hasOption('e'));
             }
         } catch (ParseException | IllegalArgumentException e) {
             printer.println(e.getMessage());
