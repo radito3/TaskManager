@@ -22,9 +22,4 @@ public class EventDeletorTF extends AbstractEventsHandler<Event> implements Even
         setChanged();
         notifyObservers(new Object[] { event, new String[] {start, end} });
     }
-
-    @Override
-    public void execute(Event var) {
-        throw new UnsupportedOperationException();
-    }
 }

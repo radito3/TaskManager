@@ -9,5 +9,8 @@ abstract class AbstractEventsHandler<T> extends Observable implements EventsHand
         addObserver(o);
     }
 
-    //TODO need to provide an exception throwing impl to all event handler methods
+    @Override
+    public void execute(T var) {
+        throw new UnsupportedOperationException();
+    }
 }

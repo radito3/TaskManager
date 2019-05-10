@@ -37,7 +37,7 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
         }
 
         setChanged();
-        //TODO it makes more sence for the observers to be notified asynchroneously. 
+        //it makes more sense for the observers to be notified asynchronously.
         notifyObservers(new Object[] { event, id });
     }
 

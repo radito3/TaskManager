@@ -21,7 +21,7 @@ public class DeletionTimeFrameObserver implements Observer {
         SharedResourcesFactory.getService().execute(() -> {
             for (Calendar cal : dateHandler.fromTo()) {
                 SharedResourcesFactory.getMapHandler().iterateEventsMap((date, eventSet) -> {
-                    if (DateUtils.isSameDay(cal, date)) {
+                    if (DateUtils.isSameDay(cal, date.getCalendar())) {
                         eventSet.removeIf(event1 -> event1.getId().equals(event.getId()));
                     }
                 });

@@ -4,6 +4,7 @@ import com.sap.exercise.db.DatabaseUtil;
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.util.CalendarWrapper;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -51,7 +52,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     private Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
         return (Calendar date) -> {
             Set<Event> ev;
-            if ((ev = SharedResourcesFactory.getMapHandler().getFromMap(date)) == null) {
+            if ((ev = SharedResourcesFactory.getMapHandler().getFromMap(new CalendarWrapper(date))) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -84,16 +85,11 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
         for (Calendar date : new DateHandler(start, end).fromTo()) {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (DateUtils.isSameDay(date, entry.getKey())) {
-                    SharedResourcesFactory.getMapHandler().putInMap(date, entry.getValue());
+                    SharedResourcesFactory.getMapHandler().putInMap(new CalendarWrapper(date), entry.getValue());
                     hasNewEntries = true;
                 }
             }
         }
         return hasNewEntries;
-    }
-
-    @Override
-    public void execute(Event var) {
-        throw new UnsupportedOperationException();
     }
 }
