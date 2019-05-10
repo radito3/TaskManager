@@ -12,17 +12,16 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.input.CloseShieldInputStream;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class AddCommand extends AbstractCommand implements Command {
 
-    private BufferedReader reader = new BufferedReader(
-            new InputStreamReader(
-                    new CloseShieldInputStream(Application.Configuration.INPUT)));
-
     @Override
     public int execute(String... args) {
-        try {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                        new CloseShieldInputStream(Application.Configuration.INPUT)))) {
         	// This does 'parsing' of args inside an execute method. Shouldn't the execute method be responsible only for executing?
         	// What do you think about introducing CommandParser (read top comment at InputParser)
         	// which would be responsible to parse the input from the user to a Command object (operating on a parsed Event object - composition).
@@ -39,7 +38,7 @@ public class AddCommand extends AbstractCommand implements Command {
 
             new EventCreator().execute(eventWrapper.getEvent());
             printer.println("\nEvent created");
-        } catch (IllegalArgumentException | ParseException e) {
+        } catch (IllegalArgumentException | ParseException | IOException e) {
             printer.println(e.getMessage());
         }
         return 0;

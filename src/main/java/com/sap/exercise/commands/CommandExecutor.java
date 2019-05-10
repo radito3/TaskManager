@@ -1,7 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.Application;
-import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,8 +27,7 @@ public class CommandExecutor {
     public CommandExecutor(String[] input) {
         String command = input[0];
         if (!commands.containsKey(command)) {
-            new OutputPrinter(Application.Configuration.OUTPUT).println("Invalid command"); //a new object shouldn't
-                                                                                            //be instanced here
+            OutputPrinterProvider.getPrinter().println("Invalid command");
         } else {
             current = commands.get(command).get();
             commandArgs = Arrays.copyOfRange(input, 1, input.length);

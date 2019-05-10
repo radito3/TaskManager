@@ -17,9 +17,9 @@ class PrinterUtils {
         Calendar toCheck = new GregorianCalendar(year, month - 1, day);
 
         if (DateUtils.isSameDay(today, toCheck)) {
-            writer.printf(OutputPrinter.INVERT + "%1$2d" + OutputPrinter.RESET, day);
+            writer.printf(PrinterColors.INVERT + "%1$2d" + PrinterColors.RESET, day);
         } else {
-            writer.printf(format + "%1$2d" + OutputPrinter.RESET, day);
+            writer.printf(format + "%1$2d" + PrinterColors.RESET, day);
         }
     }
 
@@ -63,7 +63,7 @@ class PrinterUtils {
         return result;
     }
 
-    //TODO needs complete overhaul
+    //needs complete overhaul
     static class Formatter {
         private boolean allDay = false;
         private boolean multipleEvents = false;
@@ -94,13 +94,13 @@ class PrinterUtils {
         void printTitle(String title) {
             switch (type) {
                 case TASK:
-                    writer.print(OutputPrinter.CYAN + title + OutputPrinter.RESET);
+                    writer.print(PrinterColors.CYAN + title + PrinterColors.RESET);
                     break;
                 case REMINDER:
-                    writer.print(OutputPrinter.GREEN + title + OutputPrinter.RESET);
+                    writer.print(PrinterColors.GREEN + title + PrinterColors.RESET);
                     break;
                 case GOAL:
-                    writer.print(OutputPrinter.PURPLE + title + OutputPrinter.RESET);
+                    writer.print(PrinterColors.PURPLE + title + PrinterColors.RESET);
                     break;
             }
         }

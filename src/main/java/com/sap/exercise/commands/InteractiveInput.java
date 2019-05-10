@@ -1,7 +1,8 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.Application;
 import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
+import com.sap.exercise.printer.PrinterColors;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.FieldInfo;
 import org.apache.log4j.Logger;
@@ -16,8 +17,7 @@ class InteractiveInput {
     private String input;
     private final BufferedReader reader;
     private final EventWrapper eventWrapper;
-    private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT); //don't think this needs
-                                                                                               //to be instanced here
+    private final OutputPrinter printer = OutputPrinterProvider.getPrinter();
 
     InteractiveInput(BufferedReader reader, EventWrapper wrapper) {
         this.reader = reader;
@@ -26,13 +26,12 @@ class InteractiveInput {
 
     void parseInput() {
         for (FieldInfo fieldInfo : eventWrapper.getFields()) {
-            printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
+            printer.print(fieldInfo.getNameToDisplay() + ": " + PrinterColors.CURSOR_RIGHT);
 
             readInput(fieldInfo);
 
-            if (!input.isEmpty()) {
+            if (!input.isEmpty())
                 fieldInfo.handleArg(input);
-            }
         }
     }
 
@@ -55,7 +54,7 @@ class InteractiveInput {
         if (fieldInfo.isMandatory() && input.isEmpty()) {
             do {
                 printer.println("Field is mandatory!");
-                printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
+                printer.print(fieldInfo.getNameToDisplay() + ": " + PrinterColors.CURSOR_RIGHT);
 
                 input = reader.readLine();
             } while (input.isEmpty());

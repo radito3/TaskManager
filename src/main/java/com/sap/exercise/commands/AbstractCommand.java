@@ -1,10 +1,10 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.Application;
 import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 
 class AbstractCommand {
 
-    protected OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT);
+    protected OutputPrinter printer = OutputPrinterProvider.getPrinter();
 
 }

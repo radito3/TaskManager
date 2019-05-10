@@ -4,6 +4,7 @@ import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.model.Event;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Closeable;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Calendar;
@@ -15,59 +16,13 @@ import java.util.Set;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OutputPrinter {
-
-    public static final String RESET = "\u001B[0m";
-    public static final String BOLD = "\u001B[1m";
-    public static final String UNDERLINE = "\u001B[4m";
-    public static final String INVERT = "\u001B[7m";
-
-    public static final String CURSOR_UP = "\u001B[1000A";
-    public static final String CURSOR_DOWN = "\u001B[1000B";
-    public static final String CURSOR_RIGHT = "\u001B[1000C";
-    public static final String CURSOR_LEFT = "\u001B[1000D";
-
-    public static final String BLACK = "\u001B[30m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String YELLOW = "\u001B[33m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String CYAN = "\u001B[36m";
-    public static final String WHITE = "\u001B[37m";
-
-    public static final String BLACK_BACKGROUND = "\u001B[40m";
-    public static final String RED_BACKGROUND = "\u001B[41m";
-    public static final String GREEN_BACKGROUND = "\u001B[42m";
-    public static final String YELLOW_BACKGROUND = "\u001B[43m";
-    public static final String BLUE_BACKGROUND = "\u001B[44m";
-    public static final String PURPLE_BACKGROUND = "\u001B[45m";
-    public static final String CYAN_BACKGROUND = "\u001B[46m";
-    public static final String WHITE_BACKGROUND = "\u001B[47m";
-
-    public static final String BLACK_BRIGHT = "\u001B[90m";
-    public static final String RED_BRIGHT = "\u001B[91m";
-    public static final String GREEN_BRIGHT = "\u001B[92m";
-    public static final String YELLOW_BRIGHT = "\u001B[93m";
-    public static final String BLUE_BRIGHT = "\u001B[94m";
-    public static final String PURPLE_BRIGHT = "\u001B[95m";
-    public static final String CYAN_BRIGHT = "\u001B[96m";
-    public static final String WHITE_BRIGHT = "\u001B[97m";
-
-    public static final String BLACK_BACKGROUND_BRIGHT = "\u001B[100m";
-    public static final String RED_BACKGROUND_BRIGHT = "\u001B[101m";
-    public static final String GREEN_BACKGROUND_BRIGHT = "\u001B[102m";
-    public static final String YELLOW_BACKGROUND_BRIGHT = "\u001B[103m";
-    public static final String BLUE_BACKGROUND_BRIGHT = "\u001B[104m";
-    public static final String PURPLE_BACKGROUND_BRIGHT = "\u001B[105m";
-    public static final String CYAN_BACKGROUND_BRIGHT = "\u001B[106m";
-    public static final String WHITE_BACKGROUND_BRIGHT = "\u001B[107m";
+public class OutputPrinter implements Closeable {
 
     private Calendar calendar = Calendar.getInstance();
 
     private PrintStream writer;
 
-    public OutputPrinter(OutputStream out) {
+    OutputPrinter(OutputStream out) {
         writer = new PrintStream(out);
     }
 
@@ -102,7 +57,7 @@ public class OutputPrinter {
         PrinterUtils.mapAndSort(writer, eventFormatters, events)
                 .forEach((calendar, eventList) -> {
                     Date date = calendar.getTime();
-                    writer.print(YELLOW + date.toString().substring(0, 10) + RESET);
+                    writer.print(PrinterColors.YELLOW + date.toString().substring(0, 10) + PrinterColors.RESET);
 
                     eventList.forEach(event -> {
                         eventFormatters.get(event).printTime(date);
@@ -169,7 +124,7 @@ public class OutputPrinter {
                             calendar.get(Calendar.DAY_OF_MONTH),
                             month,
                             calendar.get(Calendar.YEAR),
-                            eventSet.isEmpty() ? "" : (CYAN_BACKGROUND + BLACK));
+                            eventSet.isEmpty() ? "" : (PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK));
 
                     weekdayInd.incrementAndGet();
                     if (weekdayInd.get() == 7) {
@@ -181,4 +136,8 @@ public class OutputPrinter {
                 });
     }
 
+    @Override
+    public void close() {
+        writer.close();
+    }
 }
