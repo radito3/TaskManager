@@ -5,13 +5,13 @@ import com.sap.exercise.handler.EventDeletorTF;
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.util.NoSuchElementException;
 
-// The name is not consistent with the other commands, all of them end with Command (AddCommand, EditCommand, etc.).
-// There shouldn't be any specific reason this one does not
-public class Delete implements Command {
+public class DeleteCommand extends AbstractCommand implements Command {
 
     private Event event;
     private DateArgumentEvaluator evaluator;
@@ -46,5 +46,25 @@ public class Delete implements Command {
         }
         new EventDeletorTF().execute(event, start, end);
         return 1;
+    }
+
+    static Options getOptions() {
+        Option start = Option.builder("s")
+                .required(false)
+                .longOpt("start")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the start time from when to delete entries")
+                .build();
+        Option end = Option.builder("e")
+                .required(false)
+                .longOpt("end")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the end time to when to delete entries")
+                .build();
+        return CommandUtils.buildOptions(start, end);
     }
 }

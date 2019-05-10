@@ -1,5 +1,6 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.Application;
 import com.sap.exercise.handler.EventCreator;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.EventWrapperFactory;
@@ -8,19 +9,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.input.CloseShieldInputStream;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
-public class AddCommand implements Command, CommandOptions {
+public class AddCommand extends AbstractCommand implements Command {
 
-    private BufferedReader reader;
-
-    public AddCommand(BufferedReader reader) {
-        this.reader = reader;
-    }
-
-    AddCommand() {
-    }
+    private BufferedReader reader = new BufferedReader(
+            new InputStreamReader(
+                    new CloseShieldInputStream(Application.Configuration.INPUT)));
 
     @Override
     public int execute(String... args) {
@@ -33,7 +31,7 @@ public class AddCommand implements Command, CommandOptions {
         	// Potentially, you'd end up with a CommandParser which provides a Command you can directly execute().
         	// Complying with separation of concerns.
         	// Do you think this would improve the current design?
-            Event event = flagHandler(args);
+            Event event = handleFlags(args);
             EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
             InteractiveInput input = new InteractiveInput(reader, eventWrapper);
 
@@ -47,9 +45,7 @@ public class AddCommand implements Command, CommandOptions {
         return 0;
     }
 
-	// The name of this method is confusing at first read. flagHandler is a noun,
-	// does not contain a verb?
-    private Event flagHandler(String[] args) throws ParseException { // The method does several things (parse the input to a
+    private Event handleFlags(String[] args) throws ParseException { // The method does several things (parse the input to a
                                                                      // command then it handles different options).
                                                                      // Do you think this could be split up to allow Separation of concerns?
         CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
@@ -67,8 +63,7 @@ public class AddCommand implements Command, CommandOptions {
         return new Event("", Event.EventType.TASK);
     }
 
-    @Override
-    public Options getOptions() {
+    static Options getOptions() {
         Option taskOption = Option.builder("t")
                 .required(false)
                 .longOpt("task")
@@ -84,6 +79,6 @@ public class AddCommand implements Command, CommandOptions {
                 .longOpt("goal")
                 .desc("Create a Goal")
                 .build();
-        return new Options().addOption(taskOption).addOption(reminderOption).addOption(goalOption);
+        return CommandUtils.buildOptions(taskOption, reminderOption, goalOption);
     }
 }

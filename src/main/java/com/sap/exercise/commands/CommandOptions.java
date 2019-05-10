@@ -1,9 +1,11 @@
 package com.sap.exercise.commands;
 
-import org.apache.commons.cli.Options;
+//this may be an enum
+public class CommandOptions {
 
-//useless
-public interface CommandOptions {
+    //TODO add static fields and use them in parser/reader/executor
+    //for example
 
-    Options getOptions();
+    static boolean HAS_START_TIME = false;
+    static boolean HAS_END_TIME = false;
 }

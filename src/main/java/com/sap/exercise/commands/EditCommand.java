@@ -1,21 +1,22 @@
 package com.sap.exercise.commands;
 
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.NoSuchElementException;
 
+import com.sap.exercise.Application;
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.EventUpdater;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
+import org.apache.commons.io.input.CloseShieldInputStream;
 
-public class EditCommand implements Command {
+public class EditCommand extends AbstractCommand implements Command {
 
-    private BufferedReader reader;
-
-    public EditCommand(BufferedReader reader) {
-        this.reader = reader;
-    }
+    private BufferedReader reader = new BufferedReader(
+            new InputStreamReader(
+                    new CloseShieldInputStream(Application.Configuration.INPUT)));
 
     @Override
     public int execute(String... args) {
@@ -35,5 +36,4 @@ public class EditCommand implements Command {
         }
         return 0;
     }
-
 }

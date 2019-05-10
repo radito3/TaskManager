@@ -4,11 +4,13 @@ import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.util.Set;
 
-public class PrintAgendaCommand implements Command {
+public class PrintAgendaCommand extends AbstractCommand implements Command {
 
     @Override
     public int execute(String... args) {
@@ -32,4 +34,23 @@ public class PrintAgendaCommand implements Command {
         return 0;
     }
 
+    static Options getOptions() {
+        Option start = Option.builder("s")
+                .required(false)
+                .longOpt("start")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the start time from when to get entries")
+                .build();
+        Option end = Option.builder("e")
+                .required(false)
+                .longOpt("end")
+                .hasArg(true)
+                .numberOfArgs(1)
+                .optionalArg(false)
+                .desc("Specify the end time to when to get entries")
+                .build();
+        return CommandUtils.buildOptions(start, end);
+    }
 }

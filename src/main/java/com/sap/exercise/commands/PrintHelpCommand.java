@@ -7,7 +7,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-public class PrintHelpCommand implements Command, CommandOptions {
+public class PrintHelpCommand extends AbstractCommand implements Command {
 
     @Override
     public int execute(String... args) {
@@ -26,7 +26,7 @@ public class PrintHelpCommand implements Command, CommandOptions {
             if (cmd.hasOption("ad")) {
                 header = "\nCreate an event\n\n";
                 footer = "\nNote: Only one of the options can be present";
-                helpFormatter.printHelp("add", header, new AddCommand().getOptions(), footer, true);
+                helpFormatter.printHelp("add", header, AddCommand.getOptions(), footer, true);
 
             } else if (cmd.hasOption('e')) {
                 header = "\nEdit an event";
@@ -34,23 +34,23 @@ public class PrintHelpCommand implements Command, CommandOptions {
                 helpFormatter.printHelp("edit <event name>", header, new Options(), footer, true);
 
             } else if (cmd.hasOption('d')) {
-                header = "\nDelete an event\n\n";
-                helpFormatter.printHelp("delete <event name>", header, CommandUtils.timeFrameOptions(true), footer, true);
+                header = "\nDeleteCommand an event\n\n";
+                helpFormatter.printHelp("delete <event name>", header, DeleteCommand.getOptions(), footer, true);
 
             } else if (cmd.hasOption("ag")) {
                 header = "\nDisplay a weekly agenda (if not given time arguments)\n\n";
-                helpFormatter.printHelp("agenda", header, CommandUtils.timeFrameOptions(false), footer, true);
+                helpFormatter.printHelp("agenda", header, PrintAgendaCommand.getOptions(), footer, true);
 
             } else if (cmd.hasOption('c')) {
                 header = "\nDisplay a calendar\n\n";
                 footer = "\nNote: Only one of the options can be present";
-                helpFormatter.printHelp("calendar", header, new PrintCalendarCommand().getOptions(), footer, true);
+                helpFormatter.printHelp("calendar", header, getOptions(), footer, true);
 
             } else {
                 printer.println("Available options for help:\n" +
                         " -ad, --add      Show help page for Add command\n" +
                         " -e, --edit      Show help page for Edit command\n" +
-                        " -d, --delete    Show help page for Delete command\n" +
+                        " -d, --delete    Show help page for DeleteCommand command\n" +
                         " -ag, --agenda   Show help page for Agenda command\n" +
                         " -c, --calendar  Show help page for Calendar command");
             }
@@ -60,8 +60,7 @@ public class PrintHelpCommand implements Command, CommandOptions {
         return 0;
     }
 
-    @Override
-    public Options getOptions() {
+    private Options getOptions() {
         Option add = Option.builder("ad")
                 .required(false)
                 .longOpt("add")
@@ -82,6 +81,6 @@ public class PrintHelpCommand implements Command, CommandOptions {
                 .required(false)
                 .longOpt("calendar")
                 .build();
-        return new Options().addOption(add).addOption(edit).addOption(delete).addOption(agenda).addOption(calendar);
+        return CommandUtils.buildOptions(add, edit, delete, agenda, calendar);
     }
 }

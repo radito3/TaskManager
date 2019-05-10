@@ -1,5 +1,6 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.Application;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.FieldInfo;
@@ -15,6 +16,8 @@ class InteractiveInput {
     private String input;
     private final BufferedReader reader;
     private final EventWrapper eventWrapper;
+    private final OutputPrinter printer = new OutputPrinter(Application.Configuration.OUTPUT); //don't think this needs
+                                                                                               //to be instanced here
 
     InteractiveInput(BufferedReader reader, EventWrapper wrapper) {
         this.reader = reader;
@@ -22,30 +25,36 @@ class InteractiveInput {
     }
 
     void parseInput() {
-        try {
-            for (FieldInfo fieldInfo : eventWrapper.getFields()) {
-                Command.printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
+        for (FieldInfo fieldInfo : eventWrapper.getFields()) {
+            printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
 
-                input = reader.readLine();
-                checkMandatoryField(reader, fieldInfo);
+            readInput(fieldInfo);
 
-                if (!input.isEmpty()) {
-                    fieldInfo.handleArg(input);
-                }
+            if (!input.isEmpty()) {
+                fieldInfo.handleArg(input);
             }
-        } catch (IOException e) { // The exception is not propagated through callers
-                                  // What would happen if readLine (line 29) fails, throwing an IOException, and the field is mandatory. 
-                                  // It would not set a field which is mandatory, but neither will throw an exception further up the chain, 
-                                  // which would possibly lead to execution of some command with wrong data. Consider letting this exception propagate instead of catching it, or atleast rethrow it
+        }
+    }
+
+    private void readInput(FieldInfo fieldInfo) {
+        boolean error = false;
+        try {
+            input = reader.readLine();
+            checkMandatoryField(reader, fieldInfo);
+        } catch (IOException e) {
             Logger.getLogger(getClass()).error("Input reading error", e);
+            error = true;
+        } finally {
+            if (error)
+                readInput(fieldInfo);
         }
     }
 
     private void checkMandatoryField(BufferedReader reader, FieldInfo fieldInfo) throws IOException {
         if (fieldInfo.isMandatory() && input.isEmpty()) {
             do {
-                Command.printer.println("Field is mandatory!");
-                Command.printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
+                printer.println("Field is mandatory!");
+                printer.print(fieldInfo.getNameToDisplay() + ": " + OutputPrinter.CURSOR_RIGHT);
 
                 input = reader.readLine();
             } while (input.isEmpty());

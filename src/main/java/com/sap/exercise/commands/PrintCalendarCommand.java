@@ -10,7 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Calendar;
 
-public class PrintCalendarCommand implements Command, CommandOptions {
+public class PrintCalendarCommand extends AbstractCommand implements Command {
 
     @Override
     public int execute(String... args) {
@@ -41,8 +41,7 @@ public class PrintCalendarCommand implements Command, CommandOptions {
         return 0;
     }
 
-    @Override
-    public Options getOptions() {
+    private Options getOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")
@@ -65,7 +64,7 @@ public class PrintCalendarCommand implements Command, CommandOptions {
                 .longOpt("events")
                 .desc("Display calendar with events highlighted")
                 .build();
-        return new Options().addOption(one).addOption(three).addOption(year).addOption(withEvents);
+        return CommandUtils.buildOptions(one, three, year, withEvents);
     }
 
     private int optionsSizeWithoutEvents(CommandLine cmd) {
