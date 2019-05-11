@@ -25,12 +25,11 @@ class PrinterUtils {
 
     static Map<Calendar, Set<Event>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
         Map<Calendar, Set<Event>> result = new TreeMap<>(Comparator.comparingInt(cal -> cal.get(Calendar.DAY_OF_MONTH)));
-        Set<Event> copiedEvents = new HashSet<>(events);
 
         for (int i = 1; i <= numOfMonthDays; i++) {
             Calendar key = new GregorianCalendar(year, month - 1, i);
             Set<Event> val =  new HashSet<>();
-            for (Event ev : copiedEvents) {
+            for (Event ev : events) {
                 if (DateUtils.isSameDay(key, ev.getTimeOf())) {
                     val.add(ev);
                 }

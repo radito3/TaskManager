@@ -13,6 +13,7 @@ public class OutputPrinterProvider {
     }
 
     public static void close() {
-        printer.close();
+        if (printer != null)
+            printer.close();
     }
 }
