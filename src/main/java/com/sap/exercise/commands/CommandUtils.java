@@ -2,7 +2,7 @@ package com.sap.exercise.commands;
 
 import org.apache.commons.cli.*;
 
-import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Function;
 
 class CommandUtils {
@@ -11,8 +11,8 @@ class CommandUtils {
     }
 
     static String buildEventName(String[] input) {
-        return Arrays.stream(input)
-                .reduce((a, b) -> a.concat(" ").concat(b))
+        return Optional.ofNullable(input)
+                .flatMap(arr -> Optional.of(String.join(" ", arr)))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
 
