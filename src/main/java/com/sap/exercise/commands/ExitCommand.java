@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ExitCommand implements Command {
 
     @Override
-    public int execute(String... args) {
+    public int execute() {
         SharedResourcesFactory.shutdown();
         DatabaseUtilFactory.close();
         OutputPrinterProvider.close();

@@ -1,24 +1,25 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
-public class PrintHelpCommand extends AbstractCommand implements Command {
+public class PrintHelpCommand implements Command {
+
+    private CommandLine cmd;
+
+    public PrintHelpCommand(CommandLine cmd) {
+        this.cmd = cmd;
+    }
 
     @Override
-    public int execute(String... args) {
+    public int execute() {
+        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
-            // Take a look at first comment inside execute method of AddCommand class
-            CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
-
-            if (cmd.getOptions().length > 1) {
-                throw new IllegalArgumentException("Invalid number of arguments");
-            }
-
             HelpFormatter helpFormatter = new HelpFormatter();
             String header, footer = "\nThe time options accept time formats as follows:\n" +
                     String.join("\n", DateHandler.DATE_FORMATS);
@@ -54,13 +55,13 @@ public class PrintHelpCommand extends AbstractCommand implements Command {
                         " -ag, --agenda   Show help page for Agenda command\n" +
                         " -c, --calendar  Show help page for Calendar command");
             }
-        } catch (ParseException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
         return 0;
     }
 
-    private Options getOptions() {
+    public static Options getOptions() {
         Option add = Option.builder("ad")
                 .required(false)
                 .longOpt("add")

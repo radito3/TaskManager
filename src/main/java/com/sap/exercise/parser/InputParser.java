@@ -1,13 +1,16 @@
 package com.sap.exercise.parser;
 
 import com.sap.exercise.Application;
-import com.sap.exercise.commands.CommandExecutor;
+import com.sap.exercise.commands.Command;
+import com.sap.exercise.commands.parser.CommandParser;
+import com.sap.exercise.commands.parser.CommandParserFactory;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class InputParser {
 
@@ -27,9 +30,10 @@ public class InputParser {
                     continue;
                 }
                 String[] userInputArgs = userInput.split("\\s+");
-                CommandExecutor executor = new CommandExecutor(userInputArgs);
+                CommandParser parser = CommandParserFactory.getParser(userInputArgs[0]);
+                Command command = parser.parse(Arrays.copyOfRange(userInputArgs, 1, userInputArgs.length));
 
-                if (executor.executeCommand() != 0) {
+                if (command.execute() != 0) {
                     return;
                 }
             }

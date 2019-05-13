@@ -3,37 +3,37 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.EventDeletor;
 import com.sap.exercise.handler.EventDeletorTF;
 import com.sap.exercise.handler.EventGetter;
+import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import java.util.NoSuchElementException;
 
-public class DeleteCommand extends AbstractCommand implements Command {
+public class DeleteCommand implements Command {
 
     private Event event;
     private DateArgumentEvaluator evaluator;
+    private String start, end, eventName;
+
+    public DeleteCommand(String start, String end, String eventName) {
+        this.start = start;
+        this.end = end;
+        this.eventName = eventName;
+    }
 
     @Override
-    public int execute(String... args) {
+    public int execute() {
+        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
-            // Take a look at first comment inside execute method of AddCommand class
-            String[] vars = CommandUtils.flagHandlerForTimeFrame(
-                    args,
-                    cmd -> CommandUtils.buildEventName(cmd.getArgs())
-            );
-            String start = vars[0],
-                    end = vars[1],
-                    eventName = vars[2];
             event = new EventGetter().getEventByTitle(eventName);
-
             evaluator = new DateArgumentEvaluator(start, end);
             int result = evaluator.eval(this::deleteEvents);
 
             printer.println(result == 0 ? "\nEvent deleted" : "\nEvent entries deleted");
-        } catch (NullPointerException | NoSuchElementException | IllegalArgumentException | ParseException e) {
+        } catch (NullPointerException | NoSuchElementException | IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
         return 0;
@@ -48,7 +48,7 @@ public class DeleteCommand extends AbstractCommand implements Command {
         return 1;
     }
 
-    static Options getOptions() {
+    public static Options getOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")

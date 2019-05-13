@@ -1,40 +1,43 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventGetter;
-import com.sap.exercise.handler.EventsGetterHandler;
+import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import java.util.Set;
 
-public class PrintAgendaCommand extends AbstractCommand implements Command {
+public class PrintAgendaCommand implements Command {
+
+    private String start, end;
+
+    public PrintAgendaCommand(String start, String end) {
+        this.start = start;
+        this.end = end;
+    }
 
     @Override
-    public int execute(String... args) {
+    public int execute() {
+        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
-            // Take a look at first comment inside execute method of AddCommand class
-            String[] times = CommandUtils.flagHandlerForTimeFrame(args);
-            String startDate = times[0], endDate = times[1];
-            EventsGetterHandler eventsGetterHandler = new EventGetter(); // Do not be afraid to make descriptive variable names
-
-            DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startDate, endDate); // Do not be afraid to make descriptive variable names
-            Set<Event> events = dateArgumentEvaluator.eval(eventsGetterHandler::getEventsInTimeFrame);
+            DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(start, end);
+            Set<Event> events = dateArgumentEvaluator.eval(new EventGetter()::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");
             } else {
-                printer.printEvents(events);
+                OutputPrinterProvider.getPrinter().printEvents(events);
             }
-        } catch (ParseException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
         return 0;
     }
 
-    static Options getOptions() {
+    public static Options getOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")

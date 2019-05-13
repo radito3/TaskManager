@@ -10,16 +10,14 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-// The name of this class is not very meaningful. As far as I understand, it is supposed to further request Event specific data from the user
-// InteractiveInput does not hint at its true meaning at first sight
-class InteractiveInput {
+class EventDataParser {
 
     private String input;
     private final BufferedReader reader;
     private final EventWrapper eventWrapper;
     private final OutputPrinter printer = OutputPrinterProvider.getPrinter();
 
-    InteractiveInput(BufferedReader reader, EventWrapper wrapper) {
+    EventDataParser(BufferedReader reader, EventWrapper wrapper) {
         this.reader = reader;
         this.eventWrapper = wrapper;
     }

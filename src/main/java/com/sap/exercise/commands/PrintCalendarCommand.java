@@ -2,46 +2,48 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.EventsGetterHandler;
+import com.sap.exercise.printer.OutputPrinter;
+import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Calendar;
 
-public class PrintCalendarCommand extends AbstractCommand implements Command {
+public class PrintCalendarCommand implements Command {
+
+    private CommandLine cmd;
+
+    public PrintCalendarCommand(CommandLine cmd) {
+        this.cmd = cmd;
+    }
 
     @Override
-    public int execute(String... args) {
+    public int execute() {
+        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
-            // Take a look at first comment inside execute method of AddCommand class
             Calendar calendar = Calendar.getInstance();
-            CommandLine cmd = CommandUtils.getParsedCmd(getOptions(), args);
-            EventsGetterHandler eventsGetterHandler = new EventGetter(); // Do not be afraid to make descriptive variable names
-
-            if (cmd.getOptions().length > 2 || optionsSizeWithoutEvents(cmd) > 1) {
-                throw new IllegalArgumentException("Invalid number of arguments");
-            }
+            EventsGetterHandler eventsGetter = new EventGetter();
 
             if (cmd.hasOption('3')) {
                 for (int i = -1; i < 2; i++) {
-                    printer.monthCalendar(eventsGetterHandler, calendar.get(Calendar.MONTH) + i, cmd.hasOption('e'));
+                    printer.monthCalendar(eventsGetter, calendar.get(Calendar.MONTH) + i, cmd.hasOption('e'));
                     printer.println();
                 }
             } else if (cmd.hasOption('y')) {
-                int year = cmd.getOptionValues('y') == null ? calendar.get(Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
-                printer.yearCalendar(eventsGetterHandler, year, cmd.hasOption('e'));
+                int year = cmd.getOptionValues('y') == null ?
+                        calendar.get(Calendar.YEAR) : Integer.valueOf(cmd.getOptionValue('y'));
+                printer.yearCalendar(eventsGetter, year, cmd.hasOption('e'));
             } else {
-                printer.monthCalendar(eventsGetterHandler, calendar.get(Calendar.MONTH), cmd.hasOption('e'));
+                printer.monthCalendar(eventsGetter, calendar.get(Calendar.MONTH), cmd.hasOption('e'));
             }
-        } catch (ParseException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             printer.println(e.getMessage());
         }
         return 0;
     }
 
-    static Options getOptions() {
+    public static Options getOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")
@@ -65,9 +67,5 @@ public class PrintCalendarCommand extends AbstractCommand implements Command {
                 .desc("Display calendar with events highlighted")
                 .build();
         return CommandUtils.buildOptions(one, three, year, withEvents);
-    }
-
-    private int optionsSizeWithoutEvents(CommandLine cmd) {
-        return ArrayUtils.removeElement(cmd.getOptions(), getOptions().getOption("e")).length;
     }
 }

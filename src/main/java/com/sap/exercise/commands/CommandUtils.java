@@ -1,16 +1,19 @@
 package com.sap.exercise.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.util.Optional;
-import java.util.function.Function;
 
-class CommandUtils {
+public class CommandUtils {
 
     private CommandUtils() {
     }
 
-    static String buildEventName(String[] input) {
+    public static String buildEventName(String[] input) {
         return Optional.ofNullable(input)
                 .flatMap(arr -> Optional.of(String.join(" ", arr)))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
@@ -24,34 +27,7 @@ class CommandUtils {
         return result;
     }
 
-    static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
+    public static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
         return new DefaultParser().parse(options, args, false);
-    }
-
-    static String[] flagHandlerForTimeFrame(String[] args, Function<CommandLine, String> func) throws ParseException {
-        return timeFrameFlagHandler(
-                getParsedCmd(DeleteCommand.getOptions(), args),
-                func);
-    }
-
-    static String[] flagHandlerForTimeFrame(String[] args) throws ParseException {
-        return timeFrameFlagHandler(
-                getParsedCmd(PrintAgendaCommand.getOptions(), args),
-                cmd -> "");
-    }
-
-    private static String[] timeFrameFlagHandler(CommandLine cmd, Function<CommandLine, String> func) {
-        String startTime = "",
-                endTime = "",
-                eventName = func.apply(cmd);
-
-        if (cmd.hasOption('s')) {
-            startTime = cmd.getOptionValue('s');
-        }
-        if (cmd.hasOption('e')) {
-            endTime = cmd.getOptionValue('e') + "-";
-        }
-
-        return new String[] { startTime, endTime, eventName };
     }
 }

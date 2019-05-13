@@ -5,7 +5,6 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Observable;
@@ -21,8 +20,7 @@ public class CreationObserver implements Observer {
         Serializable id = (Serializable) objects[1];
 
         event.setId((Integer) id);
-        Calendar cal = event.getTimeOf();
-        CalendarWrapper calendarWrapper = new CalendarWrapper(cal);
+        CalendarWrapper calendarWrapper = new CalendarWrapper(event.getTimeOf());
 
         Set<Event> events;
         if ((events = SharedResourcesFactory.getMapHandler().getFromMap(calendarWrapper)) != null) {

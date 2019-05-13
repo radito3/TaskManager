@@ -9,6 +9,9 @@ abstract class AbstractEventsHandler<T> extends Observable implements EventsHand
         addObserver(o);
     }
 
+    AbstractEventsHandler() {
+    }
+
     @Override
     public void execute(T var) {
         throw new UnsupportedOperationException();
