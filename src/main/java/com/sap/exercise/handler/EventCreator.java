@@ -38,7 +38,7 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
         setChanged();
         //it makes more sense for the observers to be notified asynchronously.
-        notifyObservers(new Object[] { event, id });
+        notifyObservers(new Object[] { event, id.get() });
     }
 
     private List<CalendarEvents> eventsList(Integer eventId, Event event) {

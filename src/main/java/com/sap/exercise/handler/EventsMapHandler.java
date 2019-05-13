@@ -19,6 +19,7 @@ public final class EventsMapHandler implements Closeable {
 
     public void iterateEventsMap(BiConsumer<CalendarWrapper, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);
+        eventsMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
     public void putInMap(CalendarWrapper calendar, Set<Event> events) {
