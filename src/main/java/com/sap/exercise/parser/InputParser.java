@@ -28,7 +28,7 @@ public class InputParser {
                 CommandParser parser = CommandParserFactory.getParser(userInputArgs[0]);
                 command = parser.parse(Arrays.copyOfRange(userInputArgs, 1, userInputArgs.length));
 
-            } while (command.execute() != 0);
+            } while (command.execute() == 0);
         } catch (IOException e) {
             Logger.getLogger(InputParser.class).error("Input reading error", e);
         }
