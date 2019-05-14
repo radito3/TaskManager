@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:flowable="http://flowable.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef">
+
+  <process id="BaseProcess" name="ConsoleCalendar" isExecutable="true">
+
+    <startEvent id="appStart" name="App start"/>
+    <sequenceFlow id="sid-05C205B8-D1DE-4833-8828-C426E249CF23" sourceRef="appStart" targetRef="readInput"/>
+
+    <serviceTask id="readInput" name="Read input" flowable:class="com.sap.exercise.flowable.InputParserStep"/>
+    <sequenceFlow id="sid-A4537606-96AC-4278-8117-4644C021A59E" sourceRef="readInput" targetRef="parseCommand"/>
+
+    <serviceTask id="parseCommand" name="Parse command" flowable:class="com.sap.exercise.flowable.CommandParserStep"/>
+    <sequenceFlow id="sid-52EE8935-114E-4A27-A237-CE00C4113FCF" sourceRef="parseCommand" targetRef="executeCommand"/>
+
+    <serviceTask id="executeCommand" name="Execute command" flowable:class="com.sap.exercise.flowable.ExecuteCommandStep"/>
+    <sequenceFlow id="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" sourceRef="executeCommand" targetRef="appEnd"/>
+
+    <endEvent id="appEnd" name="App cycle end"/>
+  </process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BaseProcess">
+    <bpmndi:BPMNPlane bpmnElement="BaseProcess" id="BPMNPlane_BaseProcess">
+      <bpmndi:BPMNShape bpmnElement="appStart" id="BPMNShape_appStart">
+        <omgdc:Bounds height="30.0" width="30.0" x="375.0" y="698.9584158914314"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="readInput" id="BPMNShape_readInput">
+        <omgdc:Bounds height="80.0" width="100.0" x="495.0" y="673.9584158914314"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parseCommand" id="BPMNShape_parseCommand">
+        <omgdc:Bounds height="80.0" width="99.99999999999977" x="699.4136930288357" y="673.9584158914314"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="appEnd" id="BPMNShape_appEnd">
+        <omgdc:Bounds height="28.0" width="28.0" x="1289.3301818014957" y="701.9584158914314"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="executeCommand" id="BPMNShape_executeCommand">
+        <omgdc:Bounds height="80.0" width="100.0" x="899.3301818014957" y="673.9584158914314"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-A4537606-96AC-4278-8117-4644C021A59E" id="BPMNEdge_sid-A4537606-96AC-4278-8117-4644C021A59E">
+        <omgdi:waypoint x="594.95" y="713.9584158914314"/>
+        <omgdi:waypoint x="699.4136930288357" y="713.9584158914314"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-05C205B8-D1DE-4833-8828-C426E249CF23" id="BPMNEdge_sid-05C205B8-D1DE-4833-8828-C426E249CF23">
+        <omgdi:waypoint x="404.9499983738987" y="713.9584158914314"/>
+        <omgdi:waypoint x="495.0" y="713.9584158914314"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-52EE8935-114E-4A27-A237-CE00C4113FCF" id="BPMNEdge_sid-52EE8935-114E-4A27-A237-CE00C4113FCF">
+        <omgdi:waypoint x="799.3636930287689" y="713.9584158914314"/>
+        <omgdi:waypoint x="899.330181801402" y="713.9584158914314"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-1CC089B7-333E-4FDD-8A55-CB1BD249AD95" id="BPMNEdge_sid-1CC089B7-333E-4FDD-8A55-CB1BD249AD95">
+        <omgdi:waypoint x="1194.280181801493" y="714.5867177782238"/>
+        <omgdi:waypoint x="1289.330782737787" y="715.78232890779"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" id="BPMNEdge_sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B">
+        <omgdi:waypoint x="999.2801818013108" y="713.9584158914314"/>
+        <omgdi:waypoint x="1094.3301818014957" y="713.9584158914314"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

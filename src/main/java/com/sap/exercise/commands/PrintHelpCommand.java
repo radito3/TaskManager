@@ -8,7 +8,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class PrintHelpCommand implements Command {
+import java.io.Serializable;
+
+public class PrintHelpCommand implements Command, Serializable {
 
     private CommandLine cmd;
 

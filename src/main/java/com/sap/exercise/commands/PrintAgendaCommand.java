@@ -8,9 +8,10 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class PrintAgendaCommand implements Command {
+public class PrintAgendaCommand implements Command, Serializable {
 
     private String start, end;
 

@@ -10,9 +10,10 @@ import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 
-public class DeleteCommand implements Command {
+public class DeleteCommand implements Command, Serializable {
 
     private Event event;
     private DateArgumentEvaluator evaluator;

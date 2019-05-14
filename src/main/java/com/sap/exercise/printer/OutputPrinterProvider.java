@@ -1,6 +1,6 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.Application;
+import com.sap.exercise.Configuration;
 
 public class OutputPrinterProvider {
 
@@ -8,7 +8,7 @@ public class OutputPrinterProvider {
 
     public static OutputPrinter getPrinter() {
         if (printer == null)
-            printer = new OutputPrinter(Application.Configuration.OUTPUT);
+            printer = new OutputPrinter(Configuration.OUTPUT);
         return printer;
     }
 

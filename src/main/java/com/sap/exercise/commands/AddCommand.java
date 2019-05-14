@@ -1,6 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.Application;
+import com.sap.exercise.Configuration;
 import com.sap.exercise.handler.EventCreator;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
@@ -14,8 +14,9 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 
-public class AddCommand implements Command {
+public class AddCommand implements Command, Serializable {
 
     private Event event;
 
@@ -27,8 +28,7 @@ public class AddCommand implements Command {
     public int execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        new CloseShieldInputStream(Application.Configuration.INPUT)))) {
+                new InputStreamReader(new CloseShieldInputStream(Configuration.INPUT)))) {
             EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
             EventDataParser dataParser = new EventDataParser(reader, eventWrapper);
 

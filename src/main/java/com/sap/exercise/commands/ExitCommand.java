@@ -1,6 +1,6 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.Application;
+import com.sap.exercise.Configuration;
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.handler.SharedResourcesFactory;
 import com.sap.exercise.notifications.NotificationFactory;
@@ -8,8 +8,9 @@ import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class ExitCommand implements Command {
+public class ExitCommand implements Command, Serializable {
 
     @Override
     public int execute() {
@@ -18,7 +19,7 @@ public class ExitCommand implements Command {
         OutputPrinterProvider.close();
         NotificationFactory.clearEventsSet();
         try {
-            Application.Configuration.INPUT.close();
+            Configuration.INPUT.close();
         } catch (IOException e) {
             Logger.getLogger(getClass()).error("Streams closing error", e);
         }

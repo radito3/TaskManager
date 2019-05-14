@@ -1,6 +1,6 @@
 package com.sap.exercise.notifications;
 
-import com.sap.exercise.Application;
+import com.sap.exercise.Configuration;
 import com.sap.exercise.model.Event;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
@@ -23,7 +23,7 @@ class EmailNotification implements Notification {
         this.event = event;
         EmailValidator validator = EmailValidator.getInstance(true);
 
-        if (!validator.isValid(Application.Configuration.USER_EMAIL)) {
+        if (!validator.isValid(Configuration.USER_EMAIL)) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Invalid email", "Error", JOptionPane.ERROR_MESSAGE);
             isValidEmail = false;
         } else {
@@ -41,7 +41,7 @@ class EmailNotification implements Notification {
             try {
                 MimeMessage msg = new MimeMessage(session);
                 msg.setFrom("me@example.com");
-                msg.setRecipients(Message.RecipientType.TO, Application.Configuration.USER_EMAIL);
+                msg.setRecipients(Message.RecipientType.TO, Configuration.USER_EMAIL);
                 msg.setSubject("Event reminder: " + event.getTitle());
                 msg.setSentDate(new Date());
                 msg.setText("Event description: " + event.getDescription(), "utf-8", "plain");

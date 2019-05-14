@@ -1,6 +1,6 @@
 package com.sap.exercise.notifications;
 
-import com.sap.exercise.Application;
+import com.sap.exercise.Configuration;
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
@@ -16,7 +16,7 @@ public class NotificationFactory {
     private static Set<Integer> sentNotificationsEvents = Collections.synchronizedSet(new HashSet<>());
 
     private static Notification newNotification(Event event) {
-        switch (Application.Configuration.NOTIFICATION_TYPE) {
+        switch (Configuration.NOTIFICATION_TYPE) {
             case POPUP:
                 return new PopupNotification(event);
             case EMAIL:

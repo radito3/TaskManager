@@ -8,9 +8,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class PrintCalendarCommand implements Command {
+public class PrintCalendarCommand implements Command, Serializable {
 
     private CommandLine cmd;
 
