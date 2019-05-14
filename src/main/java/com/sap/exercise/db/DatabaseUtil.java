@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
 import java.io.Closeable;
@@ -19,11 +20,24 @@ public class DatabaseUtil implements Closeable {
     private SessionFactory factory;
 
     DatabaseUtil() {
-        Configuration configuration = new Configuration()
-                .configure("hibernate.cfg.xml")
-                .addAnnotatedClass(Event.class)
-                .addAnnotatedClass(CalendarEvents.class)
-                .addAnnotatedClass(User.class);
+        Configuration configuration = new Configuration();
+        Properties props = new Properties();
+
+        props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
+        props.setProperty(Environment.URL, System.getenv("read_url"));
+        props.setProperty(Environment.USER, System.getenv("username"));
+        props.setProperty(Environment.PASS, System.getenv("password"));
+        props.setProperty(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
+        props.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        props.setProperty(Environment.SHOW_SQL, "false");
+        props.setProperty(Environment.HBM2DDL_AUTO, "update");
+        props.setProperty(Environment.POOL_SIZE, "1");
+        props.setProperty(Environment.USE_SQL_COMMENTS, "false");
+
+        configuration.setProperties(props);
+
+        configuration.addAnnotatedClass(Event.class)
+                .addAnnotatedClass(CalendarEvents.class);
 
         ServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();

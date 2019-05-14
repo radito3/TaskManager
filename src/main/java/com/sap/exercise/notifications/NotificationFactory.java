@@ -39,4 +39,8 @@ public class NotificationFactory {
             }
         }));
     }
+
+    public static void clearEventsSet() {
+        sentNotificationsEvents.clear();
+    }
 }

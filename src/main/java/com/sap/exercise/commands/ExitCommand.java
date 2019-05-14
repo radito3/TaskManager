@@ -3,6 +3,7 @@ package com.sap.exercise.commands;
 import com.sap.exercise.Application;
 import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.handler.SharedResourcesFactory;
+import com.sap.exercise.notifications.NotificationFactory;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.log4j.Logger;
 
@@ -15,6 +16,7 @@ public class ExitCommand implements Command {
         SharedResourcesFactory.shutdown();
         DatabaseUtilFactory.close();
         OutputPrinterProvider.close();
+        NotificationFactory.clearEventsSet();
         try {
             Application.Configuration.INPUT.close();
         } catch (IOException e) {

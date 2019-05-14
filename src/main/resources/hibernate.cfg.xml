@@ -39,7 +39,6 @@
 
         <!-- List of XML mapping files -->
         <mapping resource = "Event.hbm.xml" />
-        <mapping resource = "User.hbm.xml" />
         <mapping resource = "CalendarEvents.hbm.xml" />
 
     </session-factory>

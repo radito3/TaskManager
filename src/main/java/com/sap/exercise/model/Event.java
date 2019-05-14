@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Eventt")
@@ -32,9 +33,9 @@ public class Event extends AbstractModel implements Serializable {
         }
 
         public static String getRegex() {
-            return String.join("|", Arrays.stream(RepeatableType.values())
+            return Arrays.stream(RepeatableType.values())
                     .map(RepeatableType::toRegex)
-                    .toArray(String[]::new));
+                    .collect(Collectors.joining("|"));
         }
 
         public static RepeatableType getRepeatable(String value) {
@@ -49,36 +50,36 @@ public class Event extends AbstractModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "mysql->int(11)", name = "Id", nullable = false, unique = true)
+    @Column(columnDefinition = "int(11)", name = "Id", nullable = false, unique = true)
     private Integer id;
 
-    @Column(columnDefinition = "mysql->varchar(64)", name = "Title", nullable = false)
+    @Column(columnDefinition = "varchar(64)", name = "Title", nullable = false)
     private String title;
 
-    @Column(columnDefinition = "mysql->enum('TASK', 'REMINDER', 'GOAL')", name = "TypeOf", nullable = false)
+    @Column(columnDefinition = "enum('TASK', 'REMINDER', 'GOAL')", name = "TypeOf", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventType typeOf;
 
-    @Column(columnDefinition = "mysql->text", name = "Location")
+    @Column(columnDefinition = "text", name = "Location")
     private String location;
 
-    @Column(columnDefinition = "mysql->timestamp", name = "TimeOf")
+    @Column(columnDefinition = "timestamp", name = "TimeOf")
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar timeOf;
 
-    @Column(columnDefinition = "mysql->text", name = "Description")
+    @Column(columnDefinition = "text", name = "Description")
     private String description;
 
-    @Column(columnDefinition = "mysql->tinyint(1)", name = "AllDay", nullable = false)
+    @Column(columnDefinition = "tinyint(1)", name = "AllDay", nullable = false)
     private Boolean allDay;
 
-    @Column(columnDefinition = "mysql->int(11)", name = "Duration", nullable = false)
+    @Column(columnDefinition = "int(11)", name = "Duration", nullable = false)
     private Integer duration;
 
-    @Column(columnDefinition = "mysql->int(11)", name = "Reminder", nullable = false)
+    @Column(columnDefinition = "int(11)", name = "Reminder", nullable = false)
     private Integer reminder;
 
-    @Column(columnDefinition = "mysql->enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
+    @Column(columnDefinition = "enum('NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY')", name = "ToRepeat", nullable = false)
     @Enumerated(EnumType.STRING)
     private RepeatableType toRepeat;
 
@@ -91,11 +92,10 @@ public class Event extends AbstractModel implements Serializable {
     }
 
     public Event(String title, EventType type) {
-        this(title, type, null, RepeatableType.NONE);
-        this.setTimeOf(this.getDefaultCalendar());
+        this(title, type, getDefaultCalendar(), RepeatableType.NONE);
     }
 
-    private Calendar getDefaultCalendar() {
+    private static Calendar getDefaultCalendar() {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, 12);

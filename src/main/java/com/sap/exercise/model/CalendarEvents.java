@@ -4,14 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "CalendarEvents")
@@ -19,13 +12,13 @@ public class CalendarEvents extends AbstractModel implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "mysql->int(11)", name = "Id", nullable = false, unique = true)
+    @Column(columnDefinition = "int(11)", name = "Id", nullable = false, unique = true)
     private Integer id;
 
-    @Column(columnDefinition = "mysql->int(11)", name = "EventId", nullable = false)
+    @Column(columnDefinition = "int(11)", name = "EventId", nullable = false)
     private Integer eventId;
 
-    @Column(columnDefinition = "mysql->date", name = "Date", nullable = false)
+    @Column(columnDefinition = "date", name = "Date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Calendar date;
 
