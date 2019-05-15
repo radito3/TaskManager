@@ -11,6 +11,9 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Application {
 
     public static void main(String[] args) {
@@ -49,6 +52,11 @@ public class Application {
                         + processDefinition.getId() + "]");
 
         RuntimeService runtimeService = processEngine.getRuntimeService();
-        ProcessInstance instance = runtimeService.startProcessInstanceByKey("BaseProcess");
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("allCommands", new String[] {});
+
+        ProcessInstance instance =
+                runtimeService.startProcessInstanceByKey("BaseProcess", variables);
     }
 }

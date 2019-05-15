@@ -1,9 +1,6 @@
 package com.sap.exercise;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class Configuration {
 
@@ -15,7 +12,7 @@ public class Configuration {
 
     static {
         try {
-            INPUT = new FileInputStream("src/main/resources/executeScript.txt");
+            INPUT = new FileInputStream(new File("src/main/resources/executeScript.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
