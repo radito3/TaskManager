@@ -33,7 +33,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
         List<String> nullDates = new LinkedList<>();
 
         new DateHandler(start, end).fromTo()
-                .forEach(handleDates(events, date -> nullDates.add(new DateHandler(date).asString())));
+                .forEach(handleDates(events, date -> nullDates.add(String.format("%1$tY-%1$tm-%1$td", date))));
 
         if (nullDates.size() != 0) {
             String startIndex = nullDates.get(0),

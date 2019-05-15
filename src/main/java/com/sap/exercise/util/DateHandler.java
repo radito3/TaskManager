@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -20,48 +19,34 @@ public class DateHandler {
     private DateHandler endDate;
     private Calendar currentCal = new GregorianCalendar();
 
-    public enum Dates {
-        TODAY(cal -> {}),
-        IN_ONE_WEEK(cal -> cal.add(Calendar.DAY_OF_MONTH, 6));
-
-        private Consumer<Calendar> cons;
-
-        Dates(Consumer<Calendar> cons) {
-            this.cons = cons;
-        }
-    }
-
     public DateHandler(String text) {
         try {
             String argument = StringUtils.removeEnd(text.trim(), "-");
-            this.currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
+            currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
         } catch (ParseException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
     public DateHandler(String start, String end) {
-        this.startDate = new DateHandler(start);
-        this.endDate = new DateHandler(end);
+        startDate = new DateHandler(start);
+        endDate = new DateHandler(end);
     }
 
-    public DateHandler(Calendar calendar) {
-        this.currentCal = calendar;
-    }
-
-    public DateHandler(Dates dates) {
-        dates.cons.accept(this.currentCal);
+    public DateHandler() {
     }
 
     public Calendar asCalendar() {
         return currentCal;
     }
 
-    public String asString() {
-        return String.format("%d-%d-%d",
-                currentCal.get(Calendar.YEAR),
-                (currentCal.get(Calendar.MONTH) + 1),
-                currentCal.get(Calendar.DAY_OF_MONTH));
+    void addOneWeek() {
+        currentCal.add(Calendar.DAY_OF_MONTH, 6);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%1$tY-%1$tm-%1$td", currentCal);
     }
 
     public List<Calendar> fromTo() {

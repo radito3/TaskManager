@@ -15,29 +15,29 @@ public class InputParserStep implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new CloseShieldInputStream(Configuration.INPUT)))) {
+        String[] allCommands = (String[]) delegateExecution.getVariable("allCommands");
 
-            String[] allCommands = (String[]) delegateExecution.getVariable("allCommands");
+        if (allCommands.length == 0) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(new CloseShieldInputStream(Configuration.INPUT)))) {
 
-            if (allCommands.length == 0) {
                 allCommands = reader.lines()
                         .map(String::trim)
                         .filter(s -> !s.isEmpty())
                         .toArray(String[]::new);
-
-                if (!allCommands[allCommands.length - 1].equals("exit")) {
-                    allCommands = ArrayUtils.addAll(allCommands, "exit");
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            delegateExecution.setVariable("userInput", allCommands[0].split("\\s+"));
-            if (allCommands.length > 1) {
-                delegateExecution.setVariable("allCommands",
-                        Arrays.copyOfRange(allCommands, 1, allCommands.length));
+            if (!allCommands[allCommands.length - 1].equals("exit")) {
+                allCommands = ArrayUtils.addAll(allCommands, "exit");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+
+        delegateExecution.setVariable("userInput", allCommands[0].split("\\s+"));
+        if (allCommands.length > 1) {
+            delegateExecution.setVariable("allCommands",
+                    Arrays.copyOfRange(allCommands, 1, allCommands.length));
         }
     }
 }

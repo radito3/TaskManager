@@ -26,8 +26,8 @@ public class NotificationFactory {
     }
 
     public static void pollForNotifications() {
-        DateHandler today = new DateHandler(DateHandler.Dates.TODAY);
-        Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.asString(), today.asString());
+        DateHandler today = new DateHandler();
+        Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.toString(), today.toString());
 
         todayEvents.forEach(event -> SharedResourcesFactory.getService().execute(() -> {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
