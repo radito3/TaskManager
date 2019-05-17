@@ -4,6 +4,7 @@ import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
+import com.sap.exercise.util.CommandExecutionException;
 
 import java.util.Calendar;
 
@@ -41,7 +42,7 @@ public class PrintCalendarCommand implements Command {
                     break;
             }
         } catch (IllegalArgumentException e) {
-            printer.println(e.getMessage());
+            throw new CommandExecutionException(e);
         }
         return 0;
     }

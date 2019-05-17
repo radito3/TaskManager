@@ -15,7 +15,7 @@ public interface CommandParser {
         try {
             return CommandUtils.getParsedCmd(options, args);
         } catch (ParseException e) {
-            OutputPrinterProvider.getPrinter().println(e.getMessage());
+            OutputPrinterProvider.getPrinter().printStackTrace(e);
             return null;
         }
     }

@@ -6,6 +6,7 @@ import com.sap.exercise.commands.parser.PrintAgendaCommandParser;
 import com.sap.exercise.commands.parser.PrintCalendarCommandParser;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
+import com.sap.exercise.util.CommandExecutionException;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -63,7 +64,7 @@ public class PrintHelpCommand implements Command {
                         " -c, --calendar  Show help page for Calendar command");
             }
         } catch (IllegalArgumentException e) {
-            printer.println(e.getMessage());
+            throw new CommandExecutionException(e);
         }
         return 0;
     }

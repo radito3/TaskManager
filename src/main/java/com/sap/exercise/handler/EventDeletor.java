@@ -28,9 +28,9 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
     private void deleteSingleEntry(Event event) {
         SharedResourcesFactory.getAsyncExecutionsService()
                 .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
-                        .beginTransaction()
+                        .createTransactionBuilder()
                         .addOperation(s -> s.delete(event))
-                        .commit());
+                        .build());
         setChanged();
         notifyObservers(event);
     }
@@ -38,11 +38,11 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
     private void deleteMultipleEntries(Event event) {
         SharedResourcesFactory.getAsyncExecutionsService()
                 .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
-                        .beginTransaction()
+                        .createTransactionBuilder()
                         .addOperation(s -> s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = "
                                 + event.getId() + " AND Date >= \'" + startDate + "\' AND Date <= \'" + endDate + "\';")
                                 .executeUpdate())
-                        .commit());
+                        .build());
         setChanged();
         notifyObservers(new Object[] { event, new String[] {startDate, endDate} });
     }

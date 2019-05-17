@@ -2,8 +2,8 @@ package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventDeletor;
 import com.sap.exercise.handler.EventGetter;
-import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
+import com.sap.exercise.util.CommandExecutionException;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 
@@ -23,15 +23,14 @@ public class DeleteEventCommand implements Command {
 
     @Override
     public int execute() {
-        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
             event = new EventGetter().getEventByTitle(eventName);
             evaluator = new DateArgumentEvaluator(start, end);
             evaluator.eval(this::deleteEvents);
 
-            printer.println("\nEvent entries deleted");
+            OutputPrinterProvider.getPrinter().println("\nEvent entries deleted");
         } catch (NoSuchElementException | IllegalArgumentException e) {
-            printer.println(e.getMessage());
+            throw new CommandExecutionException(e);
         }
         return 0;
     }

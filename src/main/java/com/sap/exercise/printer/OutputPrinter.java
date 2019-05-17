@@ -38,6 +38,10 @@ public class OutputPrinter implements Closeable {
         writer.print(val);
     }
 
+    public void printStackTrace(Throwable e) {
+        e.printStackTrace(writer);
+    }
+
     public void printMonthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
         this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
@@ -77,7 +81,7 @@ public class OutputPrinter implements Closeable {
 
         String monthName = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
         String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
-        String monthHeader = StringUtils.center(monthName + (wholeYear ? " " + year : ""), weekDays.length());
+        String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + year : ""), weekDays.length());
 
         int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
         int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);

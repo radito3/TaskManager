@@ -3,6 +3,7 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
+import com.sap.exercise.util.CommandExecutionException;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 
@@ -10,18 +11,18 @@ import java.util.Set;
 
 public class PrintAgendaCommand implements Command {
 
-    private String start, end;
+    private String startTime, endTime;
 
-    public PrintAgendaCommand(String start, String end) {
-        this.start = start;
-        this.end = end;
+    public PrintAgendaCommand(String startTime, String endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     @Override
     public int execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
-            DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(start, end);
+            DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
             Set<Event> events = dateArgumentEvaluator.eval(new EventGetter()::getEventsInTimeFrame);
 
             if (events.isEmpty()) {
@@ -30,7 +31,7 @@ public class PrintAgendaCommand implements Command {
                 OutputPrinterProvider.getPrinter().printEvents(events);
             }
         } catch (IllegalArgumentException e) {
-            printer.println(e.getMessage());
+            throw new CommandExecutionException(e);
         }
         return 0;
     }

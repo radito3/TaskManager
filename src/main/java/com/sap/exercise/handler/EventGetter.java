@@ -17,10 +17,10 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     @SuppressWarnings("unchecked")
     public Event getEventByTitle(String var) {
         Optional<Event> optionalEvent = (Optional<Event>) DatabaseUtilFactory.getDatabaseUtil()
-                .beginTransaction()
+                .createTransactionBuilder()
                 .addOperationWithResult(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'"
                         + var + "\' LIMIT 1;", Event.class).uniqueResultOptional())
-                .commit()
+                .build()
                 .iterator().next();
 
         return optionalEvent.orElseThrow(() -> new NoSuchElementException("Invalid event name"));
@@ -60,18 +60,18 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     private boolean setEventsInTable(String start, String end) {
         DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         boolean hasNewEntries = false;
-        List<CalendarEvents> list = (List<CalendarEvents>) db.beginTransaction()
+        List<CalendarEvents> list = (List<CalendarEvents>) db.createTransactionBuilder()
                 .addOperationWithResult(s ->
                         s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
                                 "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList())
-                .commit()
+                .build()
                 .iterator().next();
 
         Map<Calendar, Set<Event>> map = list.stream()
                 .map(calEvents -> {
-                    Event event = (Event) db.beginTransaction()
+                    Event event = (Event) db.createTransactionBuilder()
                             .addOperationWithResult(s -> s.get(Event.class, calEvents.getEventId()))
-                            .commit()
+                            .build()
                             .iterator().next();
                     event.setTimeOf(calEvents.getDate());
                     return event;

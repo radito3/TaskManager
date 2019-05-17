@@ -54,7 +54,7 @@ public class DatabaseUtil implements Closeable {
         config.setProperties(props);
     }
 
-    public synchronized TransactionBuilder beginTransaction() {
+    public synchronized TransactionBuilder createTransactionBuilder() {
         return new TransactionBuilder(sessionFactory.getCurrentSession());
     }
 
@@ -78,11 +78,11 @@ public class DatabaseUtil implements Closeable {
         public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
             if (results == null)
                 results = new LinkedHashSet<>();
-            operations.add(session -> results.add(function.apply(currentSession)));
+            operations.add(session -> results.add(function.apply(session)));
             return this;
         }
 
-        public Set<Object> commit() {
+        public synchronized Set<Object> build() {
             try {
                 for (Consumer<Session> operation : operations) {
                     operation.accept(currentSession);
@@ -95,7 +95,7 @@ public class DatabaseUtil implements Closeable {
                 if (currentSession.getTransaction().getStatus().canRollback())
                     currentSession.getTransaction().rollback();
 
-                Logger.getLogger(getClass()).error("Transaction commit error", e);
+                Logger.getLogger(getClass()).error("Transaction build error", e);
             }
             return results;
         }
