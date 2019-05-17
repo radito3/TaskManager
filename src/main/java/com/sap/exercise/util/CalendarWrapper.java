@@ -11,10 +11,6 @@ public class CalendarWrapper {
         calendar = cal;
     }
 
-    public Calendar getCalendar() {
-        return calendar;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,5 +24,10 @@ public class CalendarWrapper {
     @Override
     public int hashCode() {
         return Objects.hash(calendar.get(0), calendar.get(1), calendar.get(6));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%1$tY-%1$tm-%1$td", calendar);
     }
 }

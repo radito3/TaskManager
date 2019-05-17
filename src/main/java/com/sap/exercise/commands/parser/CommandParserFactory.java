@@ -1,12 +1,8 @@
 package com.sap.exercise.commands.parser;
 
-import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.CommandUtils;
-import com.sap.exercise.commands.EditCommand;
+import com.sap.exercise.commands.EditEventCommand;
 import com.sap.exercise.commands.ExitCommand;
-import com.sap.exercise.printer.OutputPrinterProvider;
-
-import java.io.Serializable;
 
 public class CommandParserFactory {
 
@@ -15,7 +11,7 @@ public class CommandParserFactory {
             case "add":
                 return new AddCommandParser();
             case "edit":
-                return args -> new EditCommand(CommandUtils.buildEventName(args));
+                return args -> new EditEventCommand(CommandUtils.buildEventName(args));
             case "delete":
                 return new DeleteCommandParser();
             case "cal":
@@ -26,11 +22,8 @@ public class CommandParserFactory {
                 return new PrintHelpCommandParser();
             case "exit":
                 return args -> new ExitCommand();
-            case "":
-                return args -> (Serializable & Command) () -> 0;
             default:
-                OutputPrinterProvider.getPrinter().println("Invalid command");
-                return args -> (Serializable & Command) () -> 0;
+                throw new IllegalArgumentException("Invalid command");
         }
     }
 }

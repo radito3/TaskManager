@@ -1,16 +1,17 @@
 package com.sap.exercise.commands;
 
+import com.sap.exercise.commands.parser.AddCommandParser;
+import com.sap.exercise.commands.parser.DeleteCommandParser;
+import com.sap.exercise.commands.parser.PrintAgendaCommandParser;
+import com.sap.exercise.commands.parser.PrintCalendarCommandParser;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import java.io.Serializable;
-
-public class PrintHelpCommand implements Command, Serializable {
+public class PrintHelpCommand implements Command {
 
     private CommandLine cmd;
 
@@ -29,7 +30,8 @@ public class PrintHelpCommand implements Command, Serializable {
             if (cmd.hasOption("ad")) {
                 header = "\nCreate an event\n\n";
                 footer = "\nNote: Only one of the options can be present";
-                helpFormatter.printHelp("add", header, AddCommand.getOptions(), footer, true);
+                helpFormatter.printHelp("add", header,
+                        AddCommandParser.addCommandOptions(), footer, true);
 
             } else if (cmd.hasOption('e')) {
                 header = "\nEdit an event";
@@ -37,23 +39,26 @@ public class PrintHelpCommand implements Command, Serializable {
                 helpFormatter.printHelp("edit <event name>", header, new Options(), footer, true);
 
             } else if (cmd.hasOption('d')) {
-                header = "\nDeleteCommand an event\n\n";
-                helpFormatter.printHelp("delete <event name>", header, DeleteCommand.getOptions(), footer, true);
+                header = "\nDelete an event\n\n";
+                helpFormatter.printHelp("delete <event name>", header,
+                        DeleteCommandParser.deleteOptions(), footer, true);
 
             } else if (cmd.hasOption("ag")) {
                 header = "\nDisplay a weekly agenda (if not given time arguments)\n\n";
-                helpFormatter.printHelp("agenda", header, PrintAgendaCommand.getOptions(), footer, true);
+                helpFormatter.printHelp("agenda", header,
+                        PrintAgendaCommandParser.printAgendaOptions(), footer, true);
 
             } else if (cmd.hasOption('c')) {
                 header = "\nDisplay a calendar\n\n";
                 footer = "\nNote: Only one of the options can be present (excluding --events)";
-                helpFormatter.printHelp("calendar", header, PrintCalendarCommand.getOptions(), footer, true);
+                helpFormatter.printHelp("calendar", header,
+                        PrintCalendarCommandParser.printCalendarOptions(), footer, true);
 
             } else {
                 printer.println("Available options for help:\n" +
                         " -ad, --add      Show help page for Add command\n" +
                         " -e, --edit      Show help page for Edit command\n" +
-                        " -d, --delete    Show help page for DeleteCommand command\n" +
+                        " -d, --delete    Show help page for DeleteEventCommand command\n" +
                         " -ag, --agenda   Show help page for Agenda command\n" +
                         " -c, --calendar  Show help page for Calendar command");
             }
@@ -61,29 +66,5 @@ public class PrintHelpCommand implements Command, Serializable {
             printer.println(e.getMessage());
         }
         return 0;
-    }
-
-    public static Options getOptions() {
-        Option add = Option.builder("ad")
-                .required(false)
-                .longOpt("add")
-                .build();
-        Option edit = Option.builder("e")
-                .required(false)
-                .longOpt("edit")
-                .build();
-        Option delete = Option.builder("d")
-                .required(false)
-                .longOpt("delete")
-                .build();
-        Option agenda = Option.builder("ag")
-                .required(false)
-                .longOpt("agenda")
-                .build();
-        Option calendar = Option.builder("c")
-                .required(false)
-                .longOpt("calendar")
-                .build();
-        return CommandUtils.buildOptions(add, edit, delete, agenda, calendar);
     }
 }

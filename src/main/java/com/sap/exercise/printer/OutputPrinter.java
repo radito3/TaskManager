@@ -38,11 +38,11 @@ public class OutputPrinter implements Closeable {
         writer.print(val);
     }
 
-    public void monthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
+    public void printMonthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
         this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
 
-    public void yearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
+    public void printYearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
         writer.println(StringUtils.leftPad(String.valueOf(year), 14));
         writer.println();
         for (int i = 0; i < 12; i++) {
@@ -76,14 +76,14 @@ public class OutputPrinter implements Closeable {
         Calendar cal = new GregorianCalendar(year, month - 1, 1);
 
         String monthName = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-
-        String monthHeader = StringUtils.leftPad(monthName,monthName.length() + (wholeYear ? 8 : 6));
+        String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
+        String monthHeader = StringUtils.center(monthName + (wholeYear ? " " + year : ""), weekDays.length());
 
         int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
         int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        writer.println(monthHeader + " " + (wholeYear ? "" : year));
-        writer.println("Su  Mo  Tu  We  Th  Fr  Sa");
+        writer.println(monthHeader);
+        writer.println(weekDays);
 
         int weekdayIndex = 0;
 

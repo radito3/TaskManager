@@ -6,7 +6,6 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
 import com.sap.exercise.util.DateHandler;
-import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -17,7 +16,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     @Override
     @SuppressWarnings("unchecked")
     public Event getEventByTitle(String var) {
-        Optional<Event> optionalEvent = (Optional<Event>) DatabaseUtilFactory.getDb()
+        Optional<Event> optionalEvent = (Optional<Event>) DatabaseUtilFactory.getDatabaseUtil()
                 .beginTransaction()
                 .addOperationWithResult(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'"
                         + var + "\' LIMIT 1;", Event.class).uniqueResultOptional())
@@ -33,22 +32,23 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
         List<String> nullDates = new LinkedList<>();
 
         new DateHandler(start, end).fromTo()
-                .forEach(handleDates(events, date -> nullDates.add(String.format("%1$tY-%1$tm-%1$td", date))));
+                .forEach(handleDates(events, date -> nullDates.add(date.toString())));
 
         if (nullDates.size() != 0) {
             String startIndex = nullDates.get(0),
                     endIndex = nullDates.get(nullDates.size() - 1);
             if (setEventsInTable(startIndex, endIndex)) {
-                new DateHandler(startIndex, endIndex).fromTo().forEach(handleDates(events, date -> {}));
+                new DateHandler(startIndex, endIndex).fromTo()
+                        .forEach(handleDates(events, date -> {}));
             }
         }
         return events;
     }
 
-    private Consumer<Calendar> handleDates(Set<Event> events, Consumer<Calendar> listConsumer) {
-        return (Calendar date) -> {
+    private Consumer<CalendarWrapper> handleDates(Set<Event> events, Consumer<CalendarWrapper> listConsumer) {
+        return (CalendarWrapper date) -> {
             Set<Event> ev;
-            if ((ev = SharedResourcesFactory.getMapHandler().getFromMap(new CalendarWrapper(date))) == null) {
+            if ((ev = SharedResourcesFactory.getEventsMapHandler().getFromMap(date)) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -58,7 +58,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
 
     @SuppressWarnings("unchecked")
     private boolean setEventsInTable(String start, String end) {
-        DatabaseUtil db = DatabaseUtilFactory.getDb();
+        DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         boolean hasNewEntries = false;
         List<CalendarEvents> list = (List<CalendarEvents>) db.beginTransaction()
                 .addOperationWithResult(s ->
@@ -78,10 +78,10 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
                 })
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
 
-        for (Calendar date : new DateHandler(start, end).fromTo()) {
+        for (CalendarWrapper date : new DateHandler(start, end).fromTo()) {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
-                if (DateUtils.isSameDay(date, entry.getKey())) {
-                    SharedResourcesFactory.getMapHandler().putInMap(new CalendarWrapper(date), entry.getValue());
+                if (date.equals(new CalendarWrapper(entry.getKey()))) {
+                    SharedResourcesFactory.getEventsMapHandler().putInMap(date, entry.getValue());
                     hasNewEntries = true;
                 }
             }

@@ -19,7 +19,7 @@ public class CommandUtils {
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
     }
 
-    static Options buildOptions(Option... options) {
+    public static Options buildOptions(Option... options) {
         Options result = new Options();
         for (Option opt : options) {
             result.addOption(opt);
@@ -29,5 +29,21 @@ public class CommandUtils {
 
     public static CommandLine getParsedCmd(Options options, String[] args) throws ParseException {
         return new DefaultParser().parse(options, args, false);
+    }
+
+    public enum PrintCalendarOptions {
+        ONE,
+        THREE,
+        YEAR;
+
+        private String arg;
+
+        public String getArgument() {
+            return arg;
+        }
+
+        public void setArgument(String arg) {
+            this.arg = arg;
+        }
     }
 }

@@ -1,7 +1,8 @@
 package com.sap.exercise.commands;
 
-@FunctionalInterface
-public interface Command {
+import java.io.Serializable;
+
+public interface Command extends Serializable {
 
     int execute();
 }

@@ -7,7 +7,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-@FunctionalInterface
 public interface CommandParser {
 
     Command parse(String[] args);

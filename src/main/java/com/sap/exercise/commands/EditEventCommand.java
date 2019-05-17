@@ -3,7 +3,6 @@ package com.sap.exercise.commands;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.NoSuchElementException;
 
 import com.sap.exercise.Configuration;
@@ -16,11 +15,11 @@ import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
 import org.apache.commons.io.input.CloseShieldInputStream;
 
-public class EditCommand implements Command, Serializable {
+public class EditEventCommand implements Command {
 
     private String name;
 
-    public EditCommand(String name) {
+    public EditEventCommand(String name) {
         this.name = name;
     }
 
@@ -37,7 +36,7 @@ public class EditCommand implements Command, Serializable {
 
             new EventUpdater().execute(eventWrapper.getEvent());
             printer.println("\nEvent updated");
-        } catch (NullPointerException | NoSuchElementException | IllegalArgumentException | IOException e) {
+        } catch (NoSuchElementException | IllegalArgumentException | IOException e) {
             printer.println(e.getMessage());
         }
         return 0;

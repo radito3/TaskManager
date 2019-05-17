@@ -17,10 +17,27 @@ import java.util.function.Function;
 
 public class DatabaseUtil implements Closeable {
 
-    private SessionFactory factory;
+    private SessionFactory sessionFactory;
 
     DatabaseUtil() {
+        sessionFactory = createSessionFactory();
+    }
+
+    private SessionFactory createSessionFactory() {
         Configuration configuration = new Configuration();
+
+        setProperties(configuration);
+
+        configuration.addAnnotatedClass(Event.class)
+                .addAnnotatedClass(CalendarEvents.class);
+
+        ServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .applySettings(configuration.getProperties()).build();
+
+        return configuration.buildSessionFactory(registry);
+    }
+
+    private void setProperties(Configuration config) {
         Properties props = new Properties();
 
         props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
@@ -34,24 +51,17 @@ public class DatabaseUtil implements Closeable {
         props.setProperty(Environment.POOL_SIZE, "1");
         props.setProperty(Environment.USE_SQL_COMMENTS, "false");
 
-        configuration.setProperties(props);
-
-        configuration.addAnnotatedClass(Event.class)
-                .addAnnotatedClass(CalendarEvents.class);
-
-        ServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties()).build();
-
-        factory = configuration.buildSessionFactory(registry);
+        config.setProperties(props);
     }
 
     public synchronized TransactionBuilder beginTransaction() {
-        return new TransactionBuilder(factory.getCurrentSession());
+        return new TransactionBuilder(sessionFactory.getCurrentSession());
     }
 
     public static class TransactionBuilder {
 
         private Session currentSession;
+        private List<Consumer<Session>> operations = Collections.synchronizedList(new LinkedList<>());
         private Set<Object> results;
 
         private TransactionBuilder(Session session) {
@@ -61,36 +71,30 @@ public class DatabaseUtil implements Closeable {
         }
 
         public synchronized TransactionBuilder addOperation(Consumer<Session> consumer) {
-            try {
-                consumer.accept(currentSession);
-            } catch (HibernateException e) {
-                currentSession.getTransaction().rollback();
-                if (results != null)
-                    results.clear();
-                Logger.getLogger(getClass()).error("Object operations error", e);
-            }
+            operations.add(consumer);
             return this;
         }
 
         public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
             if (results == null)
                 results = new LinkedHashSet<>();
-            try {
-                results.add(function.apply(currentSession));
-            } catch (HibernateException e) {
-                currentSession.getTransaction().rollback();
-                results.clear();
-                Logger.getLogger(getClass()).error("Object retrieval error", e);
-            }
+            operations.add(session -> results.add(function.apply(currentSession)));
             return this;
         }
 
         public Set<Object> commit() {
             try {
+                for (Consumer<Session> operation : operations) {
+                    operation.accept(currentSession);
+                }
                 currentSession.getTransaction().commit();
             } catch (HibernateException e) {
                 if (results != null)
                     results.clear();
+
+                if (currentSession.getTransaction().getStatus().canRollback())
+                    currentSession.getTransaction().rollback();
+
                 Logger.getLogger(getClass()).error("Transaction commit error", e);
             }
             return results;
@@ -99,6 +103,6 @@ public class DatabaseUtil implements Closeable {
 
     @Override
     public void close() {
-        factory.close();
+        sessionFactory.close();
     }
 }

@@ -49,18 +49,19 @@ public class DateHandler {
         return String.format("%1$tY-%1$tm-%1$td", currentCal);
     }
 
-    public List<Calendar> fromTo() {
+    public List<CalendarWrapper> fromTo() {
         if (startDate == null || endDate == null) {
             throw new UnsupportedOperationException();
         }
 
-        long days = (endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
+        long days = (endDate.currentCal.getTimeInMillis() -
+                startDate.currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
 
         return LongStream.rangeClosed(0, days)
                 .mapToObj(i -> {
                     Calendar cal = (Calendar) startDate.currentCal.clone();
                     cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
-                    return cal;
+                    return new CalendarWrapper(cal);
                 })
                 .collect(Collectors.toList());
     }

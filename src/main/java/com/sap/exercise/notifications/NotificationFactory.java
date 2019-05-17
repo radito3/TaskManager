@@ -29,7 +29,7 @@ public class NotificationFactory {
         DateHandler today = new DateHandler();
         Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.toString(), today.toString());
 
-        todayEvents.forEach(event -> SharedResourcesFactory.getService().execute(() -> {
+        todayEvents.forEach(event -> SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 

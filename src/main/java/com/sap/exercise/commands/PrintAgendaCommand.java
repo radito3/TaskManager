@@ -5,13 +5,10 @@ import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 
-import java.io.Serializable;
 import java.util.Set;
 
-public class PrintAgendaCommand implements Command, Serializable {
+public class PrintAgendaCommand implements Command {
 
     private String start, end;
 
@@ -36,25 +33,5 @@ public class PrintAgendaCommand implements Command, Serializable {
             printer.println(e.getMessage());
         }
         return 0;
-    }
-
-    public static Options getOptions() {
-        Option start = Option.builder("s")
-                .required(false)
-                .longOpt("start")
-                .hasArg(true)
-                .numberOfArgs(1)
-                .optionalArg(false)
-                .desc("Specify the start time from when to get entries")
-                .build();
-        Option end = Option.builder("e")
-                .required(false)
-                .longOpt("end")
-                .hasArg(true)
-                .numberOfArgs(1)
-                .optionalArg(false)
-                .desc("Specify the end time to when to get entries")
-                .build();
-        return CommandUtils.buildOptions(start, end);
     }
 }

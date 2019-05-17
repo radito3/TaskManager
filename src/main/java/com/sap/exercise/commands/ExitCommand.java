@@ -8,9 +8,8 @@ import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.Serializable;
 
-public class ExitCommand implements Command, Serializable {
+public class ExitCommand implements Command {
 
     @Override
     public int execute() {

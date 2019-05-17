@@ -23,10 +23,10 @@ public class CreationObserver implements Observer {
         CalendarWrapper calendarWrapper = new CalendarWrapper(event.getTimeOf());
 
         Set<Event> events;
-        if ((events = SharedResourcesFactory.getMapHandler().getFromMap(calendarWrapper)) != null) {
+        if ((events = SharedResourcesFactory.getEventsMapHandler().getFromMap(calendarWrapper)) != null) {
             events.add(event);
         } else {
-            SharedResourcesFactory.getMapHandler()
+            SharedResourcesFactory.getEventsMapHandler()
                     .putInMap(calendarWrapper, new HashSet<>(Collections.singleton(event)));
         }
     }

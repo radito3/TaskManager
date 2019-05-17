@@ -2,18 +2,18 @@ package com.sap.exercise.handler;
 
 public class SharedResourcesFactory {
 
-    private static AsyncExecutionsService service = new AsyncExecutionsService();
+    private static AsyncExecutionsService asyncExecutionsService = new AsyncExecutionsService();
     private static EventsMapHandler eventsMapHandler;
 
     static {
-        service.schedulePollingForNotifications();
+        asyncExecutionsService.schedulePollingForNotifications();
     }
 
-    public static AsyncExecutionsService getService() {
-        return service;
+    public static AsyncExecutionsService getAsyncExecutionsService() {
+        return asyncExecutionsService;
     }
 
-    public static EventsMapHandler getMapHandler() {
+    public static EventsMapHandler getEventsMapHandler() {
         if (eventsMapHandler == null) {
             eventsMapHandler = new EventsMapHandler();
         }
@@ -21,7 +21,7 @@ public class SharedResourcesFactory {
     }
 
     public static void shutdown() {
-        service.close();
+        asyncExecutionsService.close();
         if (eventsMapHandler != null)
             eventsMapHandler.close();
     }

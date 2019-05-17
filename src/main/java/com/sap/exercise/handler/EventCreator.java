@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class EventCreator extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
+public class EventCreator extends AbstractEventsHandler<Event> {
 
     public EventCreator() {
         super(new CreationObserver());
@@ -20,7 +20,7 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
 
     @Override
     public void execute(Event event) {
-        DatabaseUtil db = DatabaseUtilFactory.getDb();
+        DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         AtomicInteger id = new AtomicInteger();
         db.beginTransaction()
                 .addOperation(s -> id.set((Integer) s.save(event)))
@@ -28,7 +28,7 @@ public class EventCreator extends AbstractEventsHandler<Event> implements Events
                 .commit();
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
-            SharedResourcesFactory.getService().execute(() -> {
+            SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
                 DatabaseUtil.TransactionBuilder transaction = db.beginTransaction();
                 eventsList(id.get(), event)
                     .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));

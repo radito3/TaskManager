@@ -12,8 +12,8 @@ public class DeletionObserver implements Observer {
     public void update(Observable observable, Object o) {
         Event event = (Event) o;
 
-        SharedResourcesFactory.getService().execute(() ->
-                SharedResourcesFactory.getMapHandler().iterateEventsMap(
+        SharedResourcesFactory.getAsyncExecutionsService().execute(() ->
+                SharedResourcesFactory.getEventsMapHandler().iterateEventsMap(
                         (cal, set) -> set.removeIf(event1 -> event1.getId().equals(event.getId()))
                 )
         );

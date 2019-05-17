@@ -4,7 +4,7 @@ import com.sap.exercise.db.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.UpdateObserver;
 import com.sap.exercise.model.Event;
 
-public class EventUpdater extends AbstractEventsHandler<Event> implements EventsHandler<Event> {
+public class EventUpdater extends AbstractEventsHandler<Event> {
 
     public EventUpdater() {
         super(new UpdateObserver());
@@ -12,8 +12,8 @@ public class EventUpdater extends AbstractEventsHandler<Event> implements Events
 
     @Override
     public void execute(Event event) {
-        SharedResourcesFactory.getService()
-                .execute(() -> DatabaseUtilFactory.getDb()
+        SharedResourcesFactory.getAsyncExecutionsService()
+                .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
                         .beginTransaction()
                         .addOperation(s -> s.update(event))
                         .commit()

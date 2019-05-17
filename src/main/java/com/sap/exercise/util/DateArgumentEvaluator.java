@@ -2,6 +2,7 @@ package com.sap.exercise.util;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class DateArgumentEvaluator {
@@ -14,7 +15,7 @@ public class DateArgumentEvaluator {
         args.removeIf(String::isEmpty);
         numOfArgs = args.size();
 
-        switch (args.size()) {
+        switch (numOfArgs) {
             case 0:
                 forZeroArgs();
                 break;
@@ -51,6 +52,10 @@ public class DateArgumentEvaluator {
 
     public <T> T eval(BiFunction<String, String, T> func) {
         return func.apply(arg1, arg2);
+    }
+
+    public void eval(BiConsumer<String, String> cons) {
+        cons.accept(arg1, arg2);
     }
 
     public int numOfArgs() {
