@@ -1,9 +1,10 @@
 package com.sap.exercise.handler;
 
+import com.sap.exercise.listeners.DeletionInTimeFrameListener;
+import com.sap.exercise.listeners.DeletionListener;
 import com.sap.exercise.persistence.DatabaseUtilFactory;
-import com.sap.exercise.handler.observers.DeletionObserver;
-import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.services.SharedResourcesFactory;
 
 public class EventDeletor extends AbstractEventsHandler<Event> {
 
@@ -11,7 +12,7 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
     private boolean isInTimeFrame;
 
     public EventDeletor(boolean condition, String startDate, String endDate) {
-        super(condition ? new DeletionTimeFrameObserver() : new DeletionObserver());
+        super(condition ? new DeletionInTimeFrameListener() : new DeletionListener());
         this.startDate = startDate;
         this.endDate = endDate;
         this.isInTimeFrame = condition;
@@ -31,8 +32,7 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
                         .createTransactionBuilder()
                         .addOperation(s -> s.delete(event))
                         .build());
-        setChanged();
-        notifyObservers(event);
+        notifyListeners(event);
     }
 
     private void deleteMultipleEntries(Event event) {
@@ -43,7 +43,6 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
                                 + event.getId() + " AND Date >= \'" + startDate + "\' AND Date <= \'" + endDate + "\';")
                                 .executeUpdate())
                         .build());
-        setChanged();
-        notifyObservers(new Object[] { event, new String[] {startDate, endDate} });
+        notifyListeners(new Object[] { event, new String[] {startDate, endDate} });
     }
 }

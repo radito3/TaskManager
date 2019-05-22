@@ -1,4 +1,4 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.services;
 
 public class SharedResourcesFactory {
 

@@ -2,7 +2,6 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.CommandExecutionResult;
-import com.sap.exercise.commands.CommandUtils;
 import com.sap.exercise.commands.DeleteEventCommand;
 import com.sap.exercise.commands.validator.CommandValidator;
 import com.sap.exercise.commands.validator.CommonCommandValidator;
@@ -58,6 +57,6 @@ public class DeleteCommandParser implements CommandParser {
                 .optionalArg(false)
                 .desc("Specify the end time to when to delete entries")
                 .build();
-        return CommandUtils.buildOptions(start, end);
+        return CommandParserFactory.buildOptions(start, end);
     }
 }

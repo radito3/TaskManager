@@ -3,7 +3,6 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.AddEventCommand;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.CommandExecutionResult;
-import com.sap.exercise.commands.CommandUtils;
 import com.sap.exercise.commands.validator.AddCommandValidator;
 import com.sap.exercise.commands.validator.CommandValidator;
 import com.sap.exercise.model.Event;
@@ -49,6 +48,6 @@ public class AddCommandParser implements CommandParser {
                 .longOpt("goal")
                 .desc("Create a Goal")
                 .build();
-        return CommandUtils.buildOptions(taskOption, reminderOption, goalOption);
+        return CommandParserFactory.buildOptions(taskOption, reminderOption, goalOption);
     }
 }

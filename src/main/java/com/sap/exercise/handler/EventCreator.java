@@ -1,10 +1,11 @@
 package com.sap.exercise.handler;
 
+import com.sap.exercise.listeners.CreationListener;
 import com.sap.exercise.persistence.DatabaseUtil;
 import com.sap.exercise.persistence.DatabaseUtilFactory;
-import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.services.SharedResourcesFactory;
 
 import java.util.Calendar;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.stream.IntStream;
 public class EventCreator extends AbstractEventsHandler<Event> {
 
     public EventCreator() {
-        super(new CreationObserver());
+        super(new CreationListener());
     }
 
     @Override
@@ -36,9 +37,7 @@ public class EventCreator extends AbstractEventsHandler<Event> {
             });
         }
 
-        setChanged();
-        //it makes more sense for the observers to be notified asynchronously.
-        notifyObservers(new Object[] { event, id.get() });
+        notifyListeners(new Object[] { event, id.get() });
     }
 
     private List<CalendarEvents> eventsList(Integer eventId, Event event) {

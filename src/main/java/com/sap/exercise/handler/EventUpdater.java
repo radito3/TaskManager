@@ -1,13 +1,14 @@
 package com.sap.exercise.handler;
 
+import com.sap.exercise.listeners.UpdateListener;
 import com.sap.exercise.persistence.DatabaseUtilFactory;
-import com.sap.exercise.handler.observers.UpdateObserver;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.services.SharedResourcesFactory;
 
 public class EventUpdater extends AbstractEventsHandler<Event> {
 
     public EventUpdater() {
-        super(new UpdateObserver());
+        super(new UpdateListener());
     }
 
     @Override
@@ -18,7 +19,6 @@ public class EventUpdater extends AbstractEventsHandler<Event> {
                         .addOperation(s -> s.update(event))
                         .build()
                 );
-        setChanged();
-        notifyObservers(event);
+        notifyListeners(event);
     }
 }

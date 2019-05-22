@@ -5,6 +5,8 @@ import com.sap.exercise.commands.EditEventCommand;
 import com.sap.exercise.commands.ExitCommand;
 import com.sap.exercise.commands.PrintHelpCommand;
 import com.sap.exercise.util.ExceptionMessageHandler;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,5 +39,13 @@ public class CommandParserFactory {
         return Optional.ofNullable(input)
                 .flatMap(arr -> Optional.of(String.join(" ", arr)))
                 .orElseThrow(() -> new IllegalArgumentException("Event name not specified"));
+    }
+
+    static Options buildOptions(Option... options) {
+        Options result = new Options();
+        for (Option opt : options) {
+            result.addOption(opt);
+        }
+        return result;
     }
 }

@@ -1,4 +1,4 @@
-package com.sap.exercise.handler;
+package com.sap.exercise.services;
 
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;

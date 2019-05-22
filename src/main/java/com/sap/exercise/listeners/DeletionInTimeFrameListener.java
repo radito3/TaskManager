@@ -1,18 +1,14 @@
-package com.sap.exercise.handler.observers;
+package com.sap.exercise.listeners;
 
-import com.sap.exercise.handler.SharedResourcesFactory;
+import com.sap.exercise.services.SharedResourcesFactory;
+import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
 import com.sap.exercise.util.DateHandler;
-import com.sap.exercise.model.Event;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class DeletionTimeFrameObserver implements Observer {
-
+public class DeletionInTimeFrameListener implements EventListener {
     @Override
-    public void update(Observable observable, Object o) {
-        Object[] objects = (Object[]) o;
+    public void notify(Object arg) {
+        Object[] objects = (Object[]) arg;
         Event event = (Event) objects[0];
         String[] timeFrame = (String[]) objects[1];
         DateHandler dateHandler = new DateHandler(timeFrame[0], timeFrame[1]);

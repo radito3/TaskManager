@@ -1,12 +1,12 @@
 package com.sap.exercise.handler;
 
-import java.util.Observable;
-import java.util.Observer;
+import com.sap.exercise.listeners.EventListener;
+import com.sap.exercise.listeners.ListenableEvent;
 
-abstract class AbstractEventsHandler<T> extends Observable implements EventsHandler<T> {
+abstract class AbstractEventsHandler<T> extends ListenableEvent implements EventsHandler<T> {
 
-    AbstractEventsHandler(Observer o) {
-        addObserver(o);
+    AbstractEventsHandler(EventListener listener) {
+        addListener(listener);
     }
 
     AbstractEventsHandler() {

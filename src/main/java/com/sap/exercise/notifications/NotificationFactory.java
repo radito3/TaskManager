@@ -2,7 +2,7 @@ package com.sap.exercise.notifications;
 
 import com.sap.exercise.Configuration;
 import com.sap.exercise.handler.EventGetter;
-import com.sap.exercise.handler.SharedResourcesFactory;
+import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;

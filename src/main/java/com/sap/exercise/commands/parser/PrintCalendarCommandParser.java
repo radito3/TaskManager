@@ -56,6 +56,6 @@ public class PrintCalendarCommandParser implements CommandParser {
                 .longOpt("events")
                 .desc("Display calendar with events highlighted")
                 .build();
-        return CommandUtils.buildOptions(one, three, year, withEvents);
+        return CommandParserFactory.buildOptions(one, three, year, withEvents);
     }
 }

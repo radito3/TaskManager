@@ -1,16 +1,12 @@
-package com.sap.exercise.handler.observers;
+package com.sap.exercise.listeners;
 
-import com.sap.exercise.handler.SharedResourcesFactory;
+import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class DeletionObserver implements Observer {
-
+public class DeletionListener implements EventListener {
     @Override
-    public void update(Observable observable, Object o) {
-        Event event = (Event) o;
+    public void notify(Object arg) {
+        Event event = (Event) arg;
 
         SharedResourcesFactory.getAsyncExecutionsService().execute(() ->
                 SharedResourcesFactory.getEventsMapService().iterateEventsMap(
