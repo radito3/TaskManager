@@ -1,8 +1,11 @@
 package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
+import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.CommandUtils;
 import com.sap.exercise.commands.PrintAgendaCommand;
+import com.sap.exercise.commands.validator.CommandValidator;
+import com.sap.exercise.commands.validator.CommonCommandValidator;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -11,9 +14,11 @@ public class PrintAgendaCommandParser implements CommandParser {
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd;
-        if ((cmd = CommandParser.safeParseCmd(printAgendaOptions(), args)) == null)
-            return () -> 0;
+        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
+        CommandValidator validator = new CommonCommandValidator(cmd);
+        if (!validator.validate())
+            return () -> CommandExecutionResult.ERROR;
+
         String startTime = "", endTime = "";
 
         if (cmd.hasOption('s')) {
@@ -26,7 +31,7 @@ public class PrintAgendaCommandParser implements CommandParser {
         return new PrintAgendaCommand(startTime, endTime);
     }
 
-    public static Options printAgendaOptions() {
+    public static Options getOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")

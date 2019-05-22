@@ -1,23 +1,23 @@
 package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
+import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.CommandUtils;
 import com.sap.exercise.commands.PrintCalendarCommand;
+import com.sap.exercise.commands.validator.CommandValidator;
+import com.sap.exercise.commands.validator.PrintCalendarCommandValidator;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class PrintCalendarCommandParser implements CommandParser {
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd;
-        if ((cmd = CommandParser.safeParseCmd(printCalendarOptions(), args)) == null)
-            return () -> 0;
-        if (cmd.getOptions().length > 2 || optionsSizeWithoutEvents(cmd) > 1) {
-            throw new IllegalArgumentException("Invalid number of arguments");
-        }
+        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
+        CommandValidator validator = new PrintCalendarCommandValidator(cmd);
+        if (!validator.validate())
+            return () -> CommandExecutionResult.ERROR;
 
         boolean withEvents = cmd.hasOption('e');
         if (cmd.hasOption('3')) {
@@ -33,11 +33,7 @@ public class PrintCalendarCommandParser implements CommandParser {
         return new PrintCalendarCommand(CommandUtils.PrintCalendarOptions.ONE, withEvents);
     }
 
-    private int optionsSizeWithoutEvents(CommandLine cmd) {
-        return ArrayUtils.removeElement(cmd.getOptions(), printCalendarOptions().getOption("e")).length;
-    }
-
-    public static Options printCalendarOptions() {
+    public static Options getOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")

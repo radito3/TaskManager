@@ -1,4 +1,4 @@
-package com.sap.exercise.db;
+package com.sap.exercise.persistence;
 
 public class DatabaseUtilFactory {
 

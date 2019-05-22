@@ -2,11 +2,14 @@ package com.sap.exercise.printer;
 
 import com.sap.exercise.handler.EventsGetterHandler;
 import com.sap.exercise.model.Event;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Closeable;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Date;
@@ -21,6 +24,8 @@ public class OutputPrinter implements Closeable {
     private Calendar calendar = Calendar.getInstance();
 
     private PrintStream writer;
+
+    private final String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
 
     OutputPrinter(OutputStream out) {
         writer = new PrintStream(out);
@@ -38,8 +43,9 @@ public class OutputPrinter implements Closeable {
         writer.print(val);
     }
 
-    public void printStackTrace(Throwable e) {
-        e.printStackTrace(writer);
+    public void printHelp(String cmdLineSyntax, String header, String footer, Options options) {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        helpFormatter.printHelp(new PrintWriter(writer), 74, cmdLineSyntax, header, options, 1, 3, footer, true);
     }
 
     public void printMonthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
@@ -47,7 +53,7 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printYearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
-        writer.println(StringUtils.leftPad(String.valueOf(year), 14));
+        writer.println(StringUtils.center(String.valueOf(year), weekDays.length()));
         writer.println();
         for (int i = 0; i < 12; i++) {
             this.printCalendar(handler, i, year, true, withEvents);
@@ -80,7 +86,6 @@ public class OutputPrinter implements Closeable {
         Calendar cal = new GregorianCalendar(year, month - 1, 1);
 
         String monthName = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-        String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
         String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + year : ""), weekDays.length());
 
         int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);

@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.persistence.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.DeletionObserver;
 import com.sap.exercise.handler.observers.DeletionTimeFrameObserver;
 import com.sap.exercise.model.Event;

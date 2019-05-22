@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.persistence.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.UpdateObserver;
 import com.sap.exercise.model.Event;
 

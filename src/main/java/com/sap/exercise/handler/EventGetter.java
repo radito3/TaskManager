@@ -1,7 +1,7 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtil;
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.persistence.DatabaseUtil;
+import com.sap.exercise.persistence.DatabaseUtilFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
@@ -48,7 +48,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     private Consumer<CalendarWrapper> handleDates(Set<Event> events, Consumer<CalendarWrapper> listConsumer) {
         return (CalendarWrapper date) -> {
             Set<Event> ev;
-            if ((ev = SharedResourcesFactory.getEventsMapHandler().getFromMap(date)) == null) {
+            if ((ev = SharedResourcesFactory.getEventsMapService().getFromMap(date)) == null) {
                 listConsumer.accept(date);
             } else {
                 events.addAll(ev);
@@ -81,7 +81,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
         for (CalendarWrapper date : new DateHandler(start, end).fromTo()) {
             for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
                 if (date.equals(new CalendarWrapper(entry.getKey()))) {
-                    SharedResourcesFactory.getEventsMapHandler().putInMap(date, entry.getValue());
+                    SharedResourcesFactory.getEventsMapService().putInMap(date, entry.getValue());
                     hasNewEntries = true;
                 }
             }

@@ -12,7 +12,7 @@ public class UpdateObserver implements Observer {
     public void update(Observable observable, Object o) {
         Event event = (Event) o;
 
-        SharedResourcesFactory.getEventsMapHandler()
+        SharedResourcesFactory.getEventsMapService()
                 .iterateEventsMap((cal, set) -> {
             if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
                 set.add(event);

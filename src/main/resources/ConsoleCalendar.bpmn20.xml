@@ -23,9 +23,7 @@
     <sequenceFlow id="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" targetRef="checkCommandResult" sourceRef="executeCommand"/>
     <sequenceFlow id="sid-B2EC3BD0-AC39-4088-A28A-E2A816FC939E" targetRef="appEnd" sourceRef="checkCommandResult">
       <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[
-${commandResult != 0}
-]]>
+        <![CDATA[${!commandResult.isSuccessful()}]]>
       </conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="rerunLoop" targetRef="readInput" sourceRef="checkCommandResult">
@@ -66,9 +64,6 @@ ${commandResult != 0}
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_checkCommandResult" bpmnElement="checkCommandResult">
         <omgdc:Bounds y="519.0" x="360.0" width="40.0" height="40.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_loopBegin" bpmnElement="loopBegin">
-        <omgdc:Bounds y="693.9584158914314" x="360.0" width="40.0" height="40.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_sid-A4537606-96AC-4278-8117-4644C021A59E" bpmnElement="sid-A4537606-96AC-4278-8117-4644C021A59E">
         <omgdi:waypoint y="673.9584158914314" x="545.0"/>

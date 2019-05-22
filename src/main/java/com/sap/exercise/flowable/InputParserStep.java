@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class InputParserStep implements JavaDelegate {
-
     @Override
     public void execute(DelegateExecution delegateExecution) {
         String[] allCommands = (String[]) delegateExecution.getVariable("allCommands");
@@ -29,7 +28,7 @@ public class InputParserStep implements JavaDelegate {
                 e.printStackTrace();
             }
 
-            if (!allCommands[allCommands.length - 1].equals("exit")) {
+            if (!ArrayUtils.contains(allCommands, "exit")) {
                 allCommands = ArrayUtils.addAll(allCommands, "exit");
             }
         }

@@ -13,7 +13,7 @@ public class DeletionObserver implements Observer {
         Event event = (Event) o;
 
         SharedResourcesFactory.getAsyncExecutionsService().execute(() ->
-                SharedResourcesFactory.getEventsMapHandler().iterateEventsMap(
+                SharedResourcesFactory.getEventsMapService().iterateEventsMap(
                         (cal, set) -> set.removeIf(event1 -> event1.getId().equals(event.getId()))
                 )
         );

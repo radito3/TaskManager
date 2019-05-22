@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "CalendarEvents")
-public class CalendarEvents extends AbstractModel implements Serializable {
+public class CalendarEvents implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +30,6 @@ public class CalendarEvents extends AbstractModel implements Serializable {
         this.date = date;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }

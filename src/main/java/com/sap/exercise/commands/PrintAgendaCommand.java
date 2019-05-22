@@ -3,9 +3,9 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.EventGetter;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
-import com.sap.exercise.util.CommandExecutionException;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.util.ExceptionMessageHandler;
 
 import java.util.Set;
 
@@ -19,7 +19,7 @@ public class PrintAgendaCommand implements Command {
     }
 
     @Override
-    public int execute() {
+    public CommandExecutionResult execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
             DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
@@ -28,11 +28,12 @@ public class PrintAgendaCommand implements Command {
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");
             } else {
-                OutputPrinterProvider.getPrinter().printEvents(events);
+                printer.printEvents(events);
             }
         } catch (IllegalArgumentException e) {
-            throw new CommandExecutionException(e);
+            ExceptionMessageHandler.setMessage(e.getMessage());
+            return CommandExecutionResult.ERROR;
         }
-        return 0;
+        return CommandExecutionResult.SUCCESSFUL;
     }
 }

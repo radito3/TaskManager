@@ -1,4 +1,4 @@
-package com.sap.exercise.db;
+package com.sap.exercise.persistence;
 
 import com.sap.exercise.model.*;
 import org.apache.log4j.Logger;

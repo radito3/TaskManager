@@ -1,7 +1,7 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.db.DatabaseUtil;
-import com.sap.exercise.db.DatabaseUtilFactory;
+import com.sap.exercise.persistence.DatabaseUtil;
+import com.sap.exercise.persistence.DatabaseUtilFactory;
 import com.sap.exercise.handler.observers.CreationObserver;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
@@ -44,17 +44,17 @@ public class EventCreator extends AbstractEventsHandler<Event> {
     private List<CalendarEvents> eventsList(Integer eventId, Event event) {
         switch (event.getToRepeat()) {
             case DAILY:
-                return eventEntriesHandler(30, eventId, event, Calendar.DAY_OF_MONTH);
+                return handleEventEntries(30, eventId, event, Calendar.DAY_OF_MONTH);
             case WEEKLY:
-                return eventEntriesHandler(30, eventId, event, Calendar.WEEK_OF_YEAR);
+                return handleEventEntries(30, eventId, event, Calendar.WEEK_OF_YEAR);
             case MONTHLY:
-                return eventEntriesHandler(30, eventId, event, Calendar.MONTH);
+                return handleEventEntries(30, eventId, event, Calendar.MONTH);
             default:
-                return eventEntriesHandler(4, eventId, event, Calendar.YEAR);
+                return handleEventEntries(4, eventId, event, Calendar.YEAR);
         }
     }
 
-    private List<CalendarEvents> eventEntriesHandler(int endInclusive, Integer eventId, Event event, int field) {
+    private List<CalendarEvents> handleEventEntries(int endInclusive, Integer eventId, Event event, int field) {
         return IntStream.rangeClosed(1, endInclusive)
                 .mapToObj(i -> {
                     Calendar calendar = (Calendar) event.getTimeOf().clone();

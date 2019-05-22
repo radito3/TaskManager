@@ -9,11 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
 
-public final class EventsMapHandler implements Closeable {
+public final class EventsMapService implements Closeable {
 
     private final ConcurrentMap<CalendarWrapper, Set<Event>> eventsMap;
 
-    EventsMapHandler() {
+    EventsMapService() {
         eventsMap = new ConcurrentHashMap<>();
     }
 

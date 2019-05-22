@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "Eventt")
-public class Event extends AbstractModel implements Serializable {
+public class Event implements Serializable {
 
     public enum EventType {
         TASK, REMINDER, GOAL
@@ -122,7 +122,6 @@ public class Event extends AbstractModel implements Serializable {
         this.toRepeat = toRepeat;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
