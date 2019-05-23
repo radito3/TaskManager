@@ -22,7 +22,7 @@ public class DefaultPersistenceConfigurationProvider {
 
     private static void setProperties(Configuration config) {
         Properties props = new Properties();
-
+        //TODO need to properly get environment variables
         props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
         props.setProperty(Environment.URL, System.getenv("read_url"));
         props.setProperty(Environment.USER, System.getenv("username"));

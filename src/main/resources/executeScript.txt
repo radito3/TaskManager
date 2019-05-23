@@ -1,12 +1,4 @@
 
-add --help
-edit --help
-agenda --help
-delete --help
-cal --help
-cal
-cal -3
-cal -y
-cal -y 2015
-help
-exit
+add --help -t
+edit --tes
+asd

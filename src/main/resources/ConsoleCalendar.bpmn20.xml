@@ -20,15 +20,17 @@
     <endEvent id="appEnd" name="App end"/>
     <serviceTask flowable:class="com.sap.exercise.flowable.ExecuteCommandStep" id="executeCommand" name="Execute command"/>
     <sequenceFlow id="sid-52EE8935-114E-4A27-A237-CE00C4113FCF" targetRef="executeCommand" sourceRef="parseCommand"/>
-    <exclusiveGateway id="checkCommandResult" default="rerunLoop"/>
+    <exclusiveGateway id="checkCommandResult"/>
     <sequenceFlow id="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" targetRef="checkCommandResult" sourceRef="executeCommand"/>
     <sequenceFlow id="sid-B2EC3BD0-AC39-4088-A28A-E2A816FC939E" targetRef="appEnd" sourceRef="checkCommandResult">
       <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[${!commandResult.isSuccessful()}]]>
+        <![CDATA[${!commandResult.isEligibleForRepetition()}]]>
       </conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="rerunLoop" targetRef="readInput" sourceRef="checkCommandResult">
-
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${commandResult.isEligibleForRepetition() }]]>
+      </conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="sid-988C2382-68A4-45B9-B800-12C28D13A170" targetRef="readInput" sourceRef="appStart"/>
     <sequenceFlow id="seqFlow1" targetRef="schedulePollNotifications" sourceRef="appStart"/>
