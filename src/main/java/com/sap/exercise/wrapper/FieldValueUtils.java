@@ -10,10 +10,10 @@ public class FieldValueUtils {
     }
 
     public static Boolean valueOfBool(String input) {
-        if (input.toLowerCase().matches("^\\s*y|yes\\s*$")) {
+        if (input.matches("(?i)^\\s*y|yes\\s*$")) {
             return true;
         }
-        if (input.toLowerCase().matches("^\\s*n|no\\s*$")) {
+        if (input.matches("(?i)^\\s*n|no\\s*$")) {
             return false;
         }
         throw new IllegalArgumentException("Invalid input");
@@ -27,7 +27,7 @@ public class FieldValueUtils {
     }
 
     public static Event.RepeatableType valueOfRepeatable(String input) {
-        if (!input.toLowerCase().matches("^\\s*" + Event.RepeatableType.getRegex() + "\\s*$")) {
+        if (!input.matches("(?i)^\\s*" + Event.RepeatableType.getRegex() + "\\s*$")) {
             throw new IllegalArgumentException("Invalid input");
         }
         return Event.RepeatableType.getRepeatable(input.trim());

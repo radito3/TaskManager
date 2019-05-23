@@ -29,11 +29,11 @@ public class FieldValueUtilsTest {
     @Test
     @DisplayName("Boolean filter correct input test")
     public void valueOfValidBoolArgTest() {
-        assertAll(() -> assertEquals(true, FieldValueUtils.valueOfBool("yes"),
+        assertAll(() -> assertEquals(true, FieldValueUtils.valueOfBool("yEs"),
                 "Correct input returns false or throws exception"),
                 () -> assertEquals(true, FieldValueUtils.valueOfBool("y"),
                         "Correct input returns false or throws exception"),
-                () -> assertEquals(false, FieldValueUtils.valueOfBool("no"),
+                () -> assertEquals(false, FieldValueUtils.valueOfBool("nO"),
                         "Correct input returns true or throws exception"),
                 () -> assertEquals(false, FieldValueUtils.valueOfBool("n"),
                         "Correct input returns true or throws exception"));
@@ -71,7 +71,7 @@ public class FieldValueUtilsTest {
     public void valueOfValidRepeatableArgTest() {
         assertAll(() -> assertEquals(Event.RepeatableType.NONE, FieldValueUtils.valueOfRepeatable("n"),
                 "Correct input returns different value or throws exception"),
-                () -> assertEquals(Event.RepeatableType.NONE, FieldValueUtils.valueOfRepeatable("none"),
+                () -> assertEquals(Event.RepeatableType.NONE, FieldValueUtils.valueOfRepeatable("nOne"),
                         "Correct input returns different value or throws exception"),
                 () -> assertEquals(Event.RepeatableType.DAILY, FieldValueUtils.valueOfRepeatable("d"),
                         "Correct input returns different value or throws exception"),
