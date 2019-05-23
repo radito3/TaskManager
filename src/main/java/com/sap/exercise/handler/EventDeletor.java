@@ -29,20 +29,20 @@ public class EventDeletor extends AbstractEventsHandler<Event> {
     private void deleteSingleEntry(Event event) {
         SharedResourcesFactory.getAsyncExecutionsService()
                 .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
-                        .createTransactionBuilder()
+                        .beginTransaction()
                         .addOperation(s -> s.delete(event))
-                        .build());
+                        .commit());
         notifyListeners(event);
     }
 
     private void deleteMultipleEntries(Event event) {
         SharedResourcesFactory.getAsyncExecutionsService()
                 .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
-                        .createTransactionBuilder()
+                        .beginTransaction()
                         .addOperation(s -> s.createNativeQuery("DELETE FROM CalendarEvents WHERE EventId = "
                                 + event.getId() + " AND Date >= \'" + startDate + "\' AND Date <= \'" + endDate + "\';")
                                 .executeUpdate())
-                        .build());
+                        .commit());
         notifyListeners(new Object[] { event, new String[] {startDate, endDate} });
     }
 }

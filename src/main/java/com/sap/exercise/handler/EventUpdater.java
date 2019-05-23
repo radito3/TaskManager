@@ -15,9 +15,9 @@ public class EventUpdater extends AbstractEventsHandler<Event> {
     public void execute(Event event) {
         SharedResourcesFactory.getAsyncExecutionsService()
                 .execute(() -> DatabaseUtilFactory.getDatabaseUtil()
-                        .createTransactionBuilder()
+                        .beginTransaction()
                         .addOperation(s -> s.update(event))
-                        .build()
+                        .commit()
                 );
         notifyListeners(event);
     }

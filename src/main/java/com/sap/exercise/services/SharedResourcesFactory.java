@@ -1,12 +1,17 @@
 package com.sap.exercise.services;
 
+import com.sap.exercise.notifications.NotificationFactory;
+
+import java.util.concurrent.TimeUnit;
+
 public class SharedResourcesFactory {
 
     private static AsyncExecutionsService asyncExecutionsService = new AsyncExecutionsService();
     private static EventsMapService eventsMapService;
 
     static {
-        asyncExecutionsService.schedulePollingForNotifications();
+        asyncExecutionsService.schedule(NotificationFactory::pollForNotifications,
+                0L, 10L, TimeUnit.SECONDS);
     }
 
     public static AsyncExecutionsService getAsyncExecutionsService() {

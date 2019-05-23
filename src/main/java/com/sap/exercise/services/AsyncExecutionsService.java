@@ -1,7 +1,5 @@
 package com.sap.exercise.services;
 
-import com.sap.exercise.notifications.NotificationFactory;
-
 import java.io.Closeable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,8 +13,8 @@ public final class AsyncExecutionsService implements Closeable {
         scheduledService = Executors.newScheduledThreadPool(2);
     }
 
-    void schedulePollingForNotifications() {
-        scheduledService.scheduleAtFixedRate(NotificationFactory::pollForNotifications, 0L, 10L, TimeUnit.SECONDS);
+    public void schedule(Runnable task, long initial, long delay, TimeUnit timeUnit) {
+        scheduledService.scheduleAtFixedRate(task, initial, delay, timeUnit);
     }
 
     public void execute(Runnable task) {

@@ -23,17 +23,17 @@ public class EventCreator extends AbstractEventsHandler<Event> {
     public void execute(Event event) {
         DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         AtomicInteger id = new AtomicInteger();
-        db.createTransactionBuilder()
+        db.beginTransaction()
                 .addOperation(s -> id.set((Integer) s.save(event)))
                 .addOperation(s -> s.save(new CalendarEvents(id.get(), event.getTimeOf())))
-                .build();
+                .commit();
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
-                DatabaseUtil.TransactionBuilder transaction = db.createTransactionBuilder();
+                DatabaseUtil dbUtil = db.beginTransaction();
                 eventsList(id.get(), event)
-                    .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
-                transaction.build();
+                    .forEach(calEvents -> dbUtil.addOperation(s -> s.save(calEvents)));
+                dbUtil.commit();
             });
         }
 
