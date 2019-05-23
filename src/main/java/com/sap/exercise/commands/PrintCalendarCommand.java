@@ -9,10 +9,10 @@ import java.util.Calendar;
 
 public class PrintCalendarCommand implements Command {
 
-    private CommandUtils.PrintCalendarOptions options;
+    private PrintCalendarOptions options;
     private boolean withEvents;
 
-    public PrintCalendarCommand(CommandUtils.PrintCalendarOptions options, boolean withEvents) {
+    public PrintCalendarCommand(PrintCalendarOptions options, boolean withEvents) {
         this.options = options;
         this.withEvents = withEvents;
     }
@@ -40,5 +40,21 @@ public class PrintCalendarCommand implements Command {
                 break;
         }
         return CommandExecutionResult.SUCCESSFUL;
+    }
+
+    public enum PrintCalendarOptions {
+        ONE,
+        THREE,
+        YEAR;
+
+        private String arg;
+
+        public String getArgument() {
+            return arg;
+        }
+
+        public void setArgument(String arg) {
+            this.arg = arg;
+        }
     }
 }

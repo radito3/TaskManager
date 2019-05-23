@@ -2,7 +2,6 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.CommandExecutionResult;
-import com.sap.exercise.commands.CommandUtils;
 import com.sap.exercise.commands.PrintCalendarCommand;
 import com.sap.exercise.commands.validator.CommandValidator;
 import com.sap.exercise.commands.validator.PrintCalendarCommandValidator;
@@ -21,16 +20,16 @@ public class PrintCalendarCommandParser implements CommandParser {
 
         boolean withEvents = cmd.hasOption('e');
         if (cmd.hasOption('3')) {
-            return new PrintCalendarCommand(CommandUtils.PrintCalendarOptions.THREE, withEvents);
+            return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.THREE, withEvents);
         }
         if (cmd.hasOption('y')) {
-            CommandUtils.PrintCalendarOptions options = CommandUtils.PrintCalendarOptions.YEAR;
+            PrintCalendarCommand.PrintCalendarOptions options = PrintCalendarCommand.PrintCalendarOptions.YEAR;
             if (cmd.getOptionValues('y') != null) {
                 options.setArgument(cmd.getOptionValue('y'));
             }
             return new PrintCalendarCommand(options, withEvents);
         }
-        return new PrintCalendarCommand(CommandUtils.PrintCalendarOptions.ONE, withEvents);
+        return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.ONE, withEvents);
     }
 
     public static Options getOptions() {
