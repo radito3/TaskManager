@@ -1,4 +1,6 @@
 
-add --help -t
-edit --tes
-asd
+cal
+cal --help
+cal --help -3
+cal -3 -y
+cal -3 -e -y
