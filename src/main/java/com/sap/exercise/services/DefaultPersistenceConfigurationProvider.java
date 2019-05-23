@@ -9,18 +9,18 @@ import java.util.Properties;
 
 public class DefaultPersistenceConfigurationProvider {
 
-    private Configuration configuration;
-
-    public DefaultPersistenceConfigurationProvider() {
-        configuration = new Configuration();
+    public static Configuration getConfiguration() {
+        Configuration configuration = new Configuration();
 
         setProperties(configuration);
 
         configuration.addAnnotatedClass(Event.class)
                 .addAnnotatedClass(CalendarEvents.class);
+
+        return configuration;
     }
 
-    private void setProperties(Configuration config) {
+    private static void setProperties(Configuration config) {
         Properties props = new Properties();
 
         props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
@@ -37,7 +37,4 @@ public class DefaultPersistenceConfigurationProvider {
         config.setProperties(props);
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
-    }
 }

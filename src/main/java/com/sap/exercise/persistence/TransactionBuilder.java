@@ -8,7 +8,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-import java.io.Closeable;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -17,34 +16,34 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DatabaseUtil implements Closeable {
+public class TransactionBuilder {
 
     private SessionFactory sessionFactory;
     private Session currentSession;
     private List<Consumer<Session>> operations;
     private Set<Object> results;
 
-    DatabaseUtil(Configuration configuration) {
+    TransactionBuilder(Configuration configuration) {
         ServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
 
         sessionFactory = configuration.buildSessionFactory(registry);
+        beginTransaction();
     }
 
-    public synchronized DatabaseUtil beginTransaction() {
+    private synchronized void beginTransaction() {
         currentSession = sessionFactory.getCurrentSession();
         currentSession.beginTransaction();
         currentSession.getTransaction().setTimeout(10);
         operations = Collections.synchronizedList(new LinkedList<>());
-        return this;
     }
 
-    public synchronized DatabaseUtil addOperation(Consumer<Session> consumer) {
+    public synchronized TransactionBuilder addOperation(Consumer<Session> consumer) {
         operations.add(consumer);
         return this;
     }
 
-    public synchronized DatabaseUtil addOperationWithResult(Function<Session, ?> function) {
+    public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
         if (results == null)
             results = new LinkedHashSet<>();
         operations.add(session -> results.add(function.apply(session)));
@@ -64,13 +63,9 @@ public class DatabaseUtil implements Closeable {
             if (currentSession.getTransaction().getStatus().canRollback())
                 currentSession.getTransaction().rollback();
 
-            Logger.getLogger(DatabaseUtil.class).error("Transaction build error", e);
+            Logger.getLogger(TransactionBuilder.class).error("Transaction build error", e);
         }
-        return results;
-    }
-
-    @Override
-    public void close() {
         sessionFactory.close();
+        return results;
     }
 }

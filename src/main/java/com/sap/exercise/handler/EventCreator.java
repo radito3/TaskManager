@@ -1,8 +1,8 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.listeners.CreationListener;
-import com.sap.exercise.persistence.DatabaseUtil;
-import com.sap.exercise.persistence.DatabaseUtilFactory;
+import com.sap.exercise.persistence.TransactionBuilder;
+import com.sap.exercise.persistence.TransactionBuilderFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
@@ -21,19 +21,18 @@ public class EventCreator extends AbstractEventsHandler<Event> {
 
     @Override
     public void execute(Event event) {
-        DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         AtomicInteger id = new AtomicInteger();
-        db.beginTransaction()
+        TransactionBuilderFactory.getTransactionBuilder()
                 .addOperation(s -> id.set((Integer) s.save(event)))
                 .addOperation(s -> s.save(new CalendarEvents(id.get(), event.getTimeOf())))
                 .commit();
 
         if (event.getToRepeat() != Event.RepeatableType.NONE) {
             SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
-                DatabaseUtil dbUtil = db.beginTransaction();
+                TransactionBuilder transaction = TransactionBuilderFactory.getTransactionBuilder();
                 eventsList(id.get(), event)
-                    .forEach(calEvents -> dbUtil.addOperation(s -> s.save(calEvents)));
-                dbUtil.commit();
+                    .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
+                transaction.commit();
             });
         }
 

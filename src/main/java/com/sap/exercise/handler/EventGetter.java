@@ -1,7 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.persistence.DatabaseUtil;
-import com.sap.exercise.persistence.DatabaseUtilFactory;
+import com.sap.exercise.persistence.TransactionBuilderFactory;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
@@ -17,8 +16,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     @Override
     @SuppressWarnings("unchecked")
     public Event getEventByTitle(String var) {
-        Optional<Event> optionalEvent = (Optional<Event>) DatabaseUtilFactory.getDatabaseUtil()
-                .beginTransaction()
+        Optional<Event> optionalEvent = (Optional<Event>) TransactionBuilderFactory.getTransactionBuilder()
                 .addOperationWithResult(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'"
                         + var + "\' LIMIT 1;", Event.class).uniqueResultOptional())
                 .commit()
@@ -59,9 +57,8 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
 
     @SuppressWarnings("unchecked")
     private boolean setEventsInTable(String start, String end) {
-        DatabaseUtil db = DatabaseUtilFactory.getDatabaseUtil();
         boolean hasNewEntries = false;
-        List<CalendarEvents> list = (List<CalendarEvents>) db.beginTransaction()
+        List<CalendarEvents> list = (List<CalendarEvents>) TransactionBuilderFactory.getTransactionBuilder()
                 .addOperationWithResult(s ->
                         s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
                                 "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList())
@@ -70,7 +67,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
 
         Map<Calendar, Set<Event>> map = list.stream()
                 .map(calEvents -> {
-                    Event event = (Event) db.beginTransaction()
+                    Event event = (Event) TransactionBuilderFactory.getTransactionBuilder()
                             .addOperationWithResult(s -> s.get(Event.class, calEvents.getEventId()))
                             .commit()
                             .iterator().next();
