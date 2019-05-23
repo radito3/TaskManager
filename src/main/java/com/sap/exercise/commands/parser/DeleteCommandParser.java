@@ -1,30 +1,28 @@
 package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
-import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.DeleteEventCommand;
-import com.sap.exercise.commands.validator.CommandValidator;
-import com.sap.exercise.commands.validator.CommonCommandValidator;
-import org.apache.commons.cli.CommandLine;
+import com.sap.exercise.commands.helper.CommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import java.util.function.Function;
 
-public class DeleteCommandParser implements CommandParser {
+public class DeleteCommandParser extends AbstractCommandParser {
 
     private Function<String[], String> eventNameBuilder;
 
-    DeleteCommandParser(Function<String[], String> eventNameBuilder) {
+    DeleteCommandParser(Function<String[], String> eventNameBuilder,
+                        Function<Options, CommandHelper> helperCreator) {
+        super(helperCreator);
         this.eventNameBuilder = eventNameBuilder;
     }
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
-        CommandValidator validator = new CommonCommandValidator(cmd);
-        if (!validator.validate())
-            return () -> CommandExecutionResult.ERROR;
+        Command result = super.parse(args);
+        if (result != null)
+            return result;
 
         String startTime = "",
                 endTime = "",
@@ -40,12 +38,14 @@ public class DeleteCommandParser implements CommandParser {
         return new DeleteEventCommand(startTime, endTime, eventName);
     }
 
-    public static Options getOptions() {
+    @Override
+    public Options getOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")
                 .hasArg(true)
                 .numberOfArgs(1)
+                .argName("date")
                 .optionalArg(false)
                 .desc("Specify the start time from when to delete entries")
                 .build();
@@ -54,9 +54,15 @@ public class DeleteCommandParser implements CommandParser {
                 .longOpt("end")
                 .hasArg(true)
                 .numberOfArgs(1)
+                .argName("date")
                 .optionalArg(false)
                 .desc("Specify the end time to when to delete entries")
                 .build();
-        return CommandParserFactory.buildOptions(start, end);
+        Option help = Option.builder()
+                .longOpt("help")
+                .required(false)
+                .desc("Print command help")
+                .build();
+        return buildOptions(start, end, help);
     }
 }

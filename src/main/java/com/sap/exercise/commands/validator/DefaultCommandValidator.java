@@ -2,16 +2,16 @@ package com.sap.exercise.commands.validator;
 
 import org.apache.commons.cli.CommandLine;
 
-public class CommonCommandValidator implements CommandValidator {
+public class DefaultCommandValidator implements CommandValidator {
 
     CommandLine cmd;
 
-    public CommonCommandValidator(CommandLine cmd) {
+    public DefaultCommandValidator(CommandLine cmd) {
         this.cmd = cmd;
     }
 
     @Override
-    public boolean validate() {
+    public boolean isValid() {
         return cmd != null;
     }
 }

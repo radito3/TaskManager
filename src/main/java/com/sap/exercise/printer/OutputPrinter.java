@@ -23,29 +23,32 @@ public class OutputPrinter implements Closeable {
 
     private Calendar calendar = Calendar.getInstance();
 
-    private PrintStream writer;
+    private PrintStream printer;
 
     private final String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
 
     OutputPrinter(OutputStream out) {
-        writer = new PrintStream(out);
+        printer = new PrintStream(out, true);
     }
 
     public void println(String val) {
-        writer.println(val);
+        printer.println(val);
     }
 
     public void println() {
-        writer.println();
+        printer.println();
     }
 
     public void print(String val) {
-        writer.print(val);
+        printer.print(val);
     }
 
     public void printHelp(String cmdLineSyntax, String header, String footer, Options options) {
         HelpFormatter helpFormatter = new HelpFormatter();
-        helpFormatter.printHelp(new PrintWriter(writer), 74, cmdLineSyntax, header, options, 1, 3, footer, true);
+        helpFormatter.setSyntaxPrefix("Usage: ");
+        helpFormatter.setNewLine(System.lineSeparator());
+        helpFormatter.printHelp(new PrintWriter(printer, true),
+                74, cmdLineSyntax, header, options, 1, 3, footer, true);
     }
 
     public void printMonthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
@@ -53,29 +56,29 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printYearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
-        writer.println(StringUtils.center(String.valueOf(year), weekDays.length()));
-        writer.println();
+        printer.println(StringUtils.center(String.valueOf(year), weekDays.length()));
+        printer.println();
         for (int i = 0; i < 12; i++) {
             this.printCalendar(handler, i, year, true, withEvents);
-            writer.println();
+            printer.println();
         }
     }
 
     public void printEvents(Set<Event> events) {
         Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
 
-        PrinterUtils.mapAndSort(writer, eventFormatters, events)
+        PrinterUtils.mapAndSort(printer, eventFormatters, events)
                 .forEach((calendar, eventList) -> {
                     Date date = calendar.getTime();
-                    writer.print(PrinterColors.YELLOW + date.toString().substring(0, 10) + PrinterColors.RESET);
+                    printer.print(PrinterColors.YELLOW + date.toString().substring(0, 10) + PrinterColors.RESET);
 
                     eventList.forEach(event -> {
                         eventFormatters.get(event).printTime(date);
                         eventFormatters.get(event).printTitle(event.getTitle());
-                        writer.println();
+                        printer.println();
                     });
 
-                    writer.println();
+                    printer.println();
                 });
     }
 
@@ -91,13 +94,13 @@ public class OutputPrinter implements Closeable {
         int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
         int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        writer.println(monthHeader);
-        writer.println(weekDays);
+        printer.println(monthHeader);
+        printer.println(weekDays);
 
         int weekdayIndex = 0;
 
         for (int day = 1; day < firstWeekdayOfMonth; day++) {
-            writer.print("    ");
+            printer.print("    ");
             weekdayIndex++;
         }
 
@@ -105,18 +108,18 @@ public class OutputPrinter implements Closeable {
             printWithEvents(handler, year, month, weekdayIndex, numberOfMonthDays);
         } else {
             for (int day = 1; day <= numberOfMonthDays; day++) {
-                PrinterUtils.printDay(writer, day, month, year, "");
+                PrinterUtils.printDay(printer, day, month, year, "");
 
                 weekdayIndex++;
                 if (weekdayIndex == 7) {
                     weekdayIndex = 0;
-                    writer.println();
+                    printer.println();
                 } else {
-                    writer.print("  ");
+                    printer.print("  ");
                 }
             }
         }
-        writer.println();
+        printer.println();
     }
 
     private void printWithEvents(EventsGetterHandler handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
@@ -129,7 +132,7 @@ public class OutputPrinter implements Closeable {
 
         PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
                 .forEach((calendar, eventSet) -> {
-                    PrinterUtils.printDay(writer,
+                    PrinterUtils.printDay(printer,
                             calendar.get(Calendar.DAY_OF_MONTH),
                             month,
                             calendar.get(Calendar.YEAR),
@@ -138,15 +141,15 @@ public class OutputPrinter implements Closeable {
                     weekdayInd.incrementAndGet();
                     if (weekdayInd.get() == 7) {
                         weekdayInd.set(0);
-                        writer.println();
+                        printer.println();
                     } else {
-                        writer.print("  ");
+                        printer.print("  ");
                     }
                 });
     }
 
     @Override
     public void close() {
-        writer.close();
+        printer.close();
     }
 }

@@ -2,22 +2,25 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.AddEventCommand;
 import com.sap.exercise.commands.Command;
-import com.sap.exercise.commands.CommandExecutionResult;
+import com.sap.exercise.commands.helper.CommandHelper;
 import com.sap.exercise.commands.validator.AddCommandValidator;
-import com.sap.exercise.commands.validator.CommandValidator;
 import com.sap.exercise.model.Event;
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class AddCommandParser implements CommandParser {
+import java.util.function.Function;
+
+public class AddCommandParser extends AbstractCommandParser {
+
+    AddCommandParser(Function<Options, CommandHelper> helperCreator) {
+        super(helperCreator, AddCommandValidator::new);
+    }
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
-        CommandValidator validator = new AddCommandValidator(cmd);
-        if (!validator.validate())
-            return () -> CommandExecutionResult.ERROR;
+        Command result = super.parse(args);
+        if (result != null)
+            return result;
 
         Event event;
 
@@ -32,7 +35,8 @@ public class AddCommandParser implements CommandParser {
         return new AddEventCommand(event);
     }
 
-    public static Options getOptions() {
+    @Override
+    public Options getOptions() {
         Option taskOption = Option.builder("t")
                 .required(false)
                 .longOpt("task")
@@ -48,6 +52,11 @@ public class AddCommandParser implements CommandParser {
                 .longOpt("goal")
                 .desc("Create a Goal")
                 .build();
-        return CommandParserFactory.buildOptions(taskOption, reminderOption, goalOption);
+        Option help = Option.builder()
+                .longOpt("help")
+                .required(false)
+                .desc("Print command help")
+                .build();
+        return buildOptions(taskOption, reminderOption, goalOption, help);
     }
 }

@@ -1,22 +1,24 @@
 package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
-import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.PrintAgendaCommand;
-import com.sap.exercise.commands.validator.CommandValidator;
-import com.sap.exercise.commands.validator.CommonCommandValidator;
-import org.apache.commons.cli.CommandLine;
+import com.sap.exercise.commands.helper.CommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class PrintAgendaCommandParser implements CommandParser {
+import java.util.function.Function;
+
+public class PrintAgendaCommandParser extends AbstractCommandParser {
+
+    PrintAgendaCommandParser(Function<Options, CommandHelper> helperCreator) {
+        super(helperCreator);
+    }
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
-        CommandValidator validator = new CommonCommandValidator(cmd);
-        if (!validator.validate())
-            return () -> CommandExecutionResult.ERROR;
+        Command result = super.parse(args);
+        if (result != null)
+            return result;
 
         String startTime = "", endTime = "";
 
@@ -30,12 +32,14 @@ public class PrintAgendaCommandParser implements CommandParser {
         return new PrintAgendaCommand(startTime, endTime);
     }
 
-    public static Options getOptions() {
+    @Override
+    public Options getOptions() {
         Option start = Option.builder("s")
                 .required(false)
                 .longOpt("start")
                 .hasArg(true)
                 .numberOfArgs(1)
+                .argName("date")
                 .optionalArg(false)
                 .desc("Specify the start time from when to get entries")
                 .build();
@@ -44,9 +48,15 @@ public class PrintAgendaCommandParser implements CommandParser {
                 .longOpt("end")
                 .hasArg(true)
                 .numberOfArgs(1)
+                .argName("date")
                 .optionalArg(false)
                 .desc("Specify the end time to when to get entries")
                 .build();
-        return CommandParserFactory.buildOptions(start, end);
+        Option help = Option.builder()
+                .longOpt("help")
+                .required(false)
+                .desc("Print command help")
+                .build();
+        return buildOptions(start, end, help);
     }
 }

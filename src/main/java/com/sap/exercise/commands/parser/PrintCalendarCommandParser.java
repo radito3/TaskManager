@@ -1,22 +1,25 @@
 package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
-import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.PrintCalendarCommand;
-import com.sap.exercise.commands.validator.CommandValidator;
+import com.sap.exercise.commands.helper.CommandHelper;
 import com.sap.exercise.commands.validator.PrintCalendarCommandValidator;
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class PrintCalendarCommandParser implements CommandParser {
+import java.util.function.Function;
+
+public class PrintCalendarCommandParser extends AbstractCommandParser {
+
+    PrintCalendarCommandParser(Function<Options, CommandHelper> helperCreator) {
+        super(helperCreator, PrintCalendarCommandValidator::new);
+    }
 
     @Override
     public Command parse(String[] args) {
-        CommandLine cmd = CommandParser.safeParseCmd(getOptions(), args);
-        CommandValidator validator = new PrintCalendarCommandValidator(cmd);
-        if (!validator.validate())
-            return () -> CommandExecutionResult.ERROR;
+        Command result = super.parse(args);
+        if (result != null)
+            return result;
 
         boolean withEvents = cmd.hasOption('e');
         if (cmd.hasOption('3')) {
@@ -32,7 +35,8 @@ public class PrintCalendarCommandParser implements CommandParser {
         return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.ONE, withEvents);
     }
 
-    public static Options getOptions() {
+    @Override
+    public Options getOptions() {
         Option one = Option.builder("1")
                 .required(false)
                 .longOpt("one")
@@ -47,6 +51,7 @@ public class PrintCalendarCommandParser implements CommandParser {
                 .required(false)
                 .longOpt("year")
                 .hasArg()
+                .argName("year")
                 .optionalArg(true)
                 .desc("Display the whole year (default argument is current year)")
                 .build();
@@ -55,6 +60,11 @@ public class PrintCalendarCommandParser implements CommandParser {
                 .longOpt("events")
                 .desc("Display calendar with events highlighted")
                 .build();
-        return CommandParserFactory.buildOptions(one, three, year, withEvents);
+        Option help = Option.builder()
+                .longOpt("help")
+                .required(false)
+                .desc("Print command help")
+                .build();
+        return buildOptions(one, three, year, withEvents, help);
     }
 }
