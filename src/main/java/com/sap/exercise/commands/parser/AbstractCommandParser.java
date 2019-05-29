@@ -5,9 +5,8 @@ import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.helper.CommandHelper;
 import com.sap.exercise.commands.validator.CommandValidator;
 import com.sap.exercise.commands.validator.DefaultCommandValidator;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import com.sap.exercise.util.ExceptionMessageHandler;
+import org.apache.commons.cli.*;
 
 import java.util.function.Function;
 
@@ -33,7 +32,7 @@ abstract class AbstractCommandParser implements CommandParser {
 
     @Override
     public Command parse(String[] args) {
-        cmd = CommandParser.safeParseCmd(getOptions(), args);
+        cmd = parseCmd(getOptions(), args);
         CommandValidator validator;
         if (validatorBuilder == null)
             validator = new DefaultCommandValidator(cmd);
@@ -59,5 +58,14 @@ abstract class AbstractCommandParser implements CommandParser {
             result.addOption(opt);
         }
         return result;
+    }
+
+    private static CommandLine parseCmd(Options options, String[] args) {
+        try {
+            return new DefaultParser().parse(options, args, false);
+        } catch (ParseException e) {
+            ExceptionMessageHandler.setMessage(e.getMessage());
+            return null;
+        }
     }
 }

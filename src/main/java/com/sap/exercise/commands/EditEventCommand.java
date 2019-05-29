@@ -2,8 +2,8 @@ package com.sap.exercise.commands;
 
 import java.util.NoSuchElementException;
 
-import com.sap.exercise.handler.EventGetter;
-import com.sap.exercise.handler.EventUpdater;
+import com.sap.exercise.handler.Dao;
+import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.ExceptionMessageHandler;
 import com.sap.exercise.wrapper.EventWrapper;
@@ -13,6 +13,7 @@ import com.sap.exercise.model.Event;
 public class EditEventCommand implements Command {
 
     private String eventName;
+    private final Dao<Event> handler = new EventDao();
 
     public EditEventCommand(String eventName) {
         this.eventName = eventName;
@@ -21,13 +22,14 @@ public class EditEventCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         try  {
-            Event event = new EventGetter().getEventByTitle(eventName);
+            Event event = handler.get(eventName)
+                    .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
             EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
             EventDataParser dataParser = new EventDataParser(eventWrapper);
 
             dataParser.parseInput();
 
-            new EventUpdater().execute(eventWrapper.getEvent());
+            handler.update(eventWrapper.getEvent());
             OutputPrinterProvider.getPrinter().println("\nEvent updated");
         } catch (NoSuchElementException | IllegalArgumentException e) {
             ExceptionMessageHandler.setMessage(e.getMessage());

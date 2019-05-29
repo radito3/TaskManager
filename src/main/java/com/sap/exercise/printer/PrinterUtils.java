@@ -17,13 +17,13 @@ class PrinterUtils {
         Calendar toCheck = new GregorianCalendar(year, month - 1, day);
 
         if (DateUtils.isSameDay(today, toCheck)) {
-            writer.printf(PrinterColors.INVERT + "%1$2d" + PrinterColors.RESET, day);
+            writer.printf(PrinterColors.INVERT + "%2d" + PrinterColors.RESET, day);
         } else {
-            writer.printf(format + "%1$2d" + PrinterColors.RESET, day);
+            writer.printf(format + "%2d" + PrinterColors.RESET, day);
         }
     }
 
-    static Map<Calendar, Set<Event>> monthEventsSorted(int month, int year, int numOfMonthDays, Set<Event> events) {
+    static Map<Calendar, Set<Event>> monthEventsSorted(int month, int year, int numOfMonthDays, Collection<Event> events) {
         Map<Calendar, Set<Event>> result = new TreeMap<>(Comparator.comparingInt(cal -> cal.get(Calendar.DAY_OF_MONTH)));
 
         for (int i = 1; i <= numOfMonthDays; i++) {
@@ -40,7 +40,7 @@ class PrinterUtils {
         return result;
     }
 
-    static Map<Calendar, List<Event>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Set<Event> events) {
+    static Map<Calendar, List<Event>> mapAndSort(PrintStream writer, Map<Event, Formatter> eventFormatters, Collection<Event> events) {
         Map<Calendar, List<Event>> result = new TreeMap<>(Comparator.comparingInt(cal -> cal.get(Calendar.DAY_OF_YEAR)));
 
         result.putAll(events.stream().collect(Collectors.groupingBy(Event::getTimeOf)));
@@ -62,7 +62,6 @@ class PrinterUtils {
         return result;
     }
 
-    //needs complete overhaul
     static class Formatter {
         private boolean allDay = false;
         private boolean multipleEvents = false;
@@ -111,7 +110,7 @@ class PrinterUtils {
             if (allDay) {
                 writer.print("       ");
             } else {
-                writer.print(" " + date.toString().substring(11, 16) + " ");
+                writer.printf(" %2tk:%1$2tM:%1$2tS ", date);
             }
         }
     }

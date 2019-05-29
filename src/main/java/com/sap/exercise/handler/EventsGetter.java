@@ -11,21 +11,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class EventGetter extends AbstractEventsHandler<Event> implements EventsGetterHandler {
+public class EventsGetter {
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Event getEventByTitle(String var) {
-        Optional<Event> optionalEvent = (Optional<Event>) TransactionBuilderFactory.getTransactionBuilder()
-                .addOperationWithResult(s -> s.createNativeQuery("SELECT * FROM Eventt WHERE Title = \'"
-                        + var + "\' LIMIT 1;", Event.class).uniqueResultOptional())
-                .commit()
-                .iterator().next();
-
-        return optionalEvent.orElseThrow(() -> new NoSuchElementException("Invalid event name"));
-    }
-
-    @Override
     public Set<Event> getEventsInTimeFrame(String start, String end) {
         Set<Event> events = new HashSet<>();
         List<String> nullDates = new LinkedList<>();
@@ -58,6 +45,7 @@ public class EventGetter extends AbstractEventsHandler<Event> implements EventsG
     @SuppressWarnings("unchecked")
     private boolean setEventsInTable(String start, String end) {
         boolean hasNewEntries = false;
+        //will be changed
         List<CalendarEvents> list = (List<CalendarEvents>) TransactionBuilderFactory.getTransactionBuilder()
                 .addOperationWithResult(s ->
                         s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +

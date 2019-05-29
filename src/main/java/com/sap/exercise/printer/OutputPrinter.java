@@ -1,6 +1,7 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.handler.EventsGetterHandler;
+import com.sap.exercise.handler.Dao;
+import com.sap.exercise.handler.GetInTimeFrameOptions;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -10,13 +11,7 @@ import java.io.Closeable;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class OutputPrinter implements Closeable {
@@ -51,11 +46,11 @@ public class OutputPrinter implements Closeable {
                 74, cmdLineSyntax, header, options, 1, 3, footer, true);
     }
 
-    public void printMonthCalendar(EventsGetterHandler handler, int month, boolean withEvents) {
+    public void printMonthCalendar(Dao<Event> handler, int month, boolean withEvents) {
         this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
     }
 
-    public void printYearCalendar(EventsGetterHandler handler, int year, boolean withEvents) {
+    public void printYearCalendar(Dao<Event> handler, int year, boolean withEvents) {
         printer.println(StringUtils.center(String.valueOf(year), weekDays.length()));
         printer.println();
         for (int i = 0; i < 12; i++) {
@@ -64,13 +59,13 @@ public class OutputPrinter implements Closeable {
         }
     }
 
-    public void printEvents(Set<Event> events) {
+    public void printEvents(Collection<Event> events) {
         Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
 
         PrinterUtils.mapAndSort(printer, eventFormatters, events)
                 .forEach((calendar, eventList) -> {
                     Date date = calendar.getTime();
-                    printer.print(PrinterColors.YELLOW + date.toString().substring(0, 10) + PrinterColors.RESET);
+                    printer.printf(PrinterColors.YELLOW + "%ta %1$tb %1$2te" + PrinterColors.RESET, date);
 
                     eventList.forEach(event -> {
                         eventFormatters.get(event).printTime(date);
@@ -82,7 +77,7 @@ public class OutputPrinter implements Closeable {
                 });
     }
 
-    private void printCalendar(EventsGetterHandler handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
+    private void printCalendar(Dao<Event> handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg < 0 ? (arg + 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg < 0 ? arg1 - 1 : arg1;
 
@@ -122,13 +117,13 @@ public class OutputPrinter implements Closeable {
         printer.println();
     }
 
-    private void printWithEvents(EventsGetterHandler handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
+    private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
-        Set<Event> events = handler.getEventsInTimeFrame(
+        Collection<Event> events = handler.getAll(new GetInTimeFrameOptions(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numOfMonthDays
-        );
+        ));
 
         PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
                 .forEach((calendar, eventSet) -> {

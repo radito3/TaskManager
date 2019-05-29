@@ -16,7 +16,7 @@ public abstract class ListenableEvent {
         listeners.add(listener);
     }
 
-    protected void notifyListeners(Object arg) {
-        listeners.forEach(listener -> listener.notify(arg));
+    protected void notifyListeners(Object... args) {
+        listeners.forEach(listener -> listener.notify(args));
     }
 }

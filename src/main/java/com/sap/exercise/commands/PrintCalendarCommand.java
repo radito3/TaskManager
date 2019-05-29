@@ -1,7 +1,8 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.handler.EventGetter;
-import com.sap.exercise.handler.EventsGetterHandler;
+import com.sap.exercise.handler.Dao;
+import com.sap.exercise.handler.EventDao;
+import com.sap.exercise.model.Event;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 
@@ -21,22 +22,22 @@ public class PrintCalendarCommand implements Command {
     public CommandExecutionResult execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
         Calendar calendar = Calendar.getInstance();
-        EventsGetterHandler eventsGetter = new EventGetter();
+        Dao<Event> eventsHandler = new EventDao();
 
         switch (options) {
             case ONE:
-                printer.printMonthCalendar(eventsGetter, calendar.get(Calendar.MONTH), withEvents);
+                printer.printMonthCalendar(eventsHandler, calendar.get(Calendar.MONTH), withEvents);
                 break;
             case THREE:
                 for (int i = -1; i < 2; i++) {
-                    printer.printMonthCalendar(eventsGetter, calendar.get(Calendar.MONTH) + i, withEvents);
+                    printer.printMonthCalendar(eventsHandler, calendar.get(Calendar.MONTH) + i, withEvents);
                     printer.println();
                 }
                 break;
             case YEAR:
                 int year = options.getArgument() == null ?
                         calendar.get(Calendar.YEAR) : Integer.valueOf(options.getArgument());
-                printer.printYearCalendar(eventsGetter, year, withEvents);
+                printer.printYearCalendar(eventsHandler, year, withEvents);
                 break;
         }
         return CommandExecutionResult.SUCCESSFUL;

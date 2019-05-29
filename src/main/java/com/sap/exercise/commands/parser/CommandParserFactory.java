@@ -12,14 +12,12 @@ import java.util.Optional;
 
 public class CommandParserFactory {
 
-    private static Map<String, CommandParser> commandsMap = new HashMap<>();
+    private static Map<String, CommandParser> commandsMap = new HashMap<>(7);
 
     static {
         commandsMap.put("add", new AddCommandParser(AddCommandHelper::new));
-        commandsMap.put("edit", new EditCommandParser(
-                CommandParserFactory::buildEventName, new EditCommandHelper()));
-        commandsMap.put("delete", new DeleteCommandParser(
-                CommandParserFactory::buildEventName, DeleteCommandHelper::new));
+        commandsMap.put("edit", new EditCommandParser(CommandParserFactory::buildEventName, new EditCommandHelper()));
+        commandsMap.put("delete", new DeleteCommandParser(CommandParserFactory::buildEventName, DeleteCommandHelper::new));
         commandsMap.put("cal", new PrintCalendarCommandParser(PrintCalendarCommandHelper::new));
         commandsMap.put("agenda", new PrintAgendaCommandParser(PrintAgendaCommandHelper::new));
         commandsMap.put("help", args -> new PrintHelpCommand());

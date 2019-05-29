@@ -1,13 +1,14 @@
 package com.sap.exercise.commands;
 
-import com.sap.exercise.handler.EventGetter;
+import com.sap.exercise.handler.EventDao;
+import com.sap.exercise.handler.GetInTimeFrameOptions;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.ExceptionMessageHandler;
 
-import java.util.Set;
+import java.util.Collection;
 
 public class PrintAgendaCommand implements Command {
 
@@ -23,7 +24,7 @@ public class PrintAgendaCommand implements Command {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
         try {
             DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
-            Set<Event> events = dateArgumentEvaluator.eval(new EventGetter()::getEventsInTimeFrame);
+            Collection<Event> events = dateArgumentEvaluator.eval(this::getEvents);
 
             if (events.isEmpty()) {
                 printer.println("\nNo upcoming events");
@@ -35,5 +36,9 @@ public class PrintAgendaCommand implements Command {
             return CommandExecutionResult.ERROR;
         }
         return CommandExecutionResult.SUCCESSFUL;
+    }
+
+    private Collection<Event> getEvents(String startTime, String endTime) {
+        return new EventDao().getAll(new GetInTimeFrameOptions(startTime, endTime));
     }
 }

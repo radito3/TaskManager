@@ -1,12 +1,14 @@
 package com.sap.exercise.notifications;
 
 import com.sap.exercise.Configuration;
-import com.sap.exercise.handler.EventGetter;
+import com.sap.exercise.handler.EventDao;
+import com.sap.exercise.handler.GetInTimeFrameOptions;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateHandler;
 import org.apache.commons.lang3.time.DateUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +29,8 @@ public class NotificationFactory {
 
     public static void pollForNotifications() {
         DateHandler today = new DateHandler();
-        Set<Event> todayEvents = new EventGetter().getEventsInTimeFrame(today.toString(), today.toString());
+        Collection<Event> todayEvents = new EventDao()
+                .getAll(new GetInTimeFrameOptions(today.toString(), today.toString()));
 
         todayEvents.forEach(event -> SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())

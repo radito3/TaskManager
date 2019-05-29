@@ -1,6 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.Configuration;
+import com.sap.exercise.persistence.HibernateUtilFactory;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.notifications.NotificationFactory;
 import com.sap.exercise.printer.OutputPrinterProvider;
@@ -14,6 +15,7 @@ public class ExitCommand implements Command {
     public CommandExecutionResult execute() {
         SharedResourcesFactory.close();
         NotificationFactory.clearEventsSet();
+        HibernateUtilFactory.close();
         try {
             Configuration.INPUT.close();
         } catch (IOException e) {

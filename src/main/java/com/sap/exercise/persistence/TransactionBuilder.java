@@ -3,10 +3,6 @@ package com.sap.exercise.persistence;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -18,21 +14,16 @@ import java.util.function.Function;
 
 public class TransactionBuilder {
 
-    private SessionFactory sessionFactory;
     private Session currentSession;
     private List<Consumer<Session>> operations;
     private Set<Object> results;
 
-    TransactionBuilder(Configuration configuration) {
-        ServiceRegistry registry = new StandardServiceRegistryBuilder()
-                .applySettings(configuration.getProperties()).build();
-
-        sessionFactory = configuration.buildSessionFactory(registry);
+    TransactionBuilder(HibernateUtil hibernateUtil) {
+        currentSession = hibernateUtil.getSession();
         beginTransaction();
     }
 
     private synchronized void beginTransaction() {
-        currentSession = sessionFactory.getCurrentSession();
         currentSession.beginTransaction();
         currentSession.getTransaction().setTimeout(10);
         operations = Collections.synchronizedList(new LinkedList<>());
@@ -65,7 +56,6 @@ public class TransactionBuilder {
 
             Logger.getLogger(TransactionBuilder.class).error("Transaction build error", e);
         }
-        sessionFactory.close();
         return results;
     }
 }

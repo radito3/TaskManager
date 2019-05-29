@@ -1,15 +1,14 @@
 package com.sap.exercise.persistence;
 
-import com.sap.exercise.services.DefaultPersistenceConfigurationProvider;
 import org.hibernate.cfg.Configuration;
 
 public class TransactionBuilderFactory {
 
     public static TransactionBuilder getTransactionBuilder() {
-        return getTransactionBuilder(DefaultPersistenceConfigurationProvider.getConfiguration());
+        return new TransactionBuilder(HibernateUtilFactory.getHibernateUtil());
     }
 
-    public static TransactionBuilder getTransactionBuilder(Configuration configuration) {
-        return new TransactionBuilder(configuration);
+    public static TransactionBuilder getTransactionBuilder(Configuration config) {
+        return new TransactionBuilder(HibernateUtilFactory.getHibernateUtil(config));
     }
 }
