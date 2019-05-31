@@ -5,18 +5,15 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class TransactionBuilder {
 
     private Session currentSession;
     private List<Consumer<Session>> operations;
-    private Set<Object> results;
+//    private Set<Object> results;
 
     TransactionBuilder(HibernateUtil hibernateUtil) {
         currentSession = hibernateUtil.getSession();
@@ -34,28 +31,28 @@ public class TransactionBuilder {
         return this;
     }
 
-    public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
-        if (results == null)
-            results = new LinkedHashSet<>();
-        operations.add(session -> results.add(function.apply(session)));
-        return this;
-    }
+//    public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
+//        if (results == null)
+//            results = new LinkedHashSet<>();
+//        operations.add(session -> results.add(function.apply(session)));
+//        return this;
+//    }
 
-    public synchronized Set<Object> commit() {
+    public synchronized void commit() {
         try {
             for (Consumer<Session> operation : operations) {
                 operation.accept(currentSession);
             }
             currentSession.getTransaction().commit();
         } catch (HibernateException e) {
-            if (results != null)
-                results.clear();
+//            if (results != null)
+//                results.clear();
 
             if (currentSession.getTransaction().getStatus().canRollback())
                 currentSession.getTransaction().rollback();
 
             Logger.getLogger(TransactionBuilder.class).error("Transaction build error", e);
         }
-        return results;
+//        return results;
     }
 }

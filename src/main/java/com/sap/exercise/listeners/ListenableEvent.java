@@ -2,16 +2,15 @@ package com.sap.exercise.listeners;
 
 import com.sap.exercise.handler.ListenableEventType;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class ListenableEvent {
 
-    private Map<ListenableEventType, EventListener> listenerMap;
+    private ConcurrentMap<ListenableEventType, EventListener> listenerMap;
 
     protected ListenableEvent() {
-        listenerMap = Collections.synchronizedMap(new HashMap<>());
+        listenerMap = new ConcurrentHashMap<>();
     }
 
     protected void addListener(ListenableEventType type, EventListener listener) {

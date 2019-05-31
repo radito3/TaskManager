@@ -1,7 +1,7 @@
 package com.sap.exercise.printer;
 
 import com.sap.exercise.handler.Dao;
-import com.sap.exercise.handler.GetInTimeFrameOptions;
+import com.sap.exercise.handler.TimeFrameOptions;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -124,7 +124,7 @@ public class OutputPrinter implements Closeable {
     private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
 
-        Collection<Event> events = handler.getAll(new GetInTimeFrameOptions(
+        Collection<Event> events = handler.getAll(new TimeFrameOptions(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numOfMonthDays
         ));

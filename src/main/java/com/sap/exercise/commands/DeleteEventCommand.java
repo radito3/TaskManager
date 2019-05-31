@@ -3,6 +3,7 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.DeleteOptions;
 import com.sap.exercise.handler.EventDao;
+import com.sap.exercise.persistence.Property;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
@@ -26,7 +27,7 @@ public class DeleteEventCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         try {
-            event = handler.get(eventName)
+            event = handler.get(new Property<>("title", eventName))
                     .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
             evaluator = new DateArgumentEvaluator(start, end);
             evaluator.eval(this::deleteEvents);

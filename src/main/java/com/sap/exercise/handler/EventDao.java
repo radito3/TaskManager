@@ -4,11 +4,11 @@ import com.sap.exercise.listeners.*;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.HibernateUtilFactory;
+import com.sap.exercise.persistence.Property;
 import com.sap.exercise.persistence.TransactionBuilder;
 import com.sap.exercise.persistence.TransactionBuilderFactory;
 import com.sap.exercise.services.SharedResourcesFactory;
 import org.hibernate.Session;
-import org.hibernate.query.Query;
 
 import javax.persistence.criteria.*;
 import java.util.Collection;
@@ -26,14 +26,14 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     }
 
     @Override
-    public Optional<Event> get(Object property) { //need to add an adapter for the property -> title/id
+    public <Y> Optional<Event> get(Property<Y> property) {
         Session session = HibernateUtilFactory.getHibernateUtil().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
 
         criteriaQuery.select(root)
-                .where(criteriaBuilder.equal(root.get("title"), property.toString()))
+                .where(criteriaBuilder.equal(root.get(property.getName()), property.getValue()))
                 .distinct(true);
 
         return session.createQuery(criteriaQuery).uniqueResultOptional();
@@ -41,20 +41,14 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
 
     @Override
     public Collection<Event> getAll(CrudOptions options) {
-        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
-        Root<Event> root = criteriaQuery.from(Event.class);
+        Map<String, Object> optionParams = options.getParameters();
 
-        criteriaQuery.select(root).where(options.getPredicate());
+        EventsGetter eventsGetter = new EventsGetter(
+                (String) optionParams.get("startDate"),
+                (String) optionParams.get("endDate"),
+                this);
 
-        Query<Event> query = session.createQuery(criteriaQuery);
-
-        EventsGetter getter = new EventsGetter();
-        //to use the getter for the events
-        //this method needn't be cluttered
-
-        return query.getResultList();
+        return eventsGetter.getEventsInTimeFrame();
     }
 
     @Override

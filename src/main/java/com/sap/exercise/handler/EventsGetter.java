@@ -1,19 +1,35 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.persistence.TransactionBuilderFactory;
+import com.sap.exercise.persistence.HibernateUtilFactory;
+import com.sap.exercise.persistence.Property;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.util.CalendarWrapper;
 import com.sap.exercise.util.DateHandler;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class EventsGetter {
+class EventsGetter {
 
-    public Set<Event> getEventsInTimeFrame(String start, String end) {
+    private final String start;
+    private final String end;
+    private final EventDao eventDao;
+
+    EventsGetter(String start, String end, EventDao eventDao) {
+        this.start = start;
+        this.end = end;
+        this.eventDao = eventDao;
+    }
+
+    Set<Event> getEventsInTimeFrame() {
         Set<Event> events = new HashSet<>();
         List<String> nullDates = new LinkedList<>();
 
@@ -42,23 +58,21 @@ public class EventsGetter {
         };
     }
 
-    @SuppressWarnings("unchecked")
     private boolean setEventsInTable(String start, String end) {
         boolean hasNewEntries = false;
-        //will be changed
-        List<CalendarEvents> list = (List<CalendarEvents>) TransactionBuilderFactory.getTransactionBuilder()
-                .addOperationWithResult(s ->
-                        s.createNativeQuery("SELECT * FROM CalendarEvents WHERE Date >= \'" + start +
-                                "\' AND Date <= \'" + end + "\';", CalendarEvents.class).getResultList())
-                .commit()
-                .iterator().next();
 
-        Map<Calendar, Set<Event>> map = list.stream()
+        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<CalendarEvents> criteriaQuery = criteriaBuilder.createQuery(CalendarEvents.class);
+        Root<CalendarEvents> root = criteriaQuery.from(CalendarEvents.class);
+
+        criteriaQuery.where(criteriaBuilder.between(root.get("date"), start, end));
+        Query<CalendarEvents> query = session.createQuery(criteriaQuery);
+
+        Map<Calendar, Set<Event>> map = query.getResultList().stream()
                 .map(calEvents -> {
-                    Event event = (Event) TransactionBuilderFactory.getTransactionBuilder()
-                            .addOperationWithResult(s -> s.get(Event.class, calEvents.getEventId()))
-                            .commit()
-                            .iterator().next();
+                    Event event = eventDao.get(new Property<>("id", calEvents.getEventId()))
+                            .orElseGet(Event::new);
                     event.setTimeOf(calEvents.getDate());
                     return event;
                 })

@@ -1,7 +1,7 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventDao;
-import com.sap.exercise.handler.GetInTimeFrameOptions;
+import com.sap.exercise.handler.TimeFrameOptions;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
@@ -39,6 +39,6 @@ public class PrintAgendaCommand implements Command {
     }
 
     private Collection<Event> getEvents(String startTime, String endTime) {
-        return new EventDao().getAll(new GetInTimeFrameOptions(startTime, endTime));
+        return new EventDao().getAll(new TimeFrameOptions(startTime, endTime));
     }
 }

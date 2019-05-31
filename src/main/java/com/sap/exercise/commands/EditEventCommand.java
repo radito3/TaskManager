@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.EventDao;
+import com.sap.exercise.persistence.Property;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.ExceptionMessageHandler;
 import com.sap.exercise.wrapper.EventWrapper;
@@ -22,7 +23,7 @@ public class EditEventCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         try  {
-            Event event = handler.get(eventName)
+            Event event = handler.get(new Property<>("title", eventName))
                     .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
             EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
             EventDataParser dataParser = new EventDataParser(eventWrapper);
