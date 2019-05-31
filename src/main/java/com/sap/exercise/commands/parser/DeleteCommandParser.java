@@ -10,12 +10,8 @@ import java.util.function.Function;
 
 public class DeleteCommandParser extends AbstractCommandParser {
 
-    private Function<String[], String> eventNameBuilder;
-
-    DeleteCommandParser(Function<String[], String> eventNameBuilder,
-                        Function<Options, CommandHelper> helperCreator) {
+    DeleteCommandParser(Function<Options, CommandHelper> helperCreator) {
         super(helperCreator);
-        this.eventNameBuilder = eventNameBuilder;
     }
 
     @Override
@@ -26,7 +22,7 @@ public class DeleteCommandParser extends AbstractCommandParser {
 
         String startTime = "",
                 endTime = "",
-                eventName = eventNameBuilder.apply(cmd.getArgs());
+                eventName = buildEventName(cmd.getArgs());
 
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');

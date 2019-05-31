@@ -17,14 +17,14 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
     @Override
     public boolean isValid() {
         boolean commonCondition = super.isValid();
-        if (commonCondition && checkOptionsLength()) {
+        if (commonCondition && validateOptions()) {
             ExceptionMessageHandler.setMessage("Invalid number of arguments");
             return false;
         }
         return commonCondition;
     }
 
-    private boolean checkOptionsLength() {
+    private boolean validateOptions() {
         Supplier<Stream<Option>> optionsStreamSupplier = () -> Arrays.stream(cmd.getOptions());
         Option withEvents = Option.builder("e")
                 .required(false)
@@ -42,7 +42,7 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
         boolean optWithoutEvents = optionsStreamSupplier.get()
                 .filter(opt -> !opt.equals(withEvents))
                 .count() > 1;
-        boolean allOpts = optionsStreamSupplier.get().count() > 2;
+        boolean allOpts = cmd.getOptions().length > 2;
 
         return !onlyHelp & (optWithoutEvents | allOpts);
     }

@@ -38,6 +38,10 @@ public class OutputPrinter implements Closeable {
         printer.print(val);
     }
 
+    public void printf(String format, Object... params) {
+        printer.printf(format, params);
+    }
+
     public void printHelp(String cmdLineSyntax, String header, String footer, Options options) {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.setSyntaxPrefix("Usage: ");

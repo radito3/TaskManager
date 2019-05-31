@@ -31,7 +31,7 @@ public class DeleteEventCommand implements Command {
             evaluator = new DateArgumentEvaluator(start, end);
             evaluator.eval(this::deleteEvents);
 
-            OutputPrinterProvider.getPrinter().println("\nEvent entries deleted");
+            OutputPrinterProvider.getPrinter().printf("%nEvent entries deleted");
         } catch (NoSuchElementException | IllegalArgumentException e) {
             ExceptionMessageHandler.setMessage(e.getMessage());
             return CommandExecutionResult.ERROR;

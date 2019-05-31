@@ -14,7 +14,7 @@ abstract class AbstractCommandParser implements CommandParser {
 
     private Function<Options, CommandHelper> helperCreator;
     CommandLine cmd;
-    private Function<CommandLine, CommandValidator> validatorBuilder;
+    private Function<CommandLine, CommandValidator> validatorCreator;
 
     AbstractCommandParser(Function<Options, CommandHelper> helperCreator) {
         this.helperCreator = helperCreator;
@@ -23,7 +23,7 @@ abstract class AbstractCommandParser implements CommandParser {
     AbstractCommandParser(Function<Options, CommandHelper> helperCreator,
                           Function<CommandLine, CommandValidator> validatorCreator) {
         this(helperCreator);
-        this.validatorBuilder = validatorCreator;
+        this.validatorCreator = validatorCreator;
     }
 
     AbstractCommandParser(final CommandHelper helper) {
@@ -34,10 +34,10 @@ abstract class AbstractCommandParser implements CommandParser {
     public Command parse(String[] args) {
         cmd = parseCmd(getOptions(), args);
         CommandValidator validator;
-        if (validatorBuilder == null)
+        if (validatorCreator == null)
             validator = new DefaultCommandValidator(cmd);
         else
-            validator = validatorBuilder.apply(cmd);
+            validator = validatorCreator.apply(cmd);
 
         if (!validator.isValid())
             return () -> CommandExecutionResult.ERROR;
@@ -67,5 +67,12 @@ abstract class AbstractCommandParser implements CommandParser {
             ExceptionMessageHandler.setMessage(e.getMessage());
             return null;
         }
+    }
+
+    static String buildEventName(String[] input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Event name not specified");
+        }
+        return String.join(" ", input);
     }
 }

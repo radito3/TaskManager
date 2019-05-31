@@ -5,7 +5,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -17,7 +16,7 @@ public class DateHandler {
 
     private DateHandler startDate;
     private DateHandler endDate;
-    private Calendar currentCal = new GregorianCalendar();
+    private Calendar currentCal = Calendar.getInstance();
 
     public DateHandler(String text) {
         try {

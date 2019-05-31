@@ -27,7 +27,7 @@ public class PrintAgendaCommand implements Command {
             Collection<Event> events = dateArgumentEvaluator.eval(this::getEvents);
 
             if (events.isEmpty()) {
-                printer.println("\nNo upcoming events");
+                printer.printf("%nNo upcoming events");
             } else {
                 printer.printEvents(events);
             }

@@ -1,22 +1,24 @@
 package com.sap.exercise.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import com.sap.exercise.handler.ListenableEventType;
+
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ListenableEvent {
 
-    private Collection<EventListener> listeners;
+    private Map<ListenableEventType, EventListener> listenerMap;
 
     protected ListenableEvent() {
-        listeners = Collections.synchronizedCollection(new ArrayList<>(1));
+        listenerMap = Collections.synchronizedMap(new HashMap<>());
     }
 
-    protected void addListener(EventListener listener) {
-        listeners.add(listener);
+    protected void addListener(ListenableEventType type, EventListener listener) {
+        listenerMap.put(type, listener);
     }
 
-    protected void notifyListeners(Object... args) {
-        listeners.forEach(listener -> listener.notify(args));
+    protected void notifyListeners(ListenableEventType type, Object... args) {
+        listenerMap.get(type).notify(args);
     }
 }

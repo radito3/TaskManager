@@ -19,11 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EventDao extends ListenableEvent implements Dao<Event> {
 
     public EventDao() {
-        //may introduce a mapping to the listeners -> event_type = listener
-        addListener(new CreationListener());
-        addListener(new UpdateListener());
-        addListener(new DeletionListener());
-        addListener(new DeletionInTimeFrameListener());
+        addListener(ListenableEventType.CREATE, new CreationListener());
+        addListener(ListenableEventType.UPDATE, new UpdateListener());
+        addListener(ListenableEventType.DELETE, new DeletionListener());
+        addListener(ListenableEventType.DELETE_IN_TIME_FRAME, new DeletionInTimeFrameListener());
     }
 
     @Override

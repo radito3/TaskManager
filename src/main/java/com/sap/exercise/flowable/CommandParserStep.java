@@ -13,7 +13,8 @@ public class CommandParserStep implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) {
         String[] userInputArgs = (String[]) delegateExecution.getVariable("userInput");
 
-        CommandParser parser = CommandParserFactory.getParser(userInputArgs[0]);
+        CommandParserFactory factory = new CommandParserFactory();
+        CommandParser parser = factory.getParser(userInputArgs[0]);
         Command command = parser.parse(Arrays.copyOfRange(userInputArgs, 1, userInputArgs.length));
 
         delegateExecution.setVariable("command", command);

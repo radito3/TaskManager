@@ -30,7 +30,7 @@ public class EditEventCommand implements Command {
             dataParser.parseInput();
 
             handler.update(eventWrapper.getEvent());
-            OutputPrinterProvider.getPrinter().println("\nEvent updated");
+            OutputPrinterProvider.getPrinter().printf("%nEvent updated");
         } catch (NoSuchElementException | IllegalArgumentException e) {
             ExceptionMessageHandler.setMessage(e.getMessage());
             return CommandExecutionResult.ERROR;

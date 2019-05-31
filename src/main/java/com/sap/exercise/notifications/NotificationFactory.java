@@ -37,7 +37,7 @@ public class NotificationFactory {
                     - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
             if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
-                NotificationFactory.newNotification(event).send();
+                newNotification(event).send();
                 sentNotificationsEvents.add(event.getId());
             }
         }));

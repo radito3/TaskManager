@@ -6,15 +6,10 @@ import com.sap.exercise.commands.helper.CommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import java.util.function.Function;
-
 public class EditCommandParser extends AbstractCommandParser {
 
-    private Function<String[], String> eventNameBuilder;
-
-    EditCommandParser(Function<String[], String> eventNameBuilder, CommandHelper helper) {
+    EditCommandParser(CommandHelper helper) {
         super(helper);
-        this.eventNameBuilder = eventNameBuilder;
     }
 
     @Override
@@ -23,7 +18,7 @@ public class EditCommandParser extends AbstractCommandParser {
         if (result != null)
             return result;
 
-        return new EditEventCommand(eventNameBuilder.apply(args));
+        return new EditEventCommand(buildEventName(args));
     }
 
     @Override
