@@ -13,10 +13,9 @@ public class TransactionBuilder {
 
     private Session currentSession;
     private List<Consumer<Session>> operations;
-//    private Set<Object> results;
 
-    TransactionBuilder(HibernateUtil hibernateUtil) {
-        currentSession = hibernateUtil.getSession();
+    TransactionBuilder(Session session) {
+        currentSession = session;
         beginTransaction();
     }
 
@@ -31,13 +30,6 @@ public class TransactionBuilder {
         return this;
     }
 
-//    public synchronized TransactionBuilder addOperationWithResult(Function<Session, ?> function) {
-//        if (results == null)
-//            results = new LinkedHashSet<>();
-//        operations.add(session -> results.add(function.apply(session)));
-//        return this;
-//    }
-
     public synchronized void commit() {
         try {
             for (Consumer<Session> operation : operations) {
@@ -45,14 +37,10 @@ public class TransactionBuilder {
             }
             currentSession.getTransaction().commit();
         } catch (HibernateException e) {
-//            if (results != null)
-//                results.clear();
-
             if (currentSession.getTransaction().getStatus().canRollback())
                 currentSession.getTransaction().rollback();
 
             Logger.getLogger(TransactionBuilder.class).error("Transaction build error", e);
         }
-//        return results;
     }
 }

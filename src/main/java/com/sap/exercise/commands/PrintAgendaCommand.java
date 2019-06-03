@@ -1,12 +1,11 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.EventDao;
-import com.sap.exercise.handler.TimeFrameOptions;
+import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.ExceptionMessageHandler;
 
 import java.util.Collection;
 
@@ -22,23 +21,18 @@ public class PrintAgendaCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
-        try {
-            DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
-            Collection<Event> events = dateArgumentEvaluator.eval(this::getEvents);
+        DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
+        Collection<Event> events = dateArgumentEvaluator.eval(this::getEvents);
 
-            if (events.isEmpty()) {
-                printer.printf("%nNo upcoming events");
-            } else {
-                printer.printEvents(events);
-            }
-        } catch (IllegalArgumentException e) {
-            ExceptionMessageHandler.setMessage(e.getMessage());
-            return CommandExecutionResult.ERROR;
+        if (events.isEmpty()) {
+            printer.printf("%nNo upcoming events");
+        } else {
+            printer.printEvents(events);
         }
         return CommandExecutionResult.SUCCESSFUL;
     }
 
     private Collection<Event> getEvents(String startTime, String endTime) {
-        return new EventDao().getAll(new TimeFrameOptions(startTime, endTime));
+        return new EventDao().getAll(new TimeFrameCondition(startTime, endTime));
     }
 }

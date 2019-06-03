@@ -2,6 +2,8 @@ package com.sap.exercise.commands.validator;
 
 import org.apache.commons.cli.CommandLine;
 
+import java.util.Objects;
+
 public class DefaultCommandValidator implements CommandValidator {
 
     CommandLine cmd;
@@ -11,7 +13,7 @@ public class DefaultCommandValidator implements CommandValidator {
     }
 
     @Override
-    public boolean isValid() {
-        return cmd != null;
+    public void validate() {
+        Objects.requireNonNull(cmd);
     }
 }

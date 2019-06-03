@@ -23,11 +23,9 @@ class EmailNotification implements Notification {
         this.event = event;
         EmailValidator validator = EmailValidator.getInstance(true);
 
-        if (!validator.isValid(Configuration.USER_EMAIL)) {
+        isValidEmail = validator.isValid(Configuration.USER_EMAIL);
+        if (!isValidEmail) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Invalid email", "Error", JOptionPane.ERROR_MESSAGE);
-            isValidEmail = false;
-        } else {
-            isValidEmail = true;
         }
     }
 

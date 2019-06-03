@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-class CreateMultipleEventEntries implements Runnable {
+class CreateMultipleEventEntriesJob implements Runnable {
 
     private final int id;
     private final Event event;
 
-    CreateMultipleEventEntries(int id, Event event) {
+    CreateMultipleEventEntriesJob(int id, Event event) {
         this.id = id;
         this.event = event;
     }

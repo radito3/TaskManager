@@ -6,7 +6,6 @@ import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.printer.OutputPrinterProvider;
-import com.sap.exercise.util.ExceptionMessageHandler;
 import com.sap.exercise.wrapper.EventWrapper;
 import com.sap.exercise.wrapper.EventWrapperFactory;
 import com.sap.exercise.model.Event;
@@ -22,20 +21,15 @@ public class EditEventCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
-        try  {
-            Event event = handler.get(new Property<>("title", eventName))
-                    .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
-            EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
-            EventDataParser dataParser = new EventDataParser(eventWrapper);
+        Event event = handler.get(new Property<>("title", eventName))
+                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
+        EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
+        EventDataParser dataParser = new EventDataParser(eventWrapper);
 
-            dataParser.parseInput();
+        dataParser.parseInput();
 
-            handler.update(eventWrapper.getEvent());
-            OutputPrinterProvider.getPrinter().printf("%nEvent updated");
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            ExceptionMessageHandler.setMessage(e.getMessage());
-            return CommandExecutionResult.ERROR;
-        }
+        handler.update(eventWrapper.getEvent());
+        OutputPrinterProvider.getPrinter().printf("%nEvent updated");
         return CommandExecutionResult.SUCCESSFUL;
     }
 }

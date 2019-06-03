@@ -1,25 +1,25 @@
 package com.sap.exercise.handler;
 
 import com.sap.exercise.model.CalendarEvents;
-import com.sap.exercise.persistence.HibernateUtilFactory;
+import com.sap.exercise.persistence.SessionProviderFactory;
 import org.hibernate.Session;
 
 import javax.persistence.criteria.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TimeFrameOptions implements CrudOptions {
+public class TimeFrameCondition implements CrudCondition {
 
     protected String startDate;
     protected String endDate;
 
-    public TimeFrameOptions(String startDate, String endDate) {
+    public TimeFrameCondition(String startDate, String endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
     @Override
-    public Map<String, Object> getParameters() {
+    public Map<String, Object> parameters() {
         Map<String, Object> result = new HashMap<>();
         result.put("startDate", startDate);
         result.put("endDate", endDate);
@@ -27,8 +27,8 @@ public class TimeFrameOptions implements CrudOptions {
     }
 
     @Override
-    public Predicate getPredicate() {
-        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
+    public Predicate queryCondition() {
+        Session session = SessionProviderFactory.getSessionProvider().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<CalendarEvents> criteriaQuery =
                 criteriaBuilder.createQuery(CalendarEvents.class);

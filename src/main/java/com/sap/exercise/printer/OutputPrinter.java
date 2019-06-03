@@ -1,7 +1,7 @@
 package com.sap.exercise.printer;
 
 import com.sap.exercise.handler.Dao;
-import com.sap.exercise.handler.TimeFrameOptions;
+import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -17,9 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OutputPrinter implements Closeable {
 
     private Calendar calendar = Calendar.getInstance();
-
     private PrintStream printer;
-
     private final String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
 
     OutputPrinter(OutputStream out) {
@@ -40,6 +38,10 @@ public class OutputPrinter implements Closeable {
 
     public void printf(String format, Object... params) {
         printer.printf(format, params);
+    }
+
+    public void printStackTrace(Exception e) {
+        e.printStackTrace(printer);
     }
 
     public void printHelp(String cmdLineSyntax, String header, String footer, Options options) {
@@ -92,11 +94,10 @@ public class OutputPrinter implements Closeable {
 
         int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
         int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int weekdayIndex = 0;
 
         printer.println(monthHeader);
         printer.println(weekDays);
-
-        int weekdayIndex = 0;
 
         for (int day = 1; day < firstWeekdayOfMonth; day++) {
             printer.print("    ");
@@ -109,22 +110,25 @@ public class OutputPrinter implements Closeable {
             for (int day = 1; day <= numberOfMonthDays; day++) {
                 PrinterUtils.printDay(printer, day, month, year, "");
 
-                weekdayIndex++;
-                if (weekdayIndex == 7) {
-                    weekdayIndex = 0;
-                    printer.println();
-                } else {
-                    printer.print("  ");
-                }
+                printWeekDaySpaces(weekdayIndex);
             }
         }
         printer.println();
     }
 
-    private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
+    private void printWeekDaySpaces(int weekdayIndex) {
         AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
+        weekdayInd.incrementAndGet();
+        if (weekdayInd.get() == 7) {
+            weekdayInd.set(0);
+            printer.println();
+        } else {
+            printer.print("  ");
+        }
+    }
 
-        Collection<Event> events = handler.getAll(new TimeFrameOptions(
+    private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
+        Collection<Event> events = handler.getAll(new TimeFrameCondition(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numOfMonthDays
         ));
@@ -137,13 +141,7 @@ public class OutputPrinter implements Closeable {
                             calendar.get(Calendar.YEAR),
                             eventSet.isEmpty() ? "" : (PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK));
 
-                    weekdayInd.incrementAndGet();
-                    if (weekdayInd.get() == 7) {
-                        weekdayInd.set(0);
-                        printer.println();
-                    } else {
-                        printer.print("  ");
-                    }
+                    printWeekDaySpaces(weekdayIndex);
                 });
     }
 

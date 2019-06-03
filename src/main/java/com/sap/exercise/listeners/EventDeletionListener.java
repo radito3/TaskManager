@@ -3,7 +3,7 @@ package com.sap.exercise.listeners;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 
-public class DeletionListener implements EventListener {
+public class EventDeletionListener implements EventListener {
     @Override
     public void notify(Object... args) {
         Event event = (Event) args[0];

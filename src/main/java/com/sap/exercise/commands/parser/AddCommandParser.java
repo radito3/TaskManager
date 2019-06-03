@@ -7,6 +7,7 @@ import com.sap.exercise.commands.validator.AddCommandValidator;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.util.function.Function;
 
@@ -17,7 +18,7 @@ public class AddCommandParser extends AbstractCommandParser {
     }
 
     @Override
-    public Command parse(String[] args) {
+    public Command parse(String[] args) throws ParseException {
         Command result = super.parse(args);
         if (result != null)
             return result;

@@ -1,6 +1,7 @@
 package com.sap.exercise.flowable;
 
 import com.sap.exercise.Configuration;
+import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -9,12 +10,12 @@ import org.flowable.engine.delegate.JavaDelegate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class InputParserStep implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) {
         String[] allCommands = (String[]) delegateExecution.getVariable("allCommands");
+        StepsUtil.handlePreStepError(delegateExecution);
 
         if (allCommands.length == 0) {
             try (BufferedReader reader = new BufferedReader(
@@ -25,18 +26,16 @@ public class InputParserStep implements JavaDelegate {
                         .filter(s -> !s.isEmpty())
                         .toArray(String[]::new);
             } catch (IOException e) {
-                e.printStackTrace();
+                OutputPrinterProvider.getPrinter().printStackTrace(e);
+                delegateExecution.setVariable("error", true);
+                return;
             }
 
             if (!ArrayUtils.contains(allCommands, "exit")) {
                 allCommands = ArrayUtils.addAll(allCommands, "exit");
             }
+            delegateExecution.setVariable("allCommands", allCommands);
         }
-
         delegateExecution.setVariable("userInput", allCommands[0].split("\\s+"));
-        if (allCommands.length > 1) {
-            delegateExecution.setVariable("allCommands",
-                    Arrays.copyOfRange(allCommands, 1, allCommands.length));
-        }
     }
 }

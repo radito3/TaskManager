@@ -7,7 +7,7 @@ import com.sap.exercise.util.CalendarWrapper;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CreationListener implements EventListener {
+public class EventCreationListener implements EventListener {
     @Override
     public void notify(Object... args) {
         Event event = (Event) args[0];

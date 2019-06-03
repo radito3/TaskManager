@@ -2,17 +2,17 @@ package com.sap.exercise.handler;
 
 import com.sap.exercise.util.DateArgumentEvaluator;
 
-public class DeleteOptions extends TimeFrameOptions {
+public class DeleteCondition extends TimeFrameCondition {
 
     private final DateArgumentEvaluator evaluator;
 
-    public DeleteOptions(DateArgumentEvaluator evaluator, String startDate, String endDate) {
+    public DeleteCondition(DateArgumentEvaluator evaluator, String startDate, String endDate) {
         super(startDate, endDate);
         this.evaluator = evaluator;
     }
 
     @Override
-    public boolean getCondition() {
+    public boolean isToBeExecuted() {
         return evaluator.numOfArgs() == 0;
     }
 }

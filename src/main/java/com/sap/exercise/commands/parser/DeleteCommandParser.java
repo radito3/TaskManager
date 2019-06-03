@@ -5,6 +5,7 @@ import com.sap.exercise.commands.DeleteEventCommand;
 import com.sap.exercise.commands.helper.CommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.util.function.Function;
 
@@ -15,7 +16,7 @@ public class DeleteCommandParser extends AbstractCommandParser {
     }
 
     @Override
-    public Command parse(String[] args) {
+    public Command parse(String[] args) throws ParseException {
         Command result = super.parse(args);
         if (result != null)
             return result;

@@ -3,7 +3,7 @@ package com.sap.exercise.handler;
 import com.sap.exercise.listeners.*;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.persistence.HibernateUtilFactory;
+import com.sap.exercise.persistence.SessionProviderFactory;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.persistence.TransactionBuilder;
 import com.sap.exercise.persistence.TransactionBuilderFactory;
@@ -19,15 +19,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EventDao extends ListenableEvent implements Dao<Event> {
 
     public EventDao() {
-        addListener(ListenableEventType.CREATE, new CreationListener());
-        addListener(ListenableEventType.UPDATE, new UpdateListener());
-        addListener(ListenableEventType.DELETE, new DeletionListener());
-        addListener(ListenableEventType.DELETE_IN_TIME_FRAME, new DeletionInTimeFrameListener());
+        addListener(ListenableEventType.CREATE, new EventCreationListener());
+        addListener(ListenableEventType.UPDATE, new EventUpdateListener());
+        addListener(ListenableEventType.DELETE, new EventDeletionListener());
+        addListener(ListenableEventType.DELETE_IN_TIME_FRAME, new EventDeletionInTimeFrameListener());
     }
 
     @Override
     public <Y> Optional<Event> get(Property<Y> property) {
-        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
+        Session session = SessionProviderFactory.getSessionProvider().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
@@ -40,8 +40,8 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     }
 
     @Override
-    public Collection<Event> getAll(CrudOptions options) {
-        Map<String, Object> optionParams = options.getParameters();
+    public Collection<Event> getAll(CrudCondition condition) {
+        Map<String, Object> optionParams = condition.parameters();
 
         EventsGetter eventsGetter = new EventsGetter(
                 (String) optionParams.get("startDate"),
@@ -61,7 +61,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
 
         if (arg.getToRepeat() != Event.RepeatableType.NONE) {
             SharedResourcesFactory.getAsyncExecutionsService()
-                    .execute(new CreateMultipleEventEntries(id.get(), arg));
+                    .execute(new CreateMultipleEventEntriesJob(id.get(), arg));
         }
         notifyListeners(ListenableEventType.CREATE, arg, id.get());
     }
@@ -76,26 +76,26 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     }
 
     @Override
-    public void delete(Event arg, CrudOptions options) {
-        if (arg.getToRepeat() == Event.RepeatableType.NONE || options.getCondition()) {
+    public void delete(Event arg, CrudCondition condition) {
+        if (arg.getToRepeat() == Event.RepeatableType.NONE || condition.isToBeExecuted()) {
             SharedResourcesFactory.getAsyncExecutionsService()
                     .execute(() -> TransactionBuilderFactory.getTransactionBuilder()
                             .addOperation(s -> s.delete(arg))
                             .commit());
             notifyListeners(ListenableEventType.DELETE, arg);
         } else {
-            Map<String, Object> optionParams = options.getParameters();
+            Map<String, Object> optionParams = condition.parameters();
 
             SharedResourcesFactory.getAsyncExecutionsService()
                     .execute(() -> {
-                        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
+                        Session session = SessionProviderFactory.getSessionProvider().getSession();
                         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
                         CriteriaDelete<CalendarEvents> criteriaDelete =
                                 criteriaBuilder.createCriteriaDelete(CalendarEvents.class);
                         Root<CalendarEvents> root = criteriaDelete.from(CalendarEvents.class);
 
                         criteriaDelete.where(criteriaBuilder.equal(root.get("eventId"), arg.getId()))
-                                .where(options.getPredicate());
+                                .where(condition.queryCondition());
 
                         TransactionBuilder tb = TransactionBuilderFactory.getTransactionBuilder();
                         session.createQuery(criteriaDelete).executeUpdate();

@@ -6,11 +6,11 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-public class HibernateUtil {
+public class SessionProvider {
 
     private final SessionFactory sessionFactory;
 
-    HibernateUtil(Configuration configuration) {
+    SessionProvider(Configuration configuration) {
         ServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties()).build();
 

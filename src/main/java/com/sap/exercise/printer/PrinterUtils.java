@@ -12,14 +12,14 @@ class PrinterUtils {
     private PrinterUtils() {
     }
 
-    static void printDay(PrintStream writer, int day, int month, int year, String format) {
+    static void printDay(PrintStream printer, int day, int month, int year, String format) {
         Calendar today = Calendar.getInstance();
         Calendar toCheck = new GregorianCalendar(year, month - 1, day);
 
         if (DateUtils.isSameDay(today, toCheck)) {
-            writer.printf(PrinterColors.INVERT + "%2d" + PrinterColors.RESET, day);
+            printer.printf(PrinterColors.INVERT + "%2d" + PrinterColors.RESET, day);
         } else {
-            writer.printf(format + "%2d" + PrinterColors.RESET, day);
+            printer.printf(format + "%2d" + PrinterColors.RESET, day);
         }
     }
 

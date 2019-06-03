@@ -1,13 +1,12 @@
 package com.sap.exercise.commands;
 
 import com.sap.exercise.handler.Dao;
-import com.sap.exercise.handler.DeleteOptions;
+import com.sap.exercise.handler.DeleteCondition;
 import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.util.DateArgumentEvaluator;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.ExceptionMessageHandler;
 
 import java.util.NoSuchElementException;
 
@@ -26,21 +25,16 @@ public class DeleteEventCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
-        try {
-            event = handler.get(new Property<>("title", eventName))
-                    .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
-            evaluator = new DateArgumentEvaluator(start, end);
-            evaluator.eval(this::deleteEvents);
+        event = handler.get(new Property<>("title", eventName))
+                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
+        evaluator = new DateArgumentEvaluator(start, end);
+        evaluator.eval(this::deleteEvents);
 
-            OutputPrinterProvider.getPrinter().printf("%nEvent entries deleted");
-        } catch (NoSuchElementException | IllegalArgumentException e) {
-            ExceptionMessageHandler.setMessage(e.getMessage());
-            return CommandExecutionResult.ERROR;
-        }
+        OutputPrinterProvider.getPrinter().printf("%nEvent entries deleted");
         return CommandExecutionResult.SUCCESSFUL;
     }
 
     private void deleteEvents(String start, String end) {
-        handler.delete(event, new DeleteOptions(evaluator, start, end));
+        handler.delete(event, new DeleteCondition(evaluator, start, end));
     }
 }

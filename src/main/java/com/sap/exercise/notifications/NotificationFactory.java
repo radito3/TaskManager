@@ -2,7 +2,7 @@ package com.sap.exercise.notifications;
 
 import com.sap.exercise.Configuration;
 import com.sap.exercise.handler.EventDao;
-import com.sap.exercise.handler.TimeFrameOptions;
+import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateHandler;
@@ -30,7 +30,7 @@ public class NotificationFactory {
     public static void pollForNotifications() {
         DateHandler today = new DateHandler();
         Collection<Event> todayEvents = new EventDao()
-                .getAll(new TimeFrameOptions(today.toString(), today.toString()));
+                .getAll(new TimeFrameCondition(today.toString(), today.toString()));
 
         todayEvents.forEach(event -> SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
             long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())

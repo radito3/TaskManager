@@ -11,84 +11,47 @@
              targetNamespace="http://www.flowable.org/processdef">
 
   <process id="BaseProcess" name="ConsoleCalendar" isExecutable="true">
-
     <startEvent id="appStart" name="App start"/>
-    <serviceTask flowable:class="com.sap.exercise.flowable.InputParserStep" id="readInput" name="Read input"/>
-    <serviceTask flowable:class="com.sap.exercise.flowable.CommandParserStep" id="parseCommand" name="Parse command"/>
-    <serviceTask flowable:class="com.sap.exercise.flowable.SchedulePollingForNotificationsStep" id="schedulePollNotifications" name="Poll for notifications"/>
-    <sequenceFlow id="sid-A4537606-96AC-4278-8117-4644C021A59E" targetRef="parseCommand" sourceRef="readInput"/>
-    <endEvent id="appEnd" name="App end"/>
-    <serviceTask flowable:class="com.sap.exercise.flowable.ExecuteCommandStep" id="executeCommand" name="Execute command"/>
-    <sequenceFlow id="sid-52EE8935-114E-4A27-A237-CE00C4113FCF" targetRef="executeCommand" sourceRef="parseCommand"/>
-    <exclusiveGateway id="checkCommandResult"/>
-    <sequenceFlow id="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" targetRef="checkCommandResult" sourceRef="executeCommand"/>
-    <sequenceFlow id="sid-B2EC3BD0-AC39-4088-A28A-E2A816FC939E" targetRef="appEnd" sourceRef="checkCommandResult">
-      <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[${!commandResult.isEligibleForRepetition()}]]>
-      </conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="rerunLoop" targetRef="readInput" sourceRef="checkCommandResult">
-      <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[${commandResult.isEligibleForRepetition() }]]>
-      </conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="sid-988C2382-68A4-45B9-B800-12C28D13A170" targetRef="readInput" sourceRef="appStart"/>
     <sequenceFlow id="seqFlow1" targetRef="schedulePollNotifications" sourceRef="appStart"/>
-  </process>
+    <serviceTask flowable:class="com.sap.exercise.flowable.SchedulePollingForNotificationsStep" id="schedulePollNotifications" name="Poll for notifications"/>
 
-  <bpmndi:BPMNDiagram id="BPMNDiagram_BaseProcess">
-    <bpmndi:BPMNPlane id="BPMNPlane_BaseProcess" bpmnElement="BaseProcess">
-      <bpmndi:BPMNShape id="BPMNShape_appStart" bpmnElement="appStart">
-        <omgdc:Bounds y="698.9584158914314" x="240.0" width="30.0" height="30.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_readInput" bpmnElement="readInput">
-        <omgdc:Bounds y="673.9584158914314" x="495.0" width="100.0" height="80.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_parseCommand" bpmnElement="parseCommand">
-        <omgdc:Bounds y="540.0" x="660.0" width="99.99999999999977" height="80.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_appEnd" bpmnElement="appEnd">
-        <omgdc:Bounds y="420.0" x="366.0" width="28.0" height="28.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_executeCommand" bpmnElement="executeCommand">
-        <omgdc:Bounds y="420.0" x="510.0" width="100.0" height="80.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_checkCommandResult" bpmnElement="checkCommandResult">
-        <omgdc:Bounds y="519.0" x="360.0" width="40.0" height="40.0"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-A4537606-96AC-4278-8117-4644C021A59E" bpmnElement="sid-A4537606-96AC-4278-8117-4644C021A59E">
-        <omgdi:waypoint y="673.9584158914314" x="545.0"/>
-        <omgdi:waypoint y="646.9792079457156" x="545.0"/>
-        <omgdi:waypoint y="646.9792079457156" x="709.9999999999999"/>
-        <omgdi:waypoint y="619.9499999999999" x="709.9999999999999"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-52EE8935-114E-4A27-A237-CE00C4113FCF" bpmnElement="sid-52EE8935-114E-4A27-A237-CE00C4113FCF">
-        <omgdi:waypoint y="580.0" x="759.9499999999074"/>
-        <omgdi:waypoint y="580.0" x="829.6650909007477"/>
-        <omgdi:waypoint y="460.0" x="829.6650909007477"/>
-        <omgdi:waypoint y="460.0" x="609.9499999998741"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_rerunLoop" bpmnElement="rerunLoop">
-        <omgdi:waypoint y="558.4989921728652" x="380.44538924747434"/>
-        <omgdi:waypoint y="694.015572330286" x="380.0570135477575"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-988C2382-68A4-45B9-B800-12C28D13A170" bpmnElement="sid-988C2382-68A4-45B9-B800-12C28D13A170">
-        <omgdi:waypoint y="713.9584158914314" x="269.94999883049303"/>
-        <omgdi:waypoint y="713.9584158914314" x="360.0"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-9CF8AF55-E7A0-4A5E-A4D7-AAB956CD3C4D" bpmnElement="sid-9CF8AF55-E7A0-4A5E-A4D7-AAB956CD3C4D">
-        <omgdi:waypoint y="714.4004890621632" x="399.50196526506716"/>
-        <omgdi:waypoint y="714.110239599638" x="494.9999999999879"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B" bpmnElement="sid-D9C18ADA-4B9F-48E6-ACF9-C2ADD5511F6B">
-        <omgdi:waypoint y="499.95000000000005" x="560.0"/>
-        <omgdi:waypoint y="539.5" x="560.0"/>
-        <omgdi:waypoint y="539.5" x="399.40525362318846"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_sid-B2EC3BD0-AC39-4088-A28A-E2A816FC939E" bpmnElement="sid-B2EC3BD0-AC39-4088-A28A-E2A816FC939E">
-        <omgdi:waypoint y="519.4047619047619" x="380.4047619047619"/>
-        <omgdi:waypoint y="447.94958062721224" x="380.0661129792547"/>
-      </bpmndi:BPMNEdge>
-    </bpmndi:BPMNPlane>
-  </bpmndi:BPMNDiagram>
+    <sequenceFlow id="sid-988C2382-68A4-45B9-B800-12C28D13A170" targetRef="readInput" sourceRef="appStart"/>
+    <serviceTask flowable:class="com.sap.exercise.flowable.InputParserStep" id="readInput" name="Read input"/>
+
+    <serviceTask flowable:class="com.sap.exercise.flowable.CommandParserStep" id="parseCommand" name="Parse command"/>
+
+    <serviceTask flowable:class="com.sap.exercise.flowable.ExecuteCommandStep" id="executeCommand" name="Execute command"/>
+
+    <exclusiveGateway id="inputErrorCheck" default="noErrorOnInput"/>
+    <sequenceFlow id="inputErrorCheckSeqFlow" sourceRef="readInput" targetRef="inputErrorCheck"/>
+
+    <sequenceFlow id="noErrorOnInput" sourceRef="inputErrorCheck" targetRef="parseCommand"/>
+    <sequenceFlow id="errorOnInput" sourceRef="inputErrorCheck" targetRef="appEnd">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[ ${error} ]]>
+      </conditionExpression>
+    </sequenceFlow>
+
+    <exclusiveGateway id="parseCommandErrorCheck" default="noErrorOnParse"/>
+    <sequenceFlow id="parseCommandErrorCheckSeqFlow" sourceRef="parseCommand" targetRef="parseCommandErrorCheck"/>
+
+    <sequenceFlow id="noErrorOnParse" sourceRef="parseCommandErrorCheck" targetRef="executeCommand"/>
+    <sequenceFlow id="errorOnParse" sourceRef="parseCommandErrorCheck" targetRef="readInput">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[ ${error} ]]>
+      </conditionExpression>
+    </sequenceFlow>
+
+    <exclusiveGateway id="execCommandErrorCheck" default="noErrorOnExec"/>
+    <sequenceFlow id="execCommandErrorCheckSeqFlow" sourceRef="executeCommand" targetRef="execCommandErrorCheck"/>
+
+    <sequenceFlow id="noErrorOnExec" sourceRef="execCommandErrorCheck" targetRef="appEnd"/>
+    <sequenceFlow id="errorOnExec" sourceRef="execCommandErrorCheck" targetRef="readInput">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[ ${!commandResult.isEligibleForRepetition()} ]]>
+      </conditionExpression>
+    </sequenceFlow>
+
+    <endEvent id="appEnd" name="App end"/>
+  </process>
 </definitions>

@@ -25,7 +25,6 @@ public class AddEventCommand implements Command {
 
         handler.save(eventWrapper.getEvent());
         OutputPrinterProvider.getPrinter().printf("%nEvent created");
-
         return CommandExecutionResult.SUCCESSFUL;
     }
 }

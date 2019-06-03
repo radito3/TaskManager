@@ -1,6 +1,6 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.persistence.HibernateUtilFactory;
+import com.sap.exercise.persistence.SessionProviderFactory;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
@@ -31,7 +31,7 @@ class EventsGetter {
 
     Set<Event> getEventsInTimeFrame() {
         Set<Event> events = new HashSet<>();
-        List<String> nullDates = new LinkedList<>();
+        List<String> nullDates = new ArrayList<>(5);
 
         new DateHandler(start, end).fromTo()
                 .forEach(handleDates(events, date -> nullDates.add(date.toString())));
@@ -61,7 +61,7 @@ class EventsGetter {
     private boolean setEventsInTable(String start, String end) {
         boolean hasNewEntries = false;
 
-        Session session = HibernateUtilFactory.getHibernateUtil().getSession();
+        Session session = SessionProviderFactory.getSessionProvider().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<CalendarEvents> criteriaQuery = criteriaBuilder.createQuery(CalendarEvents.class);
         Root<CalendarEvents> root = criteriaQuery.from(CalendarEvents.class);
@@ -69,7 +69,7 @@ class EventsGetter {
         criteriaQuery.where(criteriaBuilder.between(root.get("date"), start, end));
         Query<CalendarEvents> query = session.createQuery(criteriaQuery);
 
-        Map<Calendar, Set<Event>> map = query.getResultList().stream()
+        Map<Calendar, Set<Event>> eventsPerDay = query.getResultList().stream()
                 .map(calEvents -> {
                     Event event = eventDao.get(new Property<>("id", calEvents.getEventId()))
                             .orElseGet(Event::new);
@@ -79,7 +79,7 @@ class EventsGetter {
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
 
         for (CalendarWrapper date : new DateHandler(start, end).fromTo()) {
-            for (Map.Entry<Calendar, Set<Event>> entry : map.entrySet()) {
+            for (Map.Entry<Calendar, Set<Event>> entry : eventsPerDay.entrySet()) {
                 if (date.equals(new CalendarWrapper(entry.getKey()))) {
                     SharedResourcesFactory.getEventsMapService().putInMap(date, entry.getValue());
                     hasNewEntries = true;

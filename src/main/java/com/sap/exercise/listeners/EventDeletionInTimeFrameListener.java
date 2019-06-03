@@ -5,7 +5,7 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
 import com.sap.exercise.util.DateHandler;
 
-public class DeletionInTimeFrameListener implements EventListener {
+public class EventDeletionInTimeFrameListener implements EventListener {
     @Override
     public void notify(Object... args) {
         Event event = (Event) args[0];

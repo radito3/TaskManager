@@ -1,12 +1,8 @@
 package com.sap.exercise.commands.validator;
 
-import com.sap.exercise.util.ExceptionMessageHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class PrintCalendarCommandValidator extends DefaultCommandValidator {
 
@@ -15,17 +11,14 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
     }
 
     @Override
-    public boolean isValid() {
-        boolean commonCondition = super.isValid();
-        if (commonCondition && validateOptions()) {
-            ExceptionMessageHandler.setMessage("Invalid number of arguments");
-            return false;
+    public void validate() {
+        super.validate();
+        if (invalidateOptions()) {
+            throw new IllegalArgumentException("Invalid number of arguments");
         }
-        return commonCondition;
     }
 
-    private boolean validateOptions() {
-        Supplier<Stream<Option>> optionsStreamSupplier = () -> Arrays.stream(cmd.getOptions());
+    private boolean invalidateOptions() {
         Option withEvents = Option.builder("e")
                 .required(false)
                 .longOpt("events")
@@ -37,11 +30,8 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
                 .desc("Print command help")
                 .build();
 
-        boolean onlyHelp = optionsStreamSupplier.get()
-                .allMatch(option -> option.equals(help));
-        boolean optWithoutEvents = optionsStreamSupplier.get()
-                .filter(opt -> !opt.equals(withEvents))
-                .count() > 1;
+        boolean onlyHelp = cmd.getOptions().length == 1 && cmd.getOptions()[0].equals(help);
+        boolean optWithoutEvents = ArrayUtils.removeElement(cmd.getOptions(), withEvents).length > 1;
         boolean allOpts = cmd.getOptions().length > 2;
 
         return !onlyHelp & (optWithoutEvents | allOpts);

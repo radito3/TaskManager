@@ -1,10 +1,8 @@
 package com.sap.exercise.commands.parser;
 
-import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.ExitCommand;
 import com.sap.exercise.commands.PrintHelpCommand;
 import com.sap.exercise.commands.helper.*;
-import com.sap.exercise.util.ExceptionMessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +23,8 @@ public class CommandParserFactory {
 
     public CommandParser getParser(String command) {
         if (!commandsMap.containsKey(command)) {
-            ExceptionMessageHandler.setMessage("Invalid command");
-            return args -> () -> CommandExecutionResult.ERROR;
+            throw new IllegalArgumentException("Invalid command");
         }
-
         return commandsMap.get(command);
     }
 }

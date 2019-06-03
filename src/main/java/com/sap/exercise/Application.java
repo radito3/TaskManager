@@ -37,6 +37,7 @@ public class Application {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("allCommands", new String[] {});
+        variables.put("error", false);
 
         ProcessInstance instance =
                 runtimeService.startProcessInstanceByKey("BaseProcess", variables);

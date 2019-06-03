@@ -1,4 +1,7 @@
-
+help
+help --help
+edit
+esa
 cal
 cal --help
 cal --help -3
