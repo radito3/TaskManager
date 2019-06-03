@@ -15,7 +15,7 @@ public class PrintHelpCommand implements Command {
                 " edit    Edit an event%n" +
                 " delete  Delete event entries (all/in time frame)%n" +
                 " agenda  Show (weekly) agenda%n" +
-                " cal     Show calendar");
+                " cal     Show calendar%n");
 
         return CommandExecutionResult.SUCCESSFUL;
     }

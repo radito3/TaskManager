@@ -48,7 +48,7 @@
     <sequenceFlow id="noErrorOnExec" sourceRef="execCommandErrorCheck" targetRef="appEnd"/>
     <sequenceFlow id="errorOnExec" sourceRef="execCommandErrorCheck" targetRef="readInput">
       <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[ ${!commandResult.isEligibleForRepetition()} ]]>
+        <![CDATA[ ${commandResult.isEligibleForRepetition()} ]]>
       </conditionExpression>
     </sequenceFlow>
 

@@ -110,24 +110,20 @@ public class OutputPrinter implements Closeable {
             for (int day = 1; day <= numberOfMonthDays; day++) {
                 PrinterUtils.printDay(printer, day, month, year, "");
 
-                printWeekDaySpaces(weekdayIndex);
+                weekdayIndex++;
+                if (weekdayIndex == 7) {
+                    weekdayIndex = 0;
+                    printer.println();
+                } else {
+                    printer.print("  ");
+                }
             }
         }
         printer.println();
     }
 
-    private void printWeekDaySpaces(int weekdayIndex) {
-        AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
-        weekdayInd.incrementAndGet();
-        if (weekdayInd.get() == 7) {
-            weekdayInd.set(0);
-            printer.println();
-        } else {
-            printer.print("  ");
-        }
-    }
-
     private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
+        AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
         Collection<Event> events = handler.getAll(new TimeFrameCondition(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numOfMonthDays
@@ -141,7 +137,13 @@ public class OutputPrinter implements Closeable {
                             calendar.get(Calendar.YEAR),
                             eventSet.isEmpty() ? "" : (PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK));
 
-                    printWeekDaySpaces(weekdayIndex);
+                    weekdayInd.incrementAndGet();
+                    if (weekdayInd.get() == 7) {
+                        weekdayInd.set(0);
+                        printer.println();
+                    } else {
+                        printer.print("  ");
+                    }
                 });
     }
 

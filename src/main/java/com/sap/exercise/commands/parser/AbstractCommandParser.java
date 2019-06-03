@@ -59,7 +59,7 @@ abstract class AbstractCommandParser implements CommandParser {
     }
 
     static String buildEventName(String[] input) {
-        if (input == null) {
+        if (input == null || input.length == 0) {
             throw new IllegalArgumentException("Event name not specified");
         }
         return String.join(" ", input);

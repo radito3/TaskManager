@@ -12,6 +12,7 @@ public class ExecuteCommandStep implements JavaDelegate {
         try {
             CommandExecutionResult result = command.execute();
             delegateExecution.setVariable("commandResult", result);
+            StepsUtil.finishCommand(delegateExecution);
         } catch (Exception e) {
             StepsUtil.handlePostStepError(delegateExecution, e);
         }

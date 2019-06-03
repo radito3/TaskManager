@@ -17,6 +17,10 @@ class StepsUtil {
     static void handlePostStepError(DelegateExecution delegateExecution, Exception e) {
         OutputPrinterProvider.getPrinter().printStackTrace(e);
         delegateExecution.setVariable("error", true);
+        finishCommand(delegateExecution);
+    }
+
+    static void finishCommand(DelegateExecution delegateExecution) {
         String[] allCommands = (String[]) delegateExecution.getVariable("allCommands");
         if (allCommands.length > 1) {
             delegateExecution.setVariable("allCommands",

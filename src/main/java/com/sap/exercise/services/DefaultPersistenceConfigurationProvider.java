@@ -24,9 +24,9 @@ public class DefaultPersistenceConfigurationProvider {
         Properties props = new Properties();
         //TODO need to properly get environment variables
         props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
-        props.setProperty(Environment.URL, System.getenv("read_url"));
-        props.setProperty(Environment.USER, System.getenv("username"));
-        props.setProperty(Environment.PASS, System.getenv("password"));
+        props.setProperty(Environment.URL, "");//System.getenv("read_url"));
+        props.setProperty(Environment.USER, "");//System.getenv("username"));
+        props.setProperty(Environment.PASS, "");//System.getenv("password"));
         props.setProperty(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
         props.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
         props.setProperty(Environment.SHOW_SQL, "false");

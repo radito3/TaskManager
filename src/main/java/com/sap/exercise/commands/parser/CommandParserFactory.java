@@ -1,7 +1,5 @@
 package com.sap.exercise.commands.parser;
 
-import com.sap.exercise.commands.ExitCommand;
-import com.sap.exercise.commands.PrintHelpCommand;
 import com.sap.exercise.commands.helper.*;
 
 import java.util.HashMap;
@@ -17,8 +15,8 @@ public class CommandParserFactory {
         commandsMap.put("delete", new DeleteCommandParser(DeleteCommandHelper::new));
         commandsMap.put("cal", new PrintCalendarCommandParser(PrintCalendarCommandHelper::new));
         commandsMap.put("agenda", new PrintAgendaCommandParser(PrintAgendaCommandHelper::new));
-        commandsMap.put("help", args -> new PrintHelpCommand());
-        commandsMap.put("exit", args -> new ExitCommand());
+        commandsMap.put("help", new PrintHelpCommandParser());
+        commandsMap.put("exit", new ExitCommandParser());
     }
 
     public CommandParser getParser(String command) {
