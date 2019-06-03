@@ -7,10 +7,6 @@ import org.apache.commons.cli.ParseException;
 
 public class ExitCommandParser extends AbstractCommandParser {
 
-    ExitCommandParser() {
-        super(() -> {});
-    }
-
     public Command parse(String[] args) throws ParseException {
         Command result = super.parse(args);
         if (result != null)

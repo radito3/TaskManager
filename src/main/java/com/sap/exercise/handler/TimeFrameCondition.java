@@ -30,8 +30,7 @@ public class TimeFrameCondition implements CrudCondition {
     public Predicate queryCondition() {
         Session session = SessionProviderFactory.getSessionProvider().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<CalendarEvents> criteriaQuery =
-                criteriaBuilder.createQuery(CalendarEvents.class);
+        CriteriaQuery<CalendarEvents> criteriaQuery = criteriaBuilder.createQuery(CalendarEvents.class);
         Root<CalendarEvents> root = criteriaQuery.from(CalendarEvents.class);
         return criteriaBuilder.between(root.get("date"), startDate, endDate);
     }

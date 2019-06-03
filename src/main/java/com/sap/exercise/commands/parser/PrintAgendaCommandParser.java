@@ -2,17 +2,15 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.PrintAgendaCommand;
-import com.sap.exercise.commands.helper.CommandHelper;
+import com.sap.exercise.commands.helper.PrintAgendaCommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.util.function.Function;
-
 public class PrintAgendaCommandParser extends AbstractCommandParser {
 
-    PrintAgendaCommandParser(Function<Options, CommandHelper> helperCreator) {
-        super(helperCreator);
+    PrintAgendaCommandParser() {
+        super(PrintAgendaCommandHelper::new);
     }
 
     @Override

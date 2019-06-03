@@ -2,15 +2,15 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.EditEventCommand;
-import com.sap.exercise.commands.helper.CommandHelper;
+import com.sap.exercise.commands.helper.EditCommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 public class EditCommandParser extends AbstractCommandParser {
 
-    EditCommandParser(CommandHelper helper) {
-        super(helper);
+    EditCommandParser() {
+        super(opts -> new EditCommandHelper());
     }
 
     @Override

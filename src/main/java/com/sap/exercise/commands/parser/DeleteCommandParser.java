@@ -2,17 +2,15 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.DeleteEventCommand;
-import com.sap.exercise.commands.helper.CommandHelper;
+import com.sap.exercise.commands.helper.DeleteCommandHelper;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.util.function.Function;
-
 public class DeleteCommandParser extends AbstractCommandParser {
 
-    DeleteCommandParser(Function<Options, CommandHelper> helperCreator) {
-        super(helperCreator);
+    DeleteCommandParser() {
+        super(DeleteCommandHelper::new);
     }
 
     @Override

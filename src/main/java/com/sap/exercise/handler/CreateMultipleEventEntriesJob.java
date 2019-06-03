@@ -39,7 +39,7 @@ class CreateMultipleEventEntriesJob implements Runnable {
             case YEARLY:
                 return handleEventEntries(4, eventId, event, Calendar.YEAR);
         }
-        throw new IllegalStateException("Unknown event repeatable type");
+        throw new IllegalArgumentException("Unknown event repeatable type");
     }
 
     private List<CalendarEvents> handleEventEntries(int endInclusive, Integer eventId, Event event, int field) {

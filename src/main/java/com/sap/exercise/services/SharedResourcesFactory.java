@@ -18,7 +18,8 @@ public class SharedResourcesFactory {
     }
 
     public static void close() {
-        asyncExecutionsService.close();
+        if (asyncExecutionsService != null)
+            asyncExecutionsService.close();
         if (eventsMapService != null)
             eventsMapService.close();
     }

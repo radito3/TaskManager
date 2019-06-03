@@ -2,18 +2,16 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.PrintCalendarCommand;
-import com.sap.exercise.commands.helper.CommandHelper;
+import com.sap.exercise.commands.helper.PrintCalendarCommandHelper;
 import com.sap.exercise.commands.validator.PrintCalendarCommandValidator;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.util.function.Function;
-
 public class PrintCalendarCommandParser extends AbstractCommandParser {
 
-    PrintCalendarCommandParser(Function<Options, CommandHelper> helperCreator) {
-        super(helperCreator, PrintCalendarCommandValidator::new);
+    PrintCalendarCommandParser() {
+        super(PrintCalendarCommandHelper::new, PrintCalendarCommandValidator::new);
     }
 
     @Override

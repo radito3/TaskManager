@@ -25,8 +25,7 @@ abstract class AbstractCommandParser implements CommandParser {
         this.validatorCreator = validatorCreator;
     }
 
-    AbstractCommandParser(final CommandHelper helper) {
-        helperCreator = opts -> helper;
+    AbstractCommandParser() {
     }
 
     @Override

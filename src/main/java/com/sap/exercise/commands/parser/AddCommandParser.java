@@ -2,19 +2,17 @@ package com.sap.exercise.commands.parser;
 
 import com.sap.exercise.commands.AddEventCommand;
 import com.sap.exercise.commands.Command;
-import com.sap.exercise.commands.helper.CommandHelper;
+import com.sap.exercise.commands.helper.AddCommandHelper;
 import com.sap.exercise.commands.validator.AddCommandValidator;
 import com.sap.exercise.model.Event;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.util.function.Function;
-
 public class AddCommandParser extends AbstractCommandParser {
 
-    AddCommandParser(Function<Options, CommandHelper> helperCreator) {
-        super(helperCreator, AddCommandValidator::new);
+    AddCommandParser() {
+        super(AddCommandHelper::new, AddCommandValidator::new);
     }
 
     @Override
