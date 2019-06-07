@@ -36,6 +36,7 @@ class EventDataParser {
 
     private void readInput(FieldInfo fieldInfo) {
         boolean error = false;
+        String before = input;
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new CloseShieldInputStream(Configuration.INPUT)))) {
             input = reader.readLine();
@@ -45,7 +46,7 @@ class EventDataParser {
             printer.println("Error on read. Please try again");
             error = true;
         } finally {
-            if (error)
+            if (error && input.equals(before))
                 readInput(fieldInfo);
         }
     }
