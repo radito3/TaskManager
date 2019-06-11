@@ -6,7 +6,6 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.SessionProviderFactory;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.persistence.TransactionBuilder;
-import com.sap.exercise.persistence.TransactionBuilderFactory;
 import com.sap.exercise.services.SharedResourcesFactory;
 import org.hibernate.Session;
 
@@ -54,7 +53,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     @Override
     public void save(Event arg) {
         AtomicInteger id = new AtomicInteger();
-        TransactionBuilderFactory.getTransactionBuilder()
+        TransactionBuilder.newInstance()
                 .addOperation(s -> id.set((Integer) s.save(arg)))
                 .addOperation(s -> s.save(new CalendarEvents(id.get(), arg.getTimeOf())))
                 .commit();
@@ -69,7 +68,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     @Override
     public void update(Event arg) {
         SharedResourcesFactory.getAsyncExecutionsService()
-                .execute(() -> TransactionBuilderFactory.getTransactionBuilder()
+                .execute(() -> TransactionBuilder.newInstance()
                         .addOperation(s -> s.update(arg))
                         .commit());
         notifyListeners(ListenableEventType.UPDATE, arg);
@@ -79,7 +78,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
     public void delete(Event arg, CrudCondition condition) {
         if (arg.getToRepeat() == Event.RepeatableType.NONE || condition.isToBeExecuted()) {
             SharedResourcesFactory.getAsyncExecutionsService()
-                    .execute(() -> TransactionBuilderFactory.getTransactionBuilder()
+                    .execute(() -> TransactionBuilder.newInstance()
                             .addOperation(s -> s.delete(arg))
                             .commit());
             notifyListeners(ListenableEventType.DELETE, arg);
@@ -97,7 +96,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
                         criteriaDelete.where(criteriaBuilder.equal(root.get("eventId"), arg.getId()))
                                 .where(condition.queryCondition());
 
-                        TransactionBuilder tb = TransactionBuilderFactory.getTransactionBuilder();
+                        TransactionBuilder tb = TransactionBuilder.newInstance();
                         session.createQuery(criteriaDelete).executeUpdate();
                         tb.commit();
                     });

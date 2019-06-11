@@ -3,7 +3,6 @@ package com.sap.exercise.handler;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.TransactionBuilder;
-import com.sap.exercise.persistence.TransactionBuilderFactory;
 
 import java.util.Calendar;
 import java.util.List;
@@ -22,7 +21,7 @@ class CreateMultipleEventEntriesJob implements Runnable {
 
     @Override
     public void run() {
-        TransactionBuilder transaction = TransactionBuilderFactory.getTransactionBuilder();
+        TransactionBuilder transaction = TransactionBuilder.newInstance();
         eventsList(id, event)
                 .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
         transaction.commit();

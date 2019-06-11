@@ -18,6 +18,9 @@ public class SessionProvider {
     }
 
     public Session getSession() {
+        if (sessionFactory.getCurrentSession() == null) {
+            sessionFactory.openSession();
+        }
         return sessionFactory.getCurrentSession();
     }
 
