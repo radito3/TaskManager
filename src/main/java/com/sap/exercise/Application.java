@@ -6,7 +6,6 @@ import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
-import org.flowable.engine.runtime.ProcessInstance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,6 @@ public class Application {
         variables.put("allCommands", new String[] {});
         variables.put("error", false);
 
-        ProcessInstance instance =
-                runtimeService.startProcessInstanceByKey("BaseProcess", variables);
+        runtimeService.startProcessInstanceByKey("BaseProcess", variables);
     }
 }
