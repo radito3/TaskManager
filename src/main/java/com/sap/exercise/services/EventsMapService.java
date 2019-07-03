@@ -4,6 +4,7 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.util.CalendarWrapper;
 
 import java.io.Closeable;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -19,7 +20,7 @@ public final class EventsMapService implements Closeable {
 
     public void iterateEventsMap(BiConsumer<CalendarWrapper, Set<Event>> biConsumer) {
         eventsMap.forEach(biConsumer);
-        eventsMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        eventsMap.values().removeIf(Collection::isEmpty);
     }
 
     public void putInMap(CalendarWrapper calendar, Set<Event> events) {
