@@ -40,6 +40,7 @@ public class DateHandler {
     }
 
     void addOneWeek() {
+        currentCal = (Calendar) currentCal.clone();
         currentCal.add(Calendar.DAY_OF_MONTH, 6);
     }
 
