@@ -45,7 +45,7 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
         EventsGetter eventsGetter = new EventsGetter(
                 (String) optionParams.get("startDate"),
                 (String) optionParams.get("endDate"),
-                this);
+                this::get);
 
         return eventsGetter.getEventsInTimeFrame();
     }

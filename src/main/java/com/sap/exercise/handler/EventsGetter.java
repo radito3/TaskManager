@@ -15,18 +15,19 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class EventsGetter {
 
     private final String start;
     private final String end;
-    private final EventDao eventDao;
+    private final Function<Property<Integer>, Optional<Event>> getterFunction;
 
-    EventsGetter(String start, String end, EventDao eventDao) {
+    EventsGetter(String start, String end, Function<Property<Integer>, Optional<Event>> getterFunction) {
         this.start = start;
         this.end = end;
-        this.eventDao = eventDao;
+        this.getterFunction = getterFunction;
     }
 
     Set<Event> getEventsInTimeFrame() {
@@ -36,7 +37,7 @@ class EventsGetter {
         new DateHandler(start, end).fromTo()
                 .forEach(handleDates(events, date -> nullDates.add(date.toString())));
 
-        if (nullDates.size() != 0) {
+        if (!nullDates.isEmpty()) {
             String startIndex = nullDates.get(0),
                     endIndex = nullDates.get(nullDates.size() - 1);
             if (setEventsInTable(startIndex, endIndex)) {
@@ -47,11 +48,11 @@ class EventsGetter {
         return events;
     }
 
-    private Consumer<CalendarWrapper> handleDates(Set<Event> events, Consumer<CalendarWrapper> listConsumer) {
+    private Consumer<CalendarWrapper> handleDates(Set<Event> events, Consumer<CalendarWrapper> consumer) {
         return (CalendarWrapper date) -> {
             Set<Event> ev;
             if ((ev = SharedResourcesFactory.getEventsMapService().getFromMap(date)) == null) {
-                listConsumer.accept(date);
+                consumer.accept(date);
             } else {
                 events.addAll(ev);
             }
@@ -71,7 +72,7 @@ class EventsGetter {
 
         Map<Calendar, Set<Event>> eventsPerDay = query.getResultList().stream()
                 .map(calEvents -> {
-                    Event event = eventDao.get(new Property<>("id", calEvents.getEventId()))
+                    Event event = getterFunction.apply(new Property<>("id", calEvents.getEventId()))
                             .orElseGet(Event::new);
                     event.setTimeOf(calEvents.getDate());
                     return event;
