@@ -6,14 +6,14 @@ import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class TransactionBuilder {
 
     private Session currentSession;
-    private List<Consumer<Session>> operations;
+    private Set<Consumer<Session>> operations;
 
     private TransactionBuilder(Session session) {
         currentSession = session;
@@ -31,7 +31,7 @@ public class TransactionBuilder {
     private synchronized void beginTransaction() {
         currentSession.beginTransaction();
         currentSession.getTransaction().setTimeout(10);
-        operations = Collections.synchronizedList(new LinkedList<>());
+        operations = Collections.synchronizedSet(new LinkedHashSet<>());
     }
 
     public synchronized TransactionBuilder addOperation(Consumer<Session> consumer) {

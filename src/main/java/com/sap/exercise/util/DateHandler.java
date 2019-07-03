@@ -20,7 +20,7 @@ public class DateHandler {
 
     public DateHandler(String text) {
         try {
-            String argument = StringUtils.removeEnd(text.trim(), "-");
+            String argument = StringUtils.removeEnd(text, "-").trim();
             currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
         } catch (ParseException e) {
             throw new IllegalArgumentException(e.getMessage());
