@@ -96,9 +96,9 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
                         criteriaDelete.where(criteriaBuilder.equal(root.get("eventId"), arg.getId()))
                                 .where(condition.queryCondition());
 
-                        TransactionBuilder tb = TransactionBuilder.newInstance();
-                        session.createQuery(criteriaDelete).executeUpdate();
-                        tb.commit();
+                        TransactionBuilder.newInstance()
+                            .addOperation(s -> s.createQuery(criteriaDelete).executeUpdate())
+                            .commit();
                     });
             notifyListeners(ListenableEventType.DELETE_IN_TIME_FRAME, arg,
                     optionParams.get("startDate"),
