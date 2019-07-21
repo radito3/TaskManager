@@ -5,7 +5,6 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.TransactionBuilder;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -22,32 +21,32 @@ class CreateMultipleEventEntriesJob implements Runnable {
     @Override
     public void run() {
         TransactionBuilder transaction = TransactionBuilder.newInstance();
-        eventsList(id, event)
-                .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
+        
+        IntStream.rangeClosed(1, 30)
+            .mapToObj(this::mapToCalEvents)
+            .limit(event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30)
+            .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
+        
         transaction.commit();
     }
-
-    private List<CalendarEvents> eventsList(Integer eventId, Event event) {
+    
+    private CalendarEvents mapToCalEvents(int i) {
+        Calendar calendar = (Calendar) event.getTimeOf().clone();
+        calendar.add(getCalendarField(), i);
+        return new CalendarEvents(id, calendar);
+    }
+    
+    private int getCalendarField() {
         switch (event.getToRepeat()) {
             case DAILY:
-                return handleEventEntries(30, eventId, event, Calendar.DAY_OF_MONTH);
+                return Calendar.DAY_OF_MONTH;
             case WEEKLY:
-                return handleEventEntries(30, eventId, event, Calendar.WEEK_OF_YEAR);
+                return Calendar.WEEK_OF_YEAR;
             case MONTHLY:
-                return handleEventEntries(30, eventId, event, Calendar.MONTH);
+                return Calendar.MONTH;
             case YEARLY:
-                return handleEventEntries(4, eventId, event, Calendar.YEAR);
+                return Calendar.YEAR;
         }
-        throw new IllegalArgumentException("Unknown event repeatable type");
-    }
-
-    private List<CalendarEvents> handleEventEntries(int endInclusive, Integer eventId, Event event, int field) {
-        return IntStream.rangeClosed(1, endInclusive)
-                .mapToObj(i -> {
-                    Calendar calendar = (Calendar) event.getTimeOf().clone();
-                    calendar.add(field, i);
-                    return new CalendarEvents(eventId, calendar);
-                })
-                .collect(Collectors.toList());
+        throw new IllegalStateException("Unknown repeatable type");
     }
 }
