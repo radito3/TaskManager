@@ -1,6 +1,7 @@
 package com.sap.exercise.commands.parser;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,15 +25,12 @@ public enum CommandParsers {
         return supplier;
     }
 
-    private static final Map<String, Supplier<CommandParser>> valuesMap = Stream.of(values())
-                .collect(Collectors.toMap(
-                        e -> e.toString().toLowerCase(),
-                        CommandParsers::getSupplier));
+    private static final Map<String, Supplier<CommandParser>> valuesMap = Stream.of(CommandParsers.values())
+                .collect(Collectors.toMap(e -> e.toString().toLowerCase(), CommandParsers::getSupplier));
 
     public static CommandParser getParser(String command) {
-        if (!valuesMap.containsKey(command)) {
-            throw new IllegalArgumentException("Invalid command");
-        }
-        return valuesMap.get(command).get();
+        return Optional.ofNullable(valuesMap.get(command))
+            .orElseThrow(() -> new IllegalArgumentException("Invalid command")) 
+            .get()
     }
 }
