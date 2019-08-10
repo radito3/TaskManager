@@ -31,6 +31,6 @@ public enum CommandParsers {
     public static CommandParser getParser(String command) {
         return Optional.ofNullable(valuesMap.get(command))
             .orElseThrow(() -> new IllegalArgumentException("Invalid command")) 
-            .get()
+            .get();
     }
 }
