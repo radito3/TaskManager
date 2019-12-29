@@ -5,7 +5,6 @@ import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.TransactionBuilder;
 
 import java.util.Calendar;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class CreateMultipleEventEntriesJob implements Runnable {

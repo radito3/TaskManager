@@ -2,7 +2,7 @@ package com.sap.exercise.services;
 
 import java.io.Closeable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 import java.util.concurrent.TimeUnit;
 
 public final class AsyncExecutionsService implements Closeable {
@@ -10,7 +10,7 @@ public final class AsyncExecutionsService implements Closeable {
     private final ScheduledThreadPoolExecutor scheduledExecutor;
 
     AsyncExecutionsService() {
-        scheduledExecutor = new ScheduledThreadPoolExecutor(2, new ThreadPoolExecutor.DiscardOldestPolicy());
+        scheduledExecutor = new ScheduledThreadPoolExecutor(2, new DiscardOldestPolicy());
         scheduledExecutor.setMaximumPoolSize(5);
     }
 

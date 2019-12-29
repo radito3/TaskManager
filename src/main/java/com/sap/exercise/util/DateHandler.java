@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -54,8 +55,7 @@ public class DateHandler {
             throw new UnsupportedOperationException();
         }
 
-        long days = (endDate.currentCal.getTimeInMillis() -
-                startDate.currentCal.getTimeInMillis()) / DateUtils.MILLIS_PER_DAY;
+        long days = TimeUnit.MILLISECONDS.toDays(endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis());
 
         return LongStream.rangeClosed(0, days)
                 .mapToObj(i -> {

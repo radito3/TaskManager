@@ -73,11 +73,11 @@ public class OutputPrinter implements Closeable {
                     Date date = calendar.getTime();
                     printer.printf(PrinterColors.YELLOW + "%ta %1$tb %1$2te" + PrinterColors.RESET, date);
 
-                    eventList.forEach(event -> {
+                    for (Event event : eventList) {
                         eventFormatters.get(event).printTime(date);
                         eventFormatters.get(event).printTitle(event.getTitle());
                         printer.println();
-                    });
+                    }
 
                     printer.println();
                 });

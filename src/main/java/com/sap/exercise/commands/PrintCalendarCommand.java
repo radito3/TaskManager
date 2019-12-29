@@ -36,7 +36,7 @@ public class PrintCalendarCommand implements Command {
                 break;
             case YEAR:
                 int year = options.getArgument() == null ?
-                        calendar.get(Calendar.YEAR) : Integer.valueOf(options.getArgument());
+                        calendar.get(Calendar.YEAR) : Integer.parseInt(options.getArgument());
                 printer.printYearCalendar(eventDao, year, withEvents);
                 break;
         }

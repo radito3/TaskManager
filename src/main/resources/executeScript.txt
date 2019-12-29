@@ -1,9 +1,10 @@
 help
-help --help
-edit
-esa
 cal
-cal --help
-cal --help -3
-cal -3 -y
-cal -3 -e -y
+
+cal -y
+
+cal -3
+
+agenda
+
+cal -e

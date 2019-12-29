@@ -32,15 +32,17 @@ public class NotificationFactory {
         Collection<Event> todayEvents = new EventDao()
                 .getAll(new TimeFrameCondition(today.toString(), today.toString()));
 
-        todayEvents.forEach(event -> SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
-            long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
-                    - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
+        for (Event event : todayEvents) {
+            SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
+                long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
+                        - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
 
-            if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
-                newNotification(event).send();
-                sentNotificationsEvents.add(event.getId());
-            }
-        }));
+                if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
+                    newNotification(event).send();
+                    sentNotificationsEvents.add(event.getId());
+                }
+            });
+        }
     }
 
     public static void clearEventsSet() {
