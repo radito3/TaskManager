@@ -6,12 +6,12 @@ import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateHandler;
-import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class NotificationFactory {
 
@@ -35,7 +35,7 @@ public class NotificationFactory {
         for (Event event : todayEvents) {
             SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
                 long time = (event.getTimeOf().getTimeInMillis() - today.asCalendar().getTimeInMillis())
-                        - (event.getReminder() * DateUtils.MILLIS_PER_MINUTE);
+                            - TimeUnit.MINUTES.toMillis(event.getReminder());
 
                 if ((event.getAllDay() || time <= 0) && !sentNotificationsEvents.contains(event.getId())) {
                     newNotification(event).send();

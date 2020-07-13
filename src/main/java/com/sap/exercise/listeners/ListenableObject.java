@@ -5,11 +5,11 @@ import com.sap.exercise.handler.ListenableEventType;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public abstract class ListenableEvent {
+public abstract class ListenableObject {
 
     private ConcurrentMap<ListenableEventType, EventListener> listenerMap;
 
-    protected ListenableEvent() {
+    protected ListenableObject() {
         listenerMap = new ConcurrentHashMap<>();
     }
 

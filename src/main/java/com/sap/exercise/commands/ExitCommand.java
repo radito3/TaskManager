@@ -13,7 +13,7 @@ public class ExitCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
-        SharedResourcesFactory.close();
+        SharedResourcesFactory.shutdown();
         NotificationFactory.clearEventsSet();
         SessionProviderFactory.close();
         try {

@@ -3,6 +3,7 @@ package com.sap.exercise.printer;
 import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.util.SimplifiedCalendar;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
@@ -12,11 +13,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OutputPrinter implements Closeable {
 
-    private Calendar calendar = Calendar.getInstance();
+    private Calendar today = Calendar.getInstance();
     private PrintStream printer;
     private final String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
 
@@ -53,7 +53,7 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printMonthCalendar(Dao<Event> handler, int month, boolean withEvents) {
-        this.printCalendar(handler, month, calendar.get(Calendar.YEAR), false, withEvents);
+        this.printCalendar(handler, month, today.get(Calendar.YEAR), false, withEvents);
     }
 
     public void printYearCalendar(Dao<Event> handler, int year, boolean withEvents) {
@@ -66,34 +66,34 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printEvents(Collection<Event> events) {
-        Map<Event, PrinterUtils.Formatter> eventFormatters = new HashMap<>(events.size());
+        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = PrinterUtils.getEventsPerDay(events);
+        Map<Event, Formatter> eventFormatters = PrinterUtils.getEventFormatters(eventsPerDay, printer);
 
-        PrinterUtils.mapAndSort(printer, eventFormatters, events)
-                .forEach((calendar, eventList) -> {
-                    Date date = calendar.getTime();
-                    printer.printf(PrinterColors.YELLOW + "%ta %1$tb %1$2te" + PrinterColors.RESET, date);
+        for (Map.Entry<SimplifiedCalendar, Set<Event>> entry : eventsPerDay.entrySet()) {
+            Calendar date = entry.getKey().getDelegate();
+            printer.printf(PrinterColors.YELLOW + "%ta %1$tb %1$2te" + PrinterColors.RESET, date);
 
-                    for (Event event : eventList) {
-                        eventFormatters.get(event).printTime(date);
-                        eventFormatters.get(event).printTitle(event.getTitle());
-                        printer.println();
-                    }
+            for (Event event : entry.getValue()) {
+                eventFormatters.get(event).printTime(date);
+                eventFormatters.get(event).printTitle(event.getTitle());
+                printer.println();
+            }
 
-                    printer.println();
-                });
+            printer.println();
+        }
     }
 
     private void printCalendar(Dao<Event> handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
         int month = arg > 11 ? (arg - 12) + 1 : arg < 0 ? (arg + 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg < 0 ? arg1 - 1 : arg1;
 
-        Calendar cal = new GregorianCalendar(year, month - 1, 1);
+        Calendar firstDayOfMonth = new GregorianCalendar(year, month - 1, 1);
 
-        String monthName = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+        String monthName = firstDayOfMonth.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
         String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + year : ""), weekDays.length());
 
-        int firstWeekdayOfMonth = cal.get(Calendar.DAY_OF_WEEK);
-        int numberOfMonthDays = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int firstWeekdayOfMonth = firstDayOfMonth.get(Calendar.DAY_OF_WEEK);
+        int numberOfMonthDays = firstDayOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
         int weekdayIndex = 0;
 
         printer.println(monthHeader);
@@ -104,47 +104,41 @@ public class OutputPrinter implements Closeable {
             weekdayIndex++;
         }
 
-        if (withEvents) {
-            printWithEvents(handler, year, month, weekdayIndex, numberOfMonthDays);
-        } else {
-            for (int day = 1; day <= numberOfMonthDays; day++) {
-                PrinterUtils.printDay(printer, day, month, year, "");
+        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = null;
 
-                weekdayIndex++;
-                if (weekdayIndex == 7) {
-                    weekdayIndex = 0;
-                    printer.println();
-                } else {
-                    printer.print("  ");
-                }
+        if (withEvents) {
+            Collection<Event> events = handler.getAll(new TimeFrameCondition(
+                year + "-" + month + "-1",
+                year + "-" + month + "-" + numberOfMonthDays));
+            eventsPerDay = PrinterUtils.getEventsPerDay(events);
+        }
+
+        for (int day = 1; day <= numberOfMonthDays; day++) {
+            boolean hasEvents = false;
+            //TODO implement this query to work
+            // SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
+            // FROM Eventt WHERE DATE(TimeOf) = <date>;
+            // so as not to need to query all events in the time frame
+            if (withEvents) {
+                Calendar toCheck = new GregorianCalendar(year, month - 1, day);
+                SimplifiedCalendar wrappedDate = new SimplifiedCalendar(toCheck);
+                hasEvents = !eventsPerDay.getOrDefault(wrappedDate, Collections.emptySet())
+                                         .isEmpty();
+            }
+
+            PrinterUtils.printDay(printer, day, month, year,
+                                  withEvents && hasEvents ? PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK : "");
+
+            weekdayIndex++;
+            if (weekdayIndex == 7) {
+                weekdayIndex = 0;
+                printer.println();
+            } else {
+                printer.print("  ");
             }
         }
+
         printer.println();
-    }
-
-    private void printWithEvents(Dao<Event> handler, int year, int month, int weekdayIndex, int numOfMonthDays) {
-        AtomicInteger weekdayInd = new AtomicInteger(weekdayIndex);
-        Collection<Event> events = handler.getAll(new TimeFrameCondition(
-                year + "-" + month + "-1",
-                year + "-" + month + "-" + numOfMonthDays
-        ));
-
-        PrinterUtils.monthEventsSorted(month, year, numOfMonthDays, events)
-                .forEach((calendar, eventSet) -> {
-                    PrinterUtils.printDay(printer,
-                            calendar.get(Calendar.DAY_OF_MONTH),
-                            month,
-                            calendar.get(Calendar.YEAR),
-                            eventSet.isEmpty() ? "" : (PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK));
-
-                    weekdayInd.incrementAndGet();
-                    if (weekdayInd.get() == 7) {
-                        weekdayInd.set(0);
-                        printer.println();
-                    } else {
-                        printer.print("  ");
-                    }
-                });
     }
 
     @Override

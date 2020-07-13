@@ -24,6 +24,7 @@ public class PrintCalendarCommandParser extends AbstractCommandParser {
         if (cmd.hasOption('3')) {
             return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.THREE, withEvents);
         }
+
         if (cmd.hasOption('y')) {
             PrintCalendarCommand.PrintCalendarOptions options = PrintCalendarCommand.PrintCalendarOptions.YEAR;
             if (cmd.getOptionValues('y') != null) {
@@ -31,6 +32,7 @@ public class PrintCalendarCommandParser extends AbstractCommandParser {
             }
             return new PrintCalendarCommand(options, withEvents);
         }
+
         return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.ONE, withEvents);
     }
 

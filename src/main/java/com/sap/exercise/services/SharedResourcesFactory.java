@@ -17,7 +17,7 @@ public class SharedResourcesFactory {
         return eventsMapService;
     }
 
-    public static void close() {
+    public static void shutdown() {
         if (asyncExecutionsService != null)
             asyncExecutionsService.close();
         if (eventsMapService != null)

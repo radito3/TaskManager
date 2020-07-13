@@ -31,11 +31,7 @@ abstract class AbstractCommandParser implements CommandParser {
     @Override
     public Command parse(String[] args) throws ParseException {
         cmd = new DefaultParser().parse(getOptions(), args, false);
-        CommandValidator validator;
-        if (validatorCreator == null)
-            validator = new DefaultCommandValidator(cmd);
-        else
-            validator = validatorCreator.apply(cmd);
+        CommandValidator validator = validatorCreator == null ? new DefaultCommandValidator(cmd) : validatorCreator.apply(cmd);
 
         validator.validate();
 

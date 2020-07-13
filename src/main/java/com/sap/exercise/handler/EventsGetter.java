@@ -5,7 +5,7 @@ import com.sap.exercise.persistence.Property;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
-import com.sap.exercise.util.CalendarWrapper;
+import com.sap.exercise.util.SimplifiedCalendar;
 import com.sap.exercise.util.DateHandler;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,34 +31,30 @@ class EventsGetter {
 
     Set<Event> getEventsInTimeFrame() {
         Set<Event> events = new HashSet<>();
-        List<String> nullDates = new ArrayList<>(5);
+        List<String> emptyDates = new ArrayList<>();
 
-        new DateHandler(start, end).fromTo()
-                .forEach(handleDates(events, date -> nullDates.add(date.toString())));
+        for (SimplifiedCalendar date : new DateHandler(start, end).getTimeRange()) {
+            Set<Event> eventsInDay = SharedResourcesFactory.getEventsMapService().getFromMap(date);
+            if (eventsInDay == null) {
+                emptyDates.add(date.toString());
+            } else {
+                events.addAll(eventsInDay);
+            }
+        }
 
-        if (!nullDates.isEmpty()) {
-            String startIndex = nullDates.get(0),
-                    endIndex = nullDates.get(nullDates.size() - 1);
-            if (setEventsInTable(startIndex, endIndex)) {
-                new DateHandler(startIndex, endIndex).fromTo()
-                        .forEach(handleDates(events, date -> {}));
+        if (!emptyDates.isEmpty()) {
+            String startIndex = emptyDates.get(0),
+                    endIndex = emptyDates.get(emptyDates.size() - 1);
+            if (setEventsInCache(startIndex, endIndex)) {
+                for (SimplifiedCalendar date : new DateHandler(startIndex, endIndex).getTimeRange()) {
+                    events.addAll(SharedResourcesFactory.getEventsMapService().getFromMap(date));
+                }
             }
         }
         return events;
     }
 
-    private Consumer<CalendarWrapper> handleDates(Set<Event> events, Consumer<CalendarWrapper> consumer) {
-        return (CalendarWrapper date) -> {
-            Set<Event> ev;
-            if ((ev = SharedResourcesFactory.getEventsMapService().getFromMap(date)) == null) {
-                consumer.accept(date);
-            } else {
-                events.addAll(ev);
-            }
-        };
-    }
-
-    private boolean setEventsInTable(String start, String end) {
+    private boolean setEventsInCache(String start, String end) {
         boolean hasNewEntries = false;
 
         Session session = SessionProviderFactory.getSessionProvider().getSession();
@@ -79,9 +74,9 @@ class EventsGetter {
                 })
                 .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
 
-        for (CalendarWrapper date : new DateHandler(start, end).fromTo()) {
+        for (SimplifiedCalendar date : new DateHandler(start, end).getTimeRange()) {
             for (Map.Entry<Calendar, Set<Event>> entry : eventsPerDay.entrySet()) {
-                if (date.equals(new CalendarWrapper(entry.getKey()))) {
+                if (date.equals(new SimplifiedCalendar(entry.getKey()))) {
                     SharedResourcesFactory.getEventsMapService().putInMap(date, entry.getValue());
                     hasNewEntries = true;
                 }

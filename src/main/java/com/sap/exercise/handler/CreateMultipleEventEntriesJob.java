@@ -20,8 +20,8 @@ class CreateMultipleEventEntriesJob implements Runnable {
     @Override
     public void run() {
         TransactionBuilder transaction = TransactionBuilder.newInstance();
-        
-        IntStream.rangeClosed(1, 30)
+
+        IntStream.iterate(1, i -> i + 1)
             .mapToObj(this::mapToCalEvents)
             .limit(event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30)
             .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));

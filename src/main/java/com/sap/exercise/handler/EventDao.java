@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EventDao extends ListenableEvent implements Dao<Event> {
+public class EventDao extends ListenableObject implements Dao<Event> {
 
     public EventDao() {
         addListener(ListenableEventType.CREATE, new EventCreationListener());
@@ -82,27 +82,27 @@ public class EventDao extends ListenableEvent implements Dao<Event> {
                             .addOperation(s -> s.delete(arg))
                             .commit());
             notifyListeners(ListenableEventType.DELETE, arg);
-        } else {
-            Map<String, Object> optionParams = condition.parameters();
 
-            SharedResourcesFactory.getAsyncExecutionsService()
-                    .execute(() -> {
-                        Session session = SessionProviderFactory.getSessionProvider().getSession();
-                        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-                        CriteriaDelete<CalendarEvents> criteriaDelete =
-                                criteriaBuilder.createCriteriaDelete(CalendarEvents.class);
-                        Root<CalendarEvents> root = criteriaDelete.from(CalendarEvents.class);
-
-                        criteriaDelete.where(criteriaBuilder.equal(root.get("eventId"), arg.getId()))
-                                .where(condition.queryCondition());
-
-                        TransactionBuilder.newInstance()
-                            .addOperation(s -> s.createQuery(criteriaDelete).executeUpdate())
-                            .commit();
-                    });
-            notifyListeners(ListenableEventType.DELETE_IN_TIME_FRAME, arg,
-                    optionParams.get("startDate"),
-                    optionParams.get("endDate"));
+            return;
         }
+        Map<String, Object> optionParams = condition.parameters();
+
+        SharedResourcesFactory.getAsyncExecutionsService()
+                .execute(() -> {
+                    Session session = SessionProviderFactory.getSessionProvider().getSession();
+                    CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+                    CriteriaDelete<CalendarEvents> criteriaDelete = criteriaBuilder.createCriteriaDelete(CalendarEvents.class);
+                    Root<CalendarEvents> root = criteriaDelete.from(CalendarEvents.class);
+
+                    criteriaDelete.where(criteriaBuilder.equal(root.get("eventId"), arg.getId()))
+                            .where(condition.queryCondition());
+
+                    TransactionBuilder.newInstance()
+                        .addOperation(s -> s.createQuery(criteriaDelete).executeUpdate())
+                        .commit();
+                });
+        notifyListeners(ListenableEventType.DELETE_IN_TIME_FRAME, arg,
+                optionParams.get("startDate"),
+                optionParams.get("endDate"));
     }
 }

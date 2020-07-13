@@ -50,7 +50,7 @@ public class DateHandler {
         return String.format("%1$tY-%1$tm-%1$td", currentCal);
     }
 
-    public List<CalendarWrapper> fromTo() {
+    public List<SimplifiedCalendar> getTimeRange() {
         if (startDate == null || endDate == null) {
             throw new UnsupportedOperationException();
         }
@@ -61,7 +61,7 @@ public class DateHandler {
                 .mapToObj(i -> {
                     Calendar cal = (Calendar) startDate.currentCal.clone();
                     cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
-                    return new CalendarWrapper(cal);
+                    return new SimplifiedCalendar(cal);
                 })
                 .collect(Collectors.toList());
     }

@@ -1,9 +1,10 @@
 package com.sap.exercise.util;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DateArgumentEvaluator {
 
@@ -11,8 +12,9 @@ public class DateArgumentEvaluator {
     private int numOfArgs;
 
     public DateArgumentEvaluator(String var1, String var2) {
-        List<String> args = Arrays.asList(var1, var2);
-        args.removeIf(String::isEmpty);
+        List<String> args = Stream.of(var1, var2)
+                                  .filter(String::isEmpty)
+                                  .collect(Collectors.toList());
         numOfArgs = args.size();
 
         switch (numOfArgs) {

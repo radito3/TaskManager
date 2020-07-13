@@ -21,22 +21,22 @@ public class PrintCalendarCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         OutputPrinter printer = OutputPrinterProvider.getPrinter();
-        Calendar calendar = Calendar.getInstance();
+        Calendar today = Calendar.getInstance();
         Dao<Event> eventDao = new EventDao();
 
         switch (options) {
             case ONE:
-                printer.printMonthCalendar(eventDao, calendar.get(Calendar.MONTH), withEvents);
+                printer.printMonthCalendar(eventDao, today.get(Calendar.MONTH), withEvents);
                 break;
             case THREE:
                 for (int i = -1; i < 2; i++) {
-                    printer.printMonthCalendar(eventDao, calendar.get(Calendar.MONTH) + i, withEvents);
+                    printer.printMonthCalendar(eventDao, today.get(Calendar.MONTH) + i, withEvents);
                     printer.println();
                 }
                 break;
             case YEAR:
                 int year = options.getArgument() == null ?
-                        calendar.get(Calendar.YEAR) : Integer.parseInt(options.getArgument());
+                        today.get(Calendar.YEAR) : Integer.parseInt(options.getArgument());
                 printer.printYearCalendar(eventDao, year, withEvents);
                 break;
         }
