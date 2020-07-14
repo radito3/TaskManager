@@ -13,12 +13,12 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
     @Override
     public void validate() {
         super.validate();
-        if (invalidateOptions()) {
+        if (areOptionsInvalid()) {
             throw new IllegalArgumentException("Invalid number of arguments");
         }
     }
 
-    private boolean invalidateOptions() {
+    private boolean areOptionsInvalid() {
         Option withEvents = Option.builder("e")
                 .required(false)
                 .longOpt("events")
@@ -34,6 +34,6 @@ public class PrintCalendarCommandValidator extends DefaultCommandValidator {
         boolean optWithoutEvents = ArrayUtils.removeElement(cmd.getOptions(), withEvents).length > 1;
         boolean allOpts = cmd.getOptions().length > 2;
 
-        return !onlyHelp & (optWithoutEvents | allOpts);
+        return !onlyHelp && (optWithoutEvents || allOpts);
     }
 }

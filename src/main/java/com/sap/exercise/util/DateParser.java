@@ -10,16 +10,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-public class DateHandler {
+public class DateParser {
 
     public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
-    private DateHandler startDate;
-    private DateHandler endDate;
     private Calendar currentCal = Calendar.getInstance();
 
-    public DateHandler(String text) {
+    public DateParser(String text) {
         try {
             String argument = StringUtils.removeEnd(text, "-").trim();
             currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
@@ -28,12 +26,7 @@ public class DateHandler {
         }
     }
 
-    public DateHandler(String start, String end) {
-        startDate = new DateHandler(start);
-        endDate = new DateHandler(end);
-    }
-
-    public DateHandler() {
+    public DateParser() {
     }
 
     public Calendar asCalendar() {
@@ -45,24 +38,22 @@ public class DateHandler {
         currentCal.add(Calendar.DAY_OF_MONTH, 6);
     }
 
-    @Override
-    public String toString() {
+    public String asString() {
         return String.format("%1$tY-%1$tm-%1$td", currentCal);
     }
 
-    public List<SimplifiedCalendar> getTimeRange() {
-        if (startDate == null || endDate == null) {
-            throw new UnsupportedOperationException();
-        }
+    public static List<SimplifiedCalendar> getRangeBetween(String start, String end) {
+        DateParser startDate = new DateParser(start);
+        DateParser endDate = new DateParser(end);
 
         long days = TimeUnit.MILLISECONDS.toDays(endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis());
 
         return LongStream.rangeClosed(0, days)
-                .mapToObj(i -> {
-                    Calendar cal = (Calendar) startDate.currentCal.clone();
-                    cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
-                    return new SimplifiedCalendar(cal);
-                })
-                .collect(Collectors.toList());
+                         .mapToObj(i -> {
+                             Calendar cal = (Calendar) startDate.currentCal.clone();
+                             cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
+                             return new SimplifiedCalendar(cal);
+                         })
+                         .collect(Collectors.toList());
     }
 }

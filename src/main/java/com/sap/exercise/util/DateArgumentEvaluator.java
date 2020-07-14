@@ -13,7 +13,7 @@ public class DateArgumentEvaluator {
 
     public DateArgumentEvaluator(String var1, String var2) {
         List<String> args = Stream.of(var1, var2)
-                                  .filter(String::isEmpty)
+                                  .filter(str -> !str.isEmpty())
                                   .collect(Collectors.toList());
         numOfArgs = args.size();
 
@@ -25,30 +25,30 @@ public class DateArgumentEvaluator {
                 forOneArg(args.get(0));
                 break;
             case 2:
-                arg1 = new DateHandler(var1).toString();
-                arg2 = new DateHandler(var2).toString();
+                arg1 = new DateParser(var1).asString();
+                arg2 = new DateParser(var2).asString();
                 break;
         }
     }
 
     private void forZeroArgs() {
-        DateHandler date = new DateHandler();
-        arg1 = date.toString();
+        DateParser today = new DateParser();
+        arg1 = today.asString();
 
-        date.addOneWeek();
-        arg2 = date.toString();
+        today.addOneWeek();
+        arg2 = today.asString();
     }
 
     private void forOneArg(String arg) {
-        DateHandler date = new DateHandler(arg);
+        DateParser date = new DateParser(arg);
         if (arg.endsWith("-")) {
-            arg1 = new DateHandler().toString();
-            arg2 = date.toString();
+            arg1 = new DateParser().asString();
+            arg2 = date.asString();
         } else {
-            arg1 = date.toString();
+            arg1 = date.asString();
 
             date.addOneWeek();
-            arg2 = date.toString();
+            arg2 = date.asString();
         }
     }
 

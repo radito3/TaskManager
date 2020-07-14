@@ -14,15 +14,17 @@ public class EventCreationListener implements EventListener {
         Integer id = (Integer) args[1];
 
         event.setId(id);
-        SimplifiedCalendar simplifiedCalendar = new SimplifiedCalendar(event.getTimeOf());
+        SimplifiedCalendar date = new SimplifiedCalendar(event.getTimeOf());
 
-        Set<Event> events;
-        if ((events = SharedResourcesFactory.getEventsMapService().getFromMap(simplifiedCalendar)) != null) {
+        Set<Event> events = SharedResourcesFactory.getEventsCache()
+                                      .get(date);
+        if (events != null) {
             events.add(event);
-        } else {
-            events = new HashSet<>();
-            events.add(event);
-            SharedResourcesFactory.getEventsMapService().putInMap(simplifiedCalendar, events);
+            return;
         }
+
+        events = new HashSet<>();
+        events.add(event);
+        SharedResourcesFactory.getEventsCache().put(date, events);
     }
 }

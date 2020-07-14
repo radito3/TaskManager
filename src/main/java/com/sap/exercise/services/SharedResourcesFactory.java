@@ -3,7 +3,7 @@ package com.sap.exercise.services;
 public class SharedResourcesFactory {
 
     private static AsyncExecutionsService asyncExecutionsService;
-    private static EventsMapService eventsMapService;
+    private static EventsCache eventsCache;
 
     public static AsyncExecutionsService getAsyncExecutionsService() {
         if (asyncExecutionsService == null)
@@ -11,16 +11,16 @@ public class SharedResourcesFactory {
         return asyncExecutionsService;
     }
 
-    public static EventsMapService getEventsMapService() {
-        if (eventsMapService == null)
-            eventsMapService = new EventsMapService();
-        return eventsMapService;
+    public static EventsCache getEventsCache() {
+        if (eventsCache == null)
+            eventsCache = new EventsCache();
+        return eventsCache;
     }
 
     public static void shutdown() {
         if (asyncExecutionsService != null)
             asyncExecutionsService.close();
-        if (eventsMapService != null)
-            eventsMapService.close();
+        if (eventsCache != null)
+            eventsCache.close();
     }
 }

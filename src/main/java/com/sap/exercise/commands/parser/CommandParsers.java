@@ -1,10 +1,10 @@
 package com.sap.exercise.commands.parser;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public enum CommandParsers {
     ADD(AddCommandParser::new),
@@ -25,7 +25,7 @@ public enum CommandParsers {
         return supplier;
     }
 
-    private static final Map<String, Supplier<CommandParser>> valuesMap = Stream.of(CommandParsers.values())
+    private static final Map<String, Supplier<CommandParser>> valuesMap = Arrays.stream(CommandParsers.values())
                 .collect(Collectors.toMap(e -> e.toString().toLowerCase(), CommandParsers::getSupplier));
 
     public static CommandParser getParser(String command) {

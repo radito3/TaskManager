@@ -8,10 +8,8 @@ public class EventDeletionListener implements EventListener {
     public void notify(Object... args) {
         Event event = (Event) args[0];
 
-        SharedResourcesFactory.getAsyncExecutionsService().execute(() ->
-                SharedResourcesFactory.getEventsMapService().iterateEventsMap(
-                        (cal, set) -> set.removeIf(event1 -> event1.getId().equals(event.getId()))
-                )
-        );
+        SharedResourcesFactory.getAsyncExecutionsService()
+              .execute(() -> SharedResourcesFactory.getEventsCache()
+                                   .remove(event1 -> event1.getId().equals(event.getId())));
     }
 }

@@ -6,7 +6,7 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.util.SimplifiedCalendar;
-import com.sap.exercise.util.DateHandler;
+import com.sap.exercise.util.DateParser;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -33,8 +33,8 @@ class EventsGetter {
         Set<Event> events = new HashSet<>();
         List<String> emptyDates = new ArrayList<>();
 
-        for (SimplifiedCalendar date : new DateHandler(start, end).getTimeRange()) {
-            Set<Event> eventsInDay = SharedResourcesFactory.getEventsMapService().getFromMap(date);
+        for (SimplifiedCalendar date : DateParser.getRangeBetween(start, end)) {
+            Set<Event> eventsInDay = SharedResourcesFactory.getEventsCache().get(date);
             if (eventsInDay == null) {
                 emptyDates.add(date.toString());
             } else {
@@ -46,8 +46,8 @@ class EventsGetter {
             String startIndex = emptyDates.get(0),
                     endIndex = emptyDates.get(emptyDates.size() - 1);
             if (setEventsInCache(startIndex, endIndex)) {
-                for (SimplifiedCalendar date : new DateHandler(startIndex, endIndex).getTimeRange()) {
-                    events.addAll(SharedResourcesFactory.getEventsMapService().getFromMap(date));
+                for (SimplifiedCalendar date : DateParser.getRangeBetween(startIndex, endIndex)) {
+                    events.addAll(SharedResourcesFactory.getEventsCache().get(date));
                 }
             }
         }
@@ -55,8 +55,25 @@ class EventsGetter {
     }
 
     private boolean setEventsInCache(String start, String end) {
-        boolean hasNewEntries = false;
+        List<CalendarEvents> calendarEvents = getCalendarEventsInRange(start, end);
+        if (calendarEvents.isEmpty()) {
+            return false;
+        }
 
+        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = calendarEvents.stream()
+                .map(calEvents -> {
+                    Event event = getterFunction.apply(new Property<>("id", calEvents.getEventId()))
+                            .orElseGet(Event::new);
+                    event.setTimeOf(calEvents.getDate());
+                    return event;
+                })
+                .collect(Collectors.groupingBy(calEvents -> new SimplifiedCalendar(calEvents.getTimeOf()), Collectors.toSet()));
+
+        SharedResourcesFactory.getEventsCache().putAll(eventsPerDay);
+        return true;
+    }
+
+    private List<CalendarEvents> getCalendarEventsInRange(String start, String end) {
         Session session = SessionProviderFactory.getSessionProvider().getSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<CalendarEvents> criteriaQuery = criteriaBuilder.createQuery(CalendarEvents.class);
@@ -65,23 +82,6 @@ class EventsGetter {
         criteriaQuery.where(criteriaBuilder.between(root.get("date"), start, end));
         Query<CalendarEvents> query = session.createQuery(criteriaQuery);
 
-        Map<Calendar, Set<Event>> eventsPerDay = query.getResultList().stream()
-                .map(calEvents -> {
-                    Event event = getterFunction.apply(new Property<>("id", calEvents.getEventId()))
-                            .orElseGet(Event::new);
-                    event.setTimeOf(calEvents.getDate());
-                    return event;
-                })
-                .collect(Collectors.groupingBy(Event::getTimeOf, Collectors.toSet()));
-
-        for (SimplifiedCalendar date : new DateHandler(start, end).getTimeRange()) {
-            for (Map.Entry<Calendar, Set<Event>> entry : eventsPerDay.entrySet()) {
-                if (date.equals(new SimplifiedCalendar(entry.getKey()))) {
-                    SharedResourcesFactory.getEventsMapService().putInMap(date, entry.getValue());
-                    hasNewEntries = true;
-                }
-            }
-        }
-        return hasNewEntries;
+        return query.getResultList();
     }
 }

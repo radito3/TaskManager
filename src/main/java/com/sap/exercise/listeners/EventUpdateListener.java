@@ -8,10 +8,10 @@ public class EventUpdateListener implements EventListener {
     public void notify(Object... args) {
         Event event = (Event) args[0];
 
-        SharedResourcesFactory.getEventsMapService()
-                .iterateEventsMap((cal, set) -> {
-                    if (set.removeIf(event1 -> event1.getId().equals(event.getId()))) {
-                        set.add(event);
+        SharedResourcesFactory.getEventsCache()
+                .forEach((cal, events) -> {
+                    if (events.removeIf(event1 -> event1.getId().equals(event.getId()))) {
+                        events.add(event);
                     }
                 });
     }

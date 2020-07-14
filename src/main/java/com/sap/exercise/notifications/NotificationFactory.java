@@ -5,7 +5,7 @@ import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.DateHandler;
+import com.sap.exercise.util.DateParser;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,9 +28,9 @@ public class NotificationFactory {
     }
 
     public static void pollForNotifications() {
-        DateHandler today = new DateHandler();
+        DateParser today = new DateParser();
         Collection<Event> todayEvents = new EventDao()
-                .getAll(new TimeFrameCondition(today.toString(), today.toString()));
+                .getAll(new TimeFrameCondition(today.asString(), today.asString()));
 
         for (Event event : todayEvents) {
             SharedResourcesFactory.getAsyncExecutionsService().execute(() -> {
