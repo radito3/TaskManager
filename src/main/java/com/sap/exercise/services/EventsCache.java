@@ -26,11 +26,20 @@ public final class EventsCache implements Closeable {
     }
 
     public void put(SimplifiedCalendar calendar, Set<Event> events) {
-        eventsMap.put(calendar, events);
+        if (eventsMap.containsKey(calendar)) {
+            eventsMap.get(calendar).addAll(events);
+        } else {
+            eventsMap.put(calendar, events);
+        }
     }
 
     public void putAll(Map<SimplifiedCalendar, Set<Event>> map) {
-        eventsMap.putAll(map);
+        for (Map.Entry<SimplifiedCalendar, Set<Event>> entry : map.entrySet()) {
+            eventsMap.merge(entry.getKey(), entry.getValue(), (presentEvents, newEvents) -> {
+                presentEvents.addAll(newEvents);
+                return presentEvents;
+            });
+        }
     }
 
     public Set<Event> get(SimplifiedCalendar calendar) {
