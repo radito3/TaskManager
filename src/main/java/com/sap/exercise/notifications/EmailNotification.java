@@ -14,12 +14,13 @@ import javax.swing.JOptionPane;
 import java.util.Date;
 import java.util.Properties;
 
-class EmailNotification implements Notification {
+class EmailNotification extends Notification {
 
     private boolean isValidEmail;
     private Event event;
 
-    EmailNotification(Event event) {
+    EmailNotification(Event event, Date date) {
+        super(date);
         this.event = event;
         EmailValidator validator = EmailValidator.getInstance(true);
 
