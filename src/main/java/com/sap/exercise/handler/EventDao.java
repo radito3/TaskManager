@@ -55,7 +55,7 @@ public class EventDao extends ListenableObject implements Dao<Event> {
         AtomicInteger id = new AtomicInteger();
         TransactionBuilder.newInstance()
                 .addOperation(s -> id.set((Integer) s.save(arg)))
-                .addOperation(s -> s.save(new CalendarEvents(id.get(), arg.getTimeOf())))
+                .addOperation(s -> s.save(new CalendarEvents(id.get(), arg.getTimeOf().toLocalDate())))
                 .commit();
 
         if (arg.getToRepeat() != Event.RepeatableType.NONE) {

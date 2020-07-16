@@ -4,8 +4,8 @@ import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.TransactionBuilder;
 
-import java.util.Calendar;
-import java.util.stream.IntStream;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 class CreateMultipleEventEntriesJob implements Runnable {
 
@@ -20,31 +20,30 @@ class CreateMultipleEventEntriesJob implements Runnable {
     @Override
     public void run() {
         TransactionBuilder transaction = TransactionBuilder.newInstance();
-
-        IntStream.iterate(1, i -> i + 1)
-            .mapToObj(this::mapToCalEvents)
-            .limit(event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30)
-            .forEach(calEvents -> transaction.addOperation(s -> s.save(calEvents)));
-        
+        transaction.addOperation(session -> {
+            int limit = event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30;
+            for (int i = 1; i < limit; i++) {
+                session.save(createCalEventEntry(i));
+            }
+        });
         transaction.commit();
     }
-    
-    private CalendarEvents mapToCalEvents(int i) {
-        Calendar calendar = (Calendar) event.getTimeOf().clone();
-        calendar.add(getCalendarField(), i);
-        return new CalendarEvents(id, calendar);
+
+    private CalendarEvents createCalEventEntry(int num) {
+        LocalDate date = LocalDate.from(event.getTimeOf().plus(num, getChronoUnit()));
+        return new CalendarEvents(id, date);
     }
     
-    private int getCalendarField() {
+    private ChronoUnit getChronoUnit() {
         switch (event.getToRepeat()) {
             case DAILY:
-                return Calendar.DAY_OF_MONTH;
+                return ChronoUnit.DAYS;
             case WEEKLY:
-                return Calendar.WEEK_OF_YEAR;
+                return ChronoUnit.WEEKS;
             case MONTHLY:
-                return Calendar.MONTH;
+                return ChronoUnit.MONTHS;
             case YEARLY:
-                return Calendar.YEAR;
+                return ChronoUnit.YEARS;
         }
         throw new IllegalStateException("Unknown repeatable type");
     }

@@ -11,6 +11,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Properties;
 
@@ -19,8 +20,8 @@ class EmailNotification extends Notification {
     private boolean isValidEmail;
     private Event event;
 
-    EmailNotification(Event event, Date date) {
-        super(date);
+    EmailNotification(Event event, LocalDateTime time) {
+        super(time);
         this.event = event;
         EmailValidator validator = EmailValidator.getInstance(true);
 

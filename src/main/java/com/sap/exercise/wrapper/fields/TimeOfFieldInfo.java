@@ -33,7 +33,7 @@ public class TimeOfFieldInfo implements FieldInfo {
     public void handleArg(String arg) {
         String hours = arg.contains(":") ? "" : " 12:00";
         DateParser dateParser = new DateParser(arg.trim() + hours);
-        event.setTimeOf(dateParser.asCalendar());
+        event.setTimeOf(dateParser.getDate());
     }
 
     @Override

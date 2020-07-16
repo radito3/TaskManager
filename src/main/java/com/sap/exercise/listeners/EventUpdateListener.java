@@ -9,7 +9,7 @@ public class EventUpdateListener implements EventListener {
         Event event = (Event) args[0];
 
         SharedResourcesFactory.getEventsCache()
-                .forEach((cal, events) -> {
+                .forEach((k, events) -> {
                     if (events.removeIf(event1 -> event1.getId().equals(event.getId()))) {
                         events.add(event);
                     }

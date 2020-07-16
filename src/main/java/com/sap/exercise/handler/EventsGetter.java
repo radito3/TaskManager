@@ -5,7 +5,6 @@ import com.sap.exercise.persistence.Property;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.services.SharedResourcesFactory;
-import com.sap.exercise.util.SimplifiedCalendar;
 import com.sap.exercise.util.DateParser;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -13,7 +12,13 @@ import org.hibernate.query.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,7 +38,7 @@ class EventsGetter {
         Set<Event> events = new HashSet<>();
         List<String> emptyDates = new ArrayList<>();
 
-        for (SimplifiedCalendar date : DateParser.getRangeBetween(start, end)) {
+        for (LocalDate date : DateParser.getRangeBetween(start, end)) {
             Set<Event> eventsInDay = SharedResourcesFactory.getEventsCache().get(date);
             if (eventsInDay == null) {
                 emptyDates.add(date.toString());
@@ -46,7 +51,7 @@ class EventsGetter {
             String startIndex = emptyDates.get(0),
                     endIndex = emptyDates.get(emptyDates.size() - 1);
             if (setEventsInCache(startIndex, endIndex)) {
-                for (SimplifiedCalendar date : DateParser.getRangeBetween(startIndex, endIndex)) {
+                for (LocalDate date : DateParser.getRangeBetween(startIndex, endIndex)) {
                     events.addAll(SharedResourcesFactory.getEventsCache().get(date));
                 }
             }
@@ -60,14 +65,10 @@ class EventsGetter {
             return false;
         }
 
-        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = calendarEvents.stream()
-                .map(calEvents -> {
-                    Event event = getterFunction.apply(new Property<>("id", calEvents.getEventId()))
-                            .orElseGet(Event::new);
-                    event.setTimeOf(calEvents.getDate());
-                    return event;
-                })
-                .collect(Collectors.groupingBy(calEvents -> new SimplifiedCalendar(calEvents.getTimeOf()), Collectors.toSet()));
+        Map<LocalDate, Set<Event>> eventsPerDay = calendarEvents.stream()
+                .map(calEvents -> getterFunction.apply(new Property<>("id", calEvents.getEventId()))
+                                            .orElseGet(Event::new))
+                .collect(Collectors.groupingBy(event -> event.getTimeOf().toLocalDate(), Collectors.toSet()));
 
         SharedResourcesFactory.getEventsCache().putAll(eventsPerDay);
         return true;

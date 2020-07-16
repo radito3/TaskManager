@@ -2,8 +2,10 @@ package com.sap.exercise.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -65,7 +67,7 @@ public class Event implements Serializable {
 
     @Column(columnDefinition = "timestamp", name = "TimeOf")
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar timeOf;
+    private LocalDateTime timeOf;
 
     @Column(columnDefinition = "text", name = "Description")
     private String description;
@@ -92,24 +94,18 @@ public class Event implements Serializable {
     }
 
     public Event(String title, EventType type) {
-        this(title, type, getDefaultCalendar(), RepeatableType.NONE);
+        this(title, type, getDefaultTime(), RepeatableType.NONE);
     }
 
-    private static Calendar getDefaultCalendar() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 12);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal;
+    private static LocalDateTime getDefaultTime() {
+        return LocalDateTime.of(LocalDate.now().withDayOfMonth(1), LocalTime.NOON);
     }
 
-    public Event(String title, EventType type, Calendar timeOf, RepeatableType repeat) {
+    public Event(String title, EventType type, LocalDateTime timeOf, RepeatableType repeat) {
         this(title, type, "", timeOf, "", false, 0, 0, repeat);
     }
 
-    public Event(String title, EventType typeOf, String location, Calendar timeOf, String description,
+    public Event(String title, EventType typeOf, String location, LocalDateTime timeOf, String description,
                  Boolean allDay, Integer duration, Integer reminder, RepeatableType toRepeat) {
         this.title = title;
         this.typeOf = typeOf;
@@ -154,11 +150,11 @@ public class Event implements Serializable {
         this.location = location;
     }
 
-    public Calendar getTimeOf() {
+    public LocalDateTime getTimeOf() {
         return timeOf;
     }
 
-    public void setTimeOf(Calendar timeOf) {
+    public void setTimeOf(LocalDateTime timeOf) {
         this.timeOf = timeOf;
     }
 
@@ -209,7 +205,7 @@ public class Event implements Serializable {
                 ", title='" + title + '\'' +
                 ", typeOf=" + typeOf +
                 ", location='" + location + '\'' +
-                ", timeOf=" + timeOf.getTime().toString() +
+                ", timeOf=" + timeOf.toString() +
                 ", description='" + description + '\'' +
                 ", allDay=" + allDay +
                 ", duration=" + duration +

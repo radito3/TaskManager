@@ -1,7 +1,7 @@
 package com.sap.exercise.model;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.persistence.*;
@@ -20,12 +20,12 @@ public class CalendarEvents implements Serializable {
 
     @Column(columnDefinition = "date", name = "Date", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Calendar date;
+    private LocalDate date;
 
     public CalendarEvents() {
     }
 
-    public CalendarEvents(Integer eventId, Calendar date) {
+    public CalendarEvents(Integer eventId, LocalDate date) {
         this.eventId = eventId;
         this.date = date;
     }
@@ -46,11 +46,11 @@ public class CalendarEvents implements Serializable {
         this.eventId = eventId;
     }
 
-    public Calendar getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Calendar date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

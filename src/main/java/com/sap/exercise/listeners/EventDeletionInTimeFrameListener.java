@@ -2,8 +2,9 @@ package com.sap.exercise.listeners;
 
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.SimplifiedCalendar;
 import com.sap.exercise.util.DateParser;
+
+import java.time.LocalDate;
 
 public class EventDeletionInTimeFrameListener implements EventListener {
     @Override
@@ -12,10 +13,10 @@ public class EventDeletionInTimeFrameListener implements EventListener {
 
         SharedResourcesFactory.getAsyncExecutionsService()
                   .execute(() -> {
-            for (SimplifiedCalendar calWrapper : DateParser.getRangeBetween((String) args[1], (String) args[2])) {
+            for (LocalDate date : DateParser.getRangeBetween((String) args[1], (String) args[2])) {
                 SharedResourcesFactory.getEventsCache()
-                          .forEach((date, eventSet) -> {
-                    if (calWrapper.equals(date)) {
+                          .forEach((localDate, eventSet) -> {
+                    if (date.equals(localDate)) {
                         eventSet.removeIf(event1 -> event1.getId().equals(event.getId()));
                     }
                 });

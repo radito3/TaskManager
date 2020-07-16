@@ -3,14 +3,14 @@ package com.sap.exercise.notifications;
 import com.sap.exercise.model.Event;
 
 import javax.swing.JOptionPane;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 class PopupNotification extends Notification {
 
     private Event event;
 
-    PopupNotification(Event event, Date date) {
-        super(date);
+    PopupNotification(Event event, LocalDateTime time) {
+        super(time);
         this.event = event;
     }
 

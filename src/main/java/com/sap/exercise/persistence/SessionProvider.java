@@ -6,6 +6,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.TimeZone;
+
 public class SessionProvider {
 
     private final SessionFactory sessionFactory;
@@ -19,7 +21,9 @@ public class SessionProvider {
 
     public Session getSession() {
         if (sessionFactory.getCurrentSession() == null) {
-            sessionFactory.openSession();
+            sessionFactory.withOptions()
+                          .jdbcTimeZone(TimeZone.getTimeZone("UTC"))
+                          .openSession();
         }
         return sessionFactory.getCurrentSession();
     }

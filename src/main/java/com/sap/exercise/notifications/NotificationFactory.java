@@ -3,19 +3,19 @@ package com.sap.exercise.notifications;
 import com.sap.exercise.Configuration;
 import com.sap.exercise.model.Event;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class NotificationFactory {
 
     private NotificationFactory() {
     }
 
-    public static Notification newNotification(Event event, Date date) {
+    public static Notification newNotification(Event event, LocalDateTime time) {
         switch (Configuration.NOTIFICATION_TYPE) {
             case POPUP:
-                return new PopupNotification(event, date);
+                return new PopupNotification(event, time);
             case EMAIL:
-                return new EmailNotification(event, date);
+                return new EmailNotification(event, time);
         }
         throw new UnsupportedOperationException("Invalid notification type");
     }

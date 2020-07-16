@@ -3,7 +3,6 @@ package com.sap.exercise.printer;
 import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.SimplifiedCalendar;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
@@ -12,13 +11,20 @@ import java.io.Closeable;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class OutputPrinter implements Closeable {
 
-    private Calendar today = Calendar.getInstance();
     private PrintStream printer;
-    private final String weekDays = "Su  Mo  Tu  We  Th  Fr  Sa";
+    private final String weekDays = "Mo  Tu  We  Th  Fr  Sa  Su";
 
     OutputPrinter(OutputStream out) {
         printer = new PrintStream(out, true);
@@ -53,7 +59,7 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printMonthCalendar(Dao<Event> handler, int month, boolean withEvents) {
-        this.printCalendar(handler, month, today.get(Calendar.YEAR), false, withEvents);
+        this.printCalendar(handler, month, LocalDate.now().getYear(), false, withEvents);
     }
 
     public void printYearCalendar(Dao<Event> handler, int year, boolean withEvents) {
@@ -66,16 +72,16 @@ public class OutputPrinter implements Closeable {
     }
 
     public void printEvents(Collection<Event> events) {
-        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = PrinterUtils.getEventsPerDay(events);
-        Map<Event, Formatter> eventFormatters = PrinterUtils.getEventFormatters(eventsPerDay, printer);
+        Map<LocalDate, Set<Event>> eventsPerDay = PrinterUtils.getEventsPerDay(events);
+        Map<Event, Formatter> eventFormatters = PrinterUtils.getEventFormatters(eventsPerDay);
 
-        for (Map.Entry<SimplifiedCalendar, Set<Event>> entry : eventsPerDay.entrySet()) {
-            Calendar date = entry.getKey().getDelegate();
-            printer.printf(PrinterColors.YELLOW + "%ta %1$tb %1$2te" + PrinterColors.RESET, date);
+        for (Map.Entry<LocalDate, Set<Event>> entry : eventsPerDay.entrySet()) {
+            String date = DateTimeFormatter.ofPattern("a MMM dd").format(entry.getKey());
+            printer.print(PrinterColors.YELLOW + date + PrinterColors.RESET);
 
             for (Event event : entry.getValue()) {
-                eventFormatters.get(event).printTime(date);
-                eventFormatters.get(event).printTitle(event.getTitle());
+                eventFormatters.get(event).printTime(printer);
+                eventFormatters.get(event).printTitle(printer);
                 printer.println();
             }
 
@@ -87,13 +93,14 @@ public class OutputPrinter implements Closeable {
         int month = arg > 11 ? (arg - 12) + 1 : arg < 0 ? (arg + 12) + 1 : arg + 1;
         int year = arg > 11 ? arg1 + 1 : arg < 0 ? arg1 - 1 : arg1;
 
-        Calendar firstDayOfMonth = new GregorianCalendar(year, month - 1, 1);
+        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
+        YearMonth yearMonth = YearMonth.from(firstDayOfMonth);
 
-        String monthName = firstDayOfMonth.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+        String monthName = yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + year : ""), weekDays.length());
 
-        int firstWeekdayOfMonth = firstDayOfMonth.get(Calendar.DAY_OF_WEEK);
-        int numberOfMonthDays = firstDayOfMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int firstWeekdayOfMonth = firstDayOfMonth.getDayOfWeek().getValue();
+        int numberOfMonthDays = yearMonth.lengthOfMonth();
         int weekdayIndex = 0;
 
         printer.println(monthHeader);
@@ -104,9 +111,13 @@ public class OutputPrinter implements Closeable {
             weekdayIndex++;
         }
 
-        Map<SimplifiedCalendar, Set<Event>> eventsPerDay = null;
+        Map<LocalDate, Set<Event>> eventsPerDay = Collections.emptyMap();
 
         if (withEvents) {
+            //TODO implement this query to work
+            // SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
+            // FROM Eventt WHERE DATE(TimeOf) = <date>;
+            // so as not to need to query all events in the time frame
             Collection<Event> events = handler.getAll(new TimeFrameCondition(
                 year + "-" + month + "-1",
                 year + "-" + month + "-" + numberOfMonthDays));
@@ -114,20 +125,11 @@ public class OutputPrinter implements Closeable {
         }
 
         for (int day = 1; day <= numberOfMonthDays; day++) {
-            boolean hasEvents = false;
-            //TODO implement this query to work
-            // SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
-            // FROM Eventt WHERE DATE(TimeOf) = <date>;
-            // so as not to need to query all events in the time frame
-            if (withEvents) {
-                Calendar toCheck = new GregorianCalendar(year, month - 1, day);
-                SimplifiedCalendar wrappedDate = new SimplifiedCalendar(toCheck);
-                hasEvents = !eventsPerDay.getOrDefault(wrappedDate, Collections.emptySet())
-                                         .isEmpty();
-            }
+            LocalDate date = LocalDate.of(year, month, day);
+            boolean hasEvents = withEvents && !eventsPerDay.getOrDefault(date, Collections.emptySet())
+                                                           .isEmpty();
 
-            PrinterUtils.printDay(printer, day, month, year,
-                                  withEvents && hasEvents ? PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK : "");
+            PrinterUtils.printDay(printer, date, hasEvents ? PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK : "");
 
             weekdayIndex++;
             if (weekdayIndex == 7) {

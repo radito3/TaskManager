@@ -7,6 +7,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import java.time.LocalDate;
+
 public class PrintAgendaCommandParser extends AbstractCommandParser {
 
     PrintAgendaCommandParser() {
@@ -19,7 +21,10 @@ public class PrintAgendaCommandParser extends AbstractCommandParser {
         if (result != null)
             return result;
 
-        String startTime = "", endTime = "";
+        //TODO add ISO format to date formatters
+        String today = LocalDate.now().toString();
+        String startTime = today,
+            endTime = today;
 
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');

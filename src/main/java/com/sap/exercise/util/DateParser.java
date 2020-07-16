@@ -1,12 +1,13 @@
 package com.sap.exercise.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 
-import java.text.ParseException;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -15,45 +16,55 @@ public class DateParser {
     public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
-    private Calendar currentCal = Calendar.getInstance();
+    private LocalDateTime date;
 
     public DateParser(String text) {
-        try {
-            String argument = StringUtils.removeEnd(text, "-").trim();
-            currentCal.setTime(DateUtils.parseDateStrictly(argument, DATE_FORMATS));
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(e.getMessage());
+        String argument = StringUtils.removeEnd(text, "-").trim();
+        if (!tryParseArgument(argument)) {
+            throw new IllegalArgumentException("Unsupported date format");
         }
     }
 
+    private boolean tryParseArgument(String argument) {
+        for (String format : DATE_FORMATS) {
+            try {
+                date = LocalDateTime.from(DateTimeFormatter.ofPattern(format).parse(argument));
+                return true;
+            } catch (DateTimeParseException ex) {
+                //ignored
+            }
+        }
+        return false;
+    }
+
     public DateParser() {
+        date = LocalDateTime.now();
     }
 
-    public Calendar asCalendar() {
-        return currentCal;
+    private DateParser(LocalDateTime date) {
+        this.date = date;
     }
 
-    void addOneWeek() {
-        currentCal = (Calendar) currentCal.clone();
-        currentCal.add(Calendar.DAY_OF_MONTH, 6);
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    DateParser addOneWeek() {
+        return new DateParser(date.plusWeeks(1));
     }
 
     public String asString() {
-        return String.format("%1$tY-%1$tm-%1$td", currentCal);
+        return DateTimeFormatter.ISO_LOCAL_DATE.format(date);
     }
 
-    public static List<SimplifiedCalendar> getRangeBetween(String start, String end) {
+    public static List<LocalDate> getRangeBetween(String start, String end) {
         DateParser startDate = new DateParser(start);
         DateParser endDate = new DateParser(end);
 
-        long days = TimeUnit.MILLISECONDS.toDays(endDate.currentCal.getTimeInMillis() - startDate.currentCal.getTimeInMillis());
+        long days = startDate.date.until(endDate.date, ChronoUnit.DAYS);
 
         return LongStream.rangeClosed(0, days)
-                         .mapToObj(i -> {
-                             Calendar cal = (Calendar) startDate.currentCal.clone();
-                             cal.add(Calendar.DAY_OF_MONTH, Math.toIntExact(i));
-                             return new SimplifiedCalendar(cal);
-                         })
+                         .mapToObj(num -> startDate.date.plus(num, ChronoUnit.DAYS).toLocalDate())
                          .collect(Collectors.toList());
     }
 }

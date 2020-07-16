@@ -19,7 +19,9 @@ public class DateArgumentEvaluator {
 
         switch (numOfArgs) {
             case 0:
-                forZeroArgs();
+                DateParser today = new DateParser();
+                arg1 = today.asString();
+                arg2 = today.addOneWeek().asString();
                 break;
             case 1:
                 forOneArg(args.get(0));
@@ -31,14 +33,6 @@ public class DateArgumentEvaluator {
         }
     }
 
-    private void forZeroArgs() {
-        DateParser today = new DateParser();
-        arg1 = today.asString();
-
-        today.addOneWeek();
-        arg2 = today.asString();
-    }
-
     private void forOneArg(String arg) {
         DateParser date = new DateParser(arg);
         if (arg.endsWith("-")) {
@@ -46,9 +40,7 @@ public class DateArgumentEvaluator {
             arg2 = date.asString();
         } else {
             arg1 = date.asString();
-
-            date.addOneWeek();
-            arg2 = date.asString();
+            arg2 = date.addOneWeek().asString();
         }
     }
 

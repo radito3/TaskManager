@@ -3,26 +3,16 @@ package com.sap.exercise.printer;
 import com.sap.exercise.model.Event;
 
 import java.io.PrintStream;
-import java.util.Calendar;
+import java.time.format.DateTimeFormatter;
 
 class Formatter {
 
-    private boolean allDay = false;
-    private boolean multipleEvents = false;
+    private Event event;
+    private boolean multipleEvents;
     private boolean first = false;
-    private Event.EventType type;
-    private PrintStream writer;
 
-    Formatter(PrintStream writer) {
-        this.writer = writer;
-    }
-
-    void setAllDay(boolean allDay) {
-        this.allDay = allDay;
-    }
-
-    void setType(Event.EventType type) {
-        this.type = type;
+    Formatter(Event event) {
+        this.event = event;
     }
 
     void setMultipleEvents(boolean val) {
@@ -33,28 +23,29 @@ class Formatter {
         this.first = true;
     }
 
-    void printTitle(String title) {
-        switch (type) {
+    void printTitle(PrintStream writer) {
+        switch (event.getTypeOf()) {
             case TASK:
-                writer.print(PrinterColors.CYAN + title + PrinterColors.RESET);
+                writer.print(PrinterColors.CYAN + event.getTitle() + PrinterColors.RESET);
                 break;
             case REMINDER:
-                writer.print(PrinterColors.GREEN + title + PrinterColors.RESET);
+                writer.print(PrinterColors.GREEN + event.getTitle() + PrinterColors.RESET);
                 break;
             case GOAL:
-                writer.print(PrinterColors.PURPLE + title + PrinterColors.RESET);
+                writer.print(PrinterColors.PURPLE + event.getTitle() + PrinterColors.RESET);
                 break;
         }
     }
 
-    void printTime(Calendar date) {
+    void printTime(PrintStream writer) {
         if (multipleEvents && !first) {
             writer.print("          ");
         }
-        if (allDay) {
+        if (event.getAllDay()) {
             writer.print("       ");
         } else {
-            writer.printf(" %2tk:%1$2tM:%1$2tS ", date);
+            String date = DateTimeFormatter.ofPattern(" k:mm:ss ").format(event.getTimeOf());
+            writer.print(date);
         }
     }
 }

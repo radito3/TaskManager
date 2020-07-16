@@ -2,8 +2,8 @@ package com.sap.exercise.listeners;
 
 import com.sap.exercise.services.SharedResourcesFactory;
 import com.sap.exercise.model.Event;
-import com.sap.exercise.util.SimplifiedCalendar;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +14,7 @@ public class EventCreationListener implements EventListener {
         Integer id = (Integer) args[1];
 
         event.setId(id);
-        SimplifiedCalendar date = new SimplifiedCalendar(event.getTimeOf());
+        LocalDate date = event.getTimeOf().toLocalDate();
 
         Set<Event> events = SharedResourcesFactory.getEventsCache()
                                       .get(date);

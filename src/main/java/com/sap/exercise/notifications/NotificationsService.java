@@ -5,11 +5,10 @@ import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateParser;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.TimeUnit;
 
 //ideally this would be a singleton bean
 public class NotificationsService {
@@ -24,14 +23,15 @@ public class NotificationsService {
             .getAll(new TimeFrameCondition(today.asString(), today.asString()));
 
         for (Event event : todayEvents) {
-            long timeToNotify;
+            LocalDateTime timeToNotify;
             if (event.getAllDay()) {
-                timeToNotify = System.currentTimeMillis();
+                timeToNotify = LocalDateTime.now();
             } else {
-                timeToNotify = event.getTimeOf().getTimeInMillis() - TimeUnit.MINUTES.toMillis(event.getReminder());
+                timeToNotify = event.getTimeOf()
+                                    .minusMinutes(event.getReminder());
             }
 
-            queue.add(NotificationFactory.newNotification(event, new Date(timeToNotify)));
+            queue.add(NotificationFactory.newNotification(event, timeToNotify));
         }
 
         scheduleNotifications();
