@@ -14,7 +14,6 @@ public class ExitCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         SharedResourcesFactory.shutdown();
-        NotificationFactory.clearEventsSet();
         SessionProviderFactory.close();
         try {
             Configuration.INPUT.close();
