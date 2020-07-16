@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+//TODO this is kinda excessive
+// a simple CommandParserFactory with a switch is sufficient
 public enum CommandParsers {
     ADD(AddCommandParser::new),
     EDIT(EditCommandParser::new),
