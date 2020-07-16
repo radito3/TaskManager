@@ -9,10 +9,11 @@ import org.apache.commons.cli.*;
 
 import java.util.function.Function;
 
+//TODO remove the interface, rename this class CommandParser
 abstract class AbstractCommandParser implements CommandParser {
 
     private Function<Options, CommandHelper> helperCreator;
-    CommandLine cmd;
+    private CommandLine cmd;
     private Function<CommandLine, CommandValidator> validatorCreator;
 
     AbstractCommandParser(Function<Options, CommandHelper> helperCreator) {
@@ -40,8 +41,10 @@ abstract class AbstractCommandParser implements CommandParser {
             return () -> CommandExecutionResult.SUCCESSFUL;
         }
 
-        return null;
+        return parseInternal(cmd);
     }
+    
+    abstract Command parseInternal(CommandLine cmd);
 
     abstract Options getOptions();
 
