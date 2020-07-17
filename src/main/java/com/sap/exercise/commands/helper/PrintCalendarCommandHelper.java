@@ -6,14 +6,8 @@ import org.apache.commons.cli.Options;
 
 public class PrintCalendarCommandHelper implements CommandHelper {
 
-    private Options options;
-
-    public PrintCalendarCommandHelper(Options options) {
-        this.options = options;
-    }
-
     @Override
-    public void printHelp() {
+    public void printHelp(Options options) {
         OutputPrinterProvider.getPrinter()
                 .printHelp("cal",
                         String.format("%nDisplay a calendar%n%n"),

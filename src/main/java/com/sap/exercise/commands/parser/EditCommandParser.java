@@ -3,9 +3,9 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.EditEventCommand;
 import com.sap.exercise.commands.helper.EditCommandHelper;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class EditCommandParser extends AbstractCommandParser {
 
@@ -14,12 +14,8 @@ public class EditCommandParser extends AbstractCommandParser {
     }
 
     @Override
-    public Command parse(String[] args) throws ParseException {
-        Command result = super.parse(args);
-        if (result != null)
-            return result;
-
-        return new EditEventCommand(buildEventName(args));
+    Command parseInternal(CommandLine cmd) {
+        return new EditEventCommand(buildEventName(cmd.getArgs()));
     }
 
     @Override

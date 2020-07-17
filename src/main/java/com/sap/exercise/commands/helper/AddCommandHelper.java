@@ -6,14 +6,8 @@ import org.apache.commons.cli.Options;
 
 public class AddCommandHelper implements CommandHelper {
 
-    private Options options;
-
-    public AddCommandHelper(Options options) {
-        this.options = options;
-    }
-
     @Override
-    public void printHelp() {
+    public void printHelp(Options options) {
         OutputPrinterProvider.getPrinter()
                 .printHelp("add",
                         String.format("%nCreate an event%n%n"),

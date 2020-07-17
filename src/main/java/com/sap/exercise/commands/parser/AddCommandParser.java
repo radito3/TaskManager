@@ -5,22 +5,18 @@ import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.helper.AddCommandHelper;
 import com.sap.exercise.commands.validator.AddCommandValidator;
 import com.sap.exercise.model.Event;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class AddCommandParser extends AbstractCommandParser {
 
     AddCommandParser() {
-        super(AddCommandHelper::new, AddCommandValidator::new);
+        super(new AddCommandHelper(), new AddCommandValidator());
     }
 
     @Override
-    public Command parse(String[] args) throws ParseException {
-        Command result = super.parse(args);
-        if (result != null)
-            return result;
-
+    Command parseInternal(CommandLine cmd) {
         Event event;
 
         if (cmd.hasOption('r')) {

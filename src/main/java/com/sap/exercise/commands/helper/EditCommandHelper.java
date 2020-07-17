@@ -6,7 +6,7 @@ import org.apache.commons.cli.Options;
 public class EditCommandHelper implements CommandHelper {
 
     @Override
-    public void printHelp() {
+    public void printHelp(Options options) {
         OutputPrinterProvider.getPrinter()
                 .printHelp("edit <event name>",
                         String.format("%nEdit an event"), "", new Options());

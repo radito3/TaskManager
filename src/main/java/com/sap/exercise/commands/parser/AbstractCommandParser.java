@@ -4,40 +4,37 @@ import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.CommandExecutionResult;
 import com.sap.exercise.commands.helper.CommandHelper;
 import com.sap.exercise.commands.validator.CommandValidator;
-import com.sap.exercise.commands.validator.DefaultCommandValidator;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
-import java.util.function.Function;
-
-//TODO remove the interface, rename this class CommandParser
 abstract class AbstractCommandParser implements CommandParser {
 
-    private Function<Options, CommandHelper> helperCreator;
-    private CommandLine cmd;
-    private Function<CommandLine, CommandValidator> validatorCreator;
+    private CommandHelper helper;
+    private CommandValidator validator;
 
-    AbstractCommandParser(Function<Options, CommandHelper> helperCreator) {
-        this.helperCreator = helperCreator;
+    AbstractCommandParser(CommandHelper helper) {
+        this.helper = helper;
     }
 
-    AbstractCommandParser(Function<Options, CommandHelper> helperCreator,
-                          Function<CommandLine, CommandValidator> validatorCreator) {
-        this(helperCreator);
-        this.validatorCreator = validatorCreator;
-    }
-
-    AbstractCommandParser() {
+    AbstractCommandParser(CommandHelper helper, CommandValidator validator) {
+        this(helper);
+        this.validator = validator;
     }
 
     @Override
     public Command parse(String[] args) throws ParseException {
-        cmd = new DefaultParser().parse(getOptions(), args, false);
-        CommandValidator validator = validatorCreator == null ? new DefaultCommandValidator(cmd) : validatorCreator.apply(cmd);
+        Options options = getOptions();
+        CommandLine cmd = new DefaultParser().parse(options, args, false);
 
-        validator.validate();
+        if (validator != null) {
+            validator.validate(cmd);
+        }
 
         if (cmd.hasOption("help")) {
-            helperCreator.apply(getOptions()).printHelp();
+            helper.printHelp(options);
             return () -> CommandExecutionResult.SUCCESSFUL;
         }
 

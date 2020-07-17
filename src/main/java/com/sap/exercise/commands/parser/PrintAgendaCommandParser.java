@@ -3,25 +3,20 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.PrintAgendaCommand;
 import com.sap.exercise.commands.helper.PrintAgendaCommandHelper;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 import java.time.LocalDate;
 
 public class PrintAgendaCommandParser extends AbstractCommandParser {
 
     PrintAgendaCommandParser() {
-        super(PrintAgendaCommandHelper::new);
+        super(new PrintAgendaCommandHelper());
     }
 
     @Override
-    public Command parse(String[] args) throws ParseException {
-        Command result = super.parse(args);
-        if (result != null)
-            return result;
-
-        //TODO add ISO format to date formatters
+    Command parseInternal(CommandLine cmd) {
         String today = LocalDate.now().toString();
         String startTime = today,
             endTime = today;

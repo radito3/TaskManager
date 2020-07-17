@@ -6,14 +6,8 @@ import org.apache.commons.cli.Options;
 
 public class PrintAgendaCommandHelper implements CommandHelper {
 
-    private Options options;
-
-    public PrintAgendaCommandHelper(Options options) {
-        this.options = options;
-    }
-
     @Override
-    public void printHelp() {
+    public void printHelp(Options options) {
         OutputPrinterProvider.getPrinter()
                 .printHelp("agenda",
                         String.format("%nDisplay a weekly agenda (if not given time arguments)%n%n"),

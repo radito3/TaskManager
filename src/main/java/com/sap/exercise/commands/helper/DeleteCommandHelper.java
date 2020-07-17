@@ -6,14 +6,8 @@ import org.apache.commons.cli.Options;
 
 public class DeleteCommandHelper implements CommandHelper {
 
-    private Options options;
-
-    public DeleteCommandHelper(Options options) {
-        this.options = options;
-    }
-
     @Override
-    public void printHelp() {
+    public void printHelp(Options options) {
         OutputPrinterProvider.getPrinter()
                 .printHelp("delete <event name>",
                         String.format("%nDelete an event%n%n"),

@@ -4,22 +4,18 @@ import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.PrintCalendarCommand;
 import com.sap.exercise.commands.helper.PrintCalendarCommandHelper;
 import com.sap.exercise.commands.validator.PrintCalendarCommandValidator;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class PrintCalendarCommandParser extends AbstractCommandParser {
 
     PrintCalendarCommandParser() {
-        super(PrintCalendarCommandHelper::new, PrintCalendarCommandValidator::new);
+        super(new PrintCalendarCommandHelper(), new PrintCalendarCommandValidator());
     }
 
     @Override
-    public Command parse(String[] args) throws ParseException {
-        Command result = super.parse(args);
-        if (result != null)
-            return result;
-
+    Command parseInternal(CommandLine cmd) {
         boolean withEvents = cmd.hasOption('e');
         if (cmd.hasOption('3')) {
             return new PrintCalendarCommand(PrintCalendarCommand.PrintCalendarOptions.THREE, withEvents);

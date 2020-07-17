@@ -3,25 +3,21 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.DeleteEventCommand;
 import com.sap.exercise.commands.helper.DeleteCommandHelper;
+import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class DeleteCommandParser extends AbstractCommandParser {
 
     DeleteCommandParser() {
-        super(DeleteCommandHelper::new);
+        super(new DeleteCommandHelper());
     }
 
     @Override
-    public Command parse(String[] args) throws ParseException {
-        Command result = super.parse(args);
-        if (result != null)
-            return result;
-
+    Command parseInternal(CommandLine cmd) {
         String startTime = "",
-                endTime = "",
-                eventName = buildEventName(cmd.getArgs());
+            endTime = "",
+            eventName = buildEventName(cmd.getArgs());
 
         if (cmd.hasOption('s')) {
             startTime = cmd.getOptionValue('s');
