@@ -6,14 +6,16 @@ import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.persistence.Property;
 import com.sap.exercise.printer.OutputPrinterProvider;
-import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.wrapper.EventWrapperFactory;
+import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.builder.EventBuilderFactory;
 import com.sap.exercise.model.Event;
 
+//TODO change this command to allow only field specific editing
+// rather than having to edit (potentially) every field
 public class EditEventCommand implements Command {
 
     private String eventName;
-    private final Dao<Event> handler = new EventDao();
+    private final Dao<Event> eventRepo = new EventDao();
 
     public EditEventCommand(String eventName) {
         this.eventName = eventName;
@@ -21,14 +23,14 @@ public class EditEventCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
-        Event event = handler.get(new Property<>("title", eventName))
-                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
-        EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
-        EventDataParser dataParser = new EventDataParser(eventWrapper);
+        Event event = eventRepo.get(new Property<>("title", eventName))
+                               .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
+        EventBuilder eventBuilder = EventBuilderFactory.newEventBuilder(event);
+        EventDataParser dataParser = new EventDataParser(eventBuilder);
 
         dataParser.parseInput();
+        eventRepo.update(eventBuilder.build());
 
-        handler.update(eventWrapper.getEvent());
         OutputPrinterProvider.getPrinter().printf("%nEvent updated");
         return CommandExecutionResult.SUCCESSFUL;
     }

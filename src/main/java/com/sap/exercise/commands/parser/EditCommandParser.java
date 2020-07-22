@@ -10,7 +10,7 @@ import org.apache.commons.cli.Options;
 public class EditCommandParser extends AbstractCommandParser {
 
     EditCommandParser() {
-        super(opts -> new EditCommandHelper());
+        super(new EditCommandHelper());
     }
 
     @Override

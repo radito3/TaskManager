@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 //data access object
+//TODO change to Spring Data interface
+// CrudRepository<Event, Integer>
 public interface Dao<T> {
 
     <Y> Optional<T> get(Property<Y> property);

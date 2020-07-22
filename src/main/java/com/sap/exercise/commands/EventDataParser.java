@@ -4,8 +4,8 @@ import com.sap.exercise.Configuration;
 import com.sap.exercise.printer.OutputPrinter;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import com.sap.exercise.printer.PrinterColors;
-import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.wrapper.FieldInfo;
+import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.builder.FieldInfo;
 import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.log4j.Logger;
 
@@ -16,38 +16,43 @@ import java.io.InputStreamReader;
 class EventDataParser {
 
     private String input;
-    private final EventWrapper eventWrapper;
+    private final EventBuilder eventBuilder;
     private final OutputPrinter printer = OutputPrinterProvider.getPrinter();
 
-    EventDataParser(EventWrapper wrapper) {
-        this.eventWrapper = wrapper;
+    EventDataParser(EventBuilder eventBuilder) {
+        this.eventBuilder = eventBuilder;
     }
 
     void parseInput() {
-        for (FieldInfo fieldInfo : eventWrapper.getFields()) {
+        for (FieldInfo fieldInfo : eventBuilder.getFields()) {
             printer.print(fieldInfo.getNameToDisplay() + ": " + PrinterColors.CURSOR_RIGHT);
 
             readInput(fieldInfo);
 
-            if (!input.isEmpty())
-                fieldInfo.handleArg(input);
+            if (!input.isEmpty()) {
+                fieldInfo.parseArgument(input);
+            }
         }
     }
 
     private void readInput(FieldInfo fieldInfo) {
         boolean error = false;
         String before = input;
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new CloseShieldInputStream(Configuration.INPUT)))) {
+
             input = reader.readLine();
             checkMandatoryField(reader, fieldInfo);
+
         } catch (IOException e) {
             Logger.getLogger(getClass()).error("Input reading error", e);
-            printer.println("Error on read. Please try again");
+            printer.println("Error reading input. Please try again");
             error = true;
         } finally {
-            if (error && input.equals(before))
+            if (error && input.equals(before)) {
                 readInput(fieldInfo);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.sap.exercise.wrapper;
+package com.sap.exercise.builder;
 
 //Dido: nice, good use of an interface
 public interface FieldInfo {
@@ -9,6 +9,6 @@ public interface FieldInfo {
 
     String getNameToDisplay();
 
-    void handleArg(String arg);
+    void parseArgument(String arg);
 
 }

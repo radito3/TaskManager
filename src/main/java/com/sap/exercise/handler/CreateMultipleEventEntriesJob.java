@@ -3,6 +3,7 @@ package com.sap.exercise.handler;
 import com.sap.exercise.model.CalendarEvents;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.persistence.TransactionBuilder;
+import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -19,14 +20,16 @@ class CreateMultipleEventEntriesJob implements Runnable {
 
     @Override
     public void run() {
-        TransactionBuilder transaction = TransactionBuilder.newInstance();
-        transaction.addOperation(session -> {
-            int limit = event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30;
-            for (int i = 1; i < limit; i++) {
-                session.save(createCalEventEntry(i));
-            }
-        });
-        transaction.commit();
+        TransactionBuilder.newInstance()
+                          .addOperation(this::createEntries)
+                          .commit();
+    }
+
+    private void createEntries(Session session) {
+        int limit = event.getToRepeat() == Event.RepeatableType.YEARLY ? 4 : 30;
+        for (int i = 1; i < limit; i++) {
+            session.save(createCalEventEntry(i));
+        }
     }
 
     private CalendarEvents createCalEventEntry(int num) {

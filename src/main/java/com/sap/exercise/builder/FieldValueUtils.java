@@ -1,6 +1,4 @@
-package com.sap.exercise.wrapper;
-
-import java.util.Optional;
+package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
@@ -11,10 +9,10 @@ public class FieldValueUtils {
 
     public static Boolean valueOfBool(String input) {
         if (input.matches("(?i)^\\s*y|yes\\s*$")) {
-            return true;
+            return Boolean.TRUE;
         }
         if (input.matches("(?i)^\\s*n|no\\s*$")) {
-            return false;
+            return Boolean.FALSE;
         }
         throw new IllegalArgumentException("Invalid input");
     }
@@ -34,8 +32,9 @@ public class FieldValueUtils {
     }
 
     public static String valueOfStr(String input) {
-        return Optional.ofNullable(input)
-                .filter(string -> string.matches("[-_.a-zA-Z0-9 ]*"))
-                .orElseThrow(() -> new IllegalArgumentException("Illegal characters in input"));
+        if (input == null || input.matches("[^-_.a-zA-Z0-9 ]+")) {
+            throw new IllegalArgumentException("Illegal characters in input");
+        }
+        return input;
     }
 }

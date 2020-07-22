@@ -1,16 +1,20 @@
-package com.sap.exercise.wrapper;
+package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
-import com.sap.exercise.wrapper.fields.*;
+import com.sap.exercise.builder.fields.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class GoalEventWrapper implements EventWrapper {
+public class GoalEventBuilder implements EventBuilder {
 
     private Event event;
 
-    GoalEventWrapper(Event event) {
+    GoalEventBuilder() {
+        this.event = new Event("", Event.EventType.GOAL);
+    }
+
+    GoalEventBuilder(Event event) {
         this.event = event;
     }
 
@@ -21,7 +25,7 @@ public class GoalEventWrapper implements EventWrapper {
     }
 
     @Override
-    public Event getEvent() {
+    public Event build() {
         return event;
     }
 }

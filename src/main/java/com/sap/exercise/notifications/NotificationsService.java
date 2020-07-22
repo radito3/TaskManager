@@ -24,6 +24,7 @@ public class NotificationsService {
 
         for (Event event : todayEvents) {
             LocalDateTime timeToNotify;
+
             if (event.getAllDay()) {
                 timeToNotify = LocalDateTime.now();
             } else {

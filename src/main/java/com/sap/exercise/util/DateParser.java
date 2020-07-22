@@ -64,7 +64,7 @@ public class DateParser {
         long days = startDate.date.until(endDate.date, ChronoUnit.DAYS);
 
         return LongStream.rangeClosed(0, days)
-                         .mapToObj(num -> startDate.date.plus(num, ChronoUnit.DAYS).toLocalDate())
+                         .mapToObj(num -> startDate.date.plusDays(num).toLocalDate())
                          .collect(Collectors.toList());
     }
 }

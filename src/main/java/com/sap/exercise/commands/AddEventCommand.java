@@ -3,27 +3,30 @@ package com.sap.exercise.commands;
 import com.sap.exercise.handler.Dao;
 import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.printer.OutputPrinterProvider;
-import com.sap.exercise.wrapper.EventWrapper;
-import com.sap.exercise.wrapper.EventWrapperFactory;
+import com.sap.exercise.builder.EventBuilder;
+import com.sap.exercise.builder.EventBuilderFactory;
 import com.sap.exercise.model.Event;
 
+//TODO for this and the Edit command, when migrating to a rest service
+// it'd probably be best if they are web socket endpoints,
+// so as not to send a http request on every event field
 public class AddEventCommand implements Command {
 
-    private Event event;
-    private final Dao<Event> handler = new EventDao();
+    private Event.EventType eventType;
+    private final Dao<Event> eventRepo = new EventDao();
 
-    public AddEventCommand(Event event) {
-        this.event = event;
+    public AddEventCommand(Event.EventType eventType) {
+        this.eventType = eventType;
     }
 
     @Override
     public CommandExecutionResult execute() {
-        EventWrapper eventWrapper = EventWrapperFactory.getEventWrapper(event);
-        EventDataParser dataParser = new EventDataParser(eventWrapper);
+        EventBuilder eventBuilder = EventBuilderFactory.newEventBuilder(eventType);
+        EventDataParser dataParser = new EventDataParser(eventBuilder);
 
         dataParser.parseInput();
+        eventRepo.save(eventBuilder.build());
 
-        handler.save(eventWrapper.getEvent());
         OutputPrinterProvider.getPrinter().printf("%nEvent created");
         return CommandExecutionResult.SUCCESSFUL;
     }

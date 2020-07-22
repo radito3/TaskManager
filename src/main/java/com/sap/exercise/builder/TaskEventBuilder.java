@@ -1,16 +1,20 @@
-package com.sap.exercise.wrapper;
+package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
-import com.sap.exercise.wrapper.fields.*;
+import com.sap.exercise.builder.fields.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class TaskEventWrapper implements EventWrapper {
+public class TaskEventBuilder implements EventBuilder {
 
     private Event event;
 
-    TaskEventWrapper(Event event) {
+    TaskEventBuilder() {
+        this.event = new Event("", Event.EventType.TASK);
+    }
+
+    TaskEventBuilder(Event event) {
         this.event = event;
     }
 
@@ -22,7 +26,7 @@ public class TaskEventWrapper implements EventWrapper {
     }
 
     @Override
-    public Event getEvent() {
+    public Event build() {
         return event;
     }
 }

@@ -1,12 +1,12 @@
-package com.sap.exercise.wrapper;
+package com.sap.exercise.builder;
 
 import com.sap.exercise.model.Event;
 
 import java.util.List;
 
-public interface EventWrapper {
+public interface EventBuilder {
 
     List<FieldInfo> getFields();
 
-    Event getEvent();
+    Event build();
 }

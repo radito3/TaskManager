@@ -14,13 +14,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 class EventsGetter {
 
@@ -65,10 +65,17 @@ class EventsGetter {
             return false;
         }
 
-        Map<LocalDate, Set<Event>> eventsPerDay = calendarEvents.stream()
-                .map(calEvents -> getterFunction.apply(new Property<>("id", calEvents.getEventId()))
-                                            .orElseGet(Event::new))
-                .collect(Collectors.groupingBy(event -> event.getTimeOf().toLocalDate(), Collectors.toSet()));
+        Map<LocalDate, Set<Event>> eventsPerDay = new HashMap<>();
+
+        for (CalendarEvents calEvents : calendarEvents) {
+            Optional<Event> optional = getterFunction.apply(new Property<>("id", calEvents.getEventId()));
+            if (!optional.isPresent()) {
+                continue;
+            }
+            Event event = optional.get();
+            eventsPerDay.computeIfAbsent(event.getTimeOf().toLocalDate(), k -> new HashSet<>())
+                        .add(event);
+        }
 
         SharedResourcesFactory.getEventsCache().putAll(eventsPerDay);
         return true;

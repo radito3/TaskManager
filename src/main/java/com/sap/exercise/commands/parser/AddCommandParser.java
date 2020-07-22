@@ -17,17 +17,17 @@ public class AddCommandParser extends AbstractCommandParser {
 
     @Override
     Command parseInternal(CommandLine cmd) {
-        Event event;
+        Event.EventType eventType;
 
         if (cmd.hasOption('r')) {
-            event = new Event("", Event.EventType.REMINDER);
+            eventType = Event.EventType.REMINDER;
         } else if (cmd.hasOption('g')) {
-            event = new Event("", Event.EventType.GOAL);
+            eventType = Event.EventType.GOAL;
         } else {
-            event = new Event("", Event.EventType.TASK);
+            eventType = Event.EventType.TASK;
         }
 
-        return new AddEventCommand(event);
+        return new AddEventCommand(eventType);
     }
 
     @Override
