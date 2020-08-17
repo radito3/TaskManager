@@ -1,8 +1,7 @@
 package com.sap.exercise.printer;
 
-import com.sap.exercise.handler.Dao;
-import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
+import com.sap.exercise.util.EventExtractor;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +11,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -58,15 +58,23 @@ public class OutputPrinter implements Closeable {
                 74, cmdLineSyntax, header, options, 1, 3, footer, true);
     }
 
-    public void printMonthCalendar(Dao<Event> handler, int month, boolean withEvents) {
-        this.printCalendar(handler, month, LocalDate.now().getYear(), false, withEvents);
+    public void printMonthCalendar(int month, EventExtractor eventExtractor) {
+        int year = Year.now().getValue();
+        if (month < 1) {
+            year--;
+            month += 12;
+        } else if (month > 12) {
+            year++;
+            month -= 12;
+        }
+        this.printCalendar(YearMonth.of(year, month), false, eventExtractor);
     }
 
-    public void printYearCalendar(Dao<Event> handler, int year, boolean withEvents) {
+    public void printYearCalendar(int year, EventExtractor eventExtractor) {
         printer.println(StringUtils.center(String.valueOf(year), weekDays.length()));
         printer.println();
-        for (int i = 0; i < 12; i++) {
-            this.printCalendar(handler, i, year, true, withEvents);
+        for (int i = 1; i <= 12; i++) {
+            this.printCalendar(YearMonth.of(year, i), true, eventExtractor);
             printer.println();
         }
     }
@@ -89,45 +97,30 @@ public class OutputPrinter implements Closeable {
         }
     }
 
-    private void printCalendar(Dao<Event> handler, int arg, int arg1, boolean wholeYear, boolean withEvents) {
-        int month = arg > 11 ? (arg - 12) + 1 : arg < 0 ? (arg + 12) + 1 : arg + 1;
-        int year = arg > 11 ? arg1 + 1 : arg < 0 ? arg1 - 1 : arg1;
-
-        LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
-        YearMonth yearMonth = YearMonth.from(firstDayOfMonth);
-
+    private void printCalendar(YearMonth yearMonth, boolean wholeYear, EventExtractor eventExtractor) {
         String monthName = yearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + year : ""), weekDays.length());
-
-        int firstWeekdayOfMonth = firstDayOfMonth.getDayOfWeek().getValue();
-        int numberOfMonthDays = yearMonth.lengthOfMonth();
-        int weekdayIndex = 0;
+        String monthHeader = StringUtils.center(monthName + (!wholeYear ? " " + yearMonth.getYear() : ""), weekDays.length());
 
         printer.println(monthHeader);
         printer.println(weekDays);
+
+        LocalDate firstDayOfMonth = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), 1);
+        int firstWeekdayOfMonth = firstDayOfMonth.getDayOfWeek().getValue();
+        int numberOfMonthDays = yearMonth.lengthOfMonth();
+        int weekdayIndex = 0;
 
         for (int day = 1; day < firstWeekdayOfMonth; day++) {
             printer.print("    ");
             weekdayIndex++;
         }
 
-        Map<LocalDate, Set<Event>> eventsPerDay = Collections.emptyMap();
-
-        if (withEvents) {
-            //TODO implement this query to work
-            // SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
-            // FROM Eventt WHERE DATE(TimeOf) = <date>;
-            // so as not to need to query all events in the time frame
-            Collection<Event> events = handler.getAll(new TimeFrameCondition(
-                year + "-" + month + "-1",
-                year + "-" + month + "-" + numberOfMonthDays));
-            eventsPerDay = PrinterUtils.getEventsPerDay(events);
-        }
+        Collection<Event> events = eventExtractor.getEventsForMonth(yearMonth);
+        Map<LocalDate, Set<Event>> eventsPerDay = PrinterUtils.getEventsPerDay(events);
 
         for (int day = 1; day <= numberOfMonthDays; day++) {
-            LocalDate date = LocalDate.of(year, month, day);
-            boolean hasEvents = withEvents && !eventsPerDay.getOrDefault(date, Collections.emptySet())
-                                                           .isEmpty();
+            LocalDate date = LocalDate.of(yearMonth.getYear(), yearMonth.getMonthValue(), day);
+            boolean hasEvents = !eventsPerDay.getOrDefault(date, Collections.emptySet())
+                                             .isEmpty();
 
             PrinterUtils.printDay(printer, date, hasEvents ? PrinterColors.CYAN_BACKGROUND + PrinterColors.BLACK : "");
 

@@ -5,11 +5,12 @@ import com.sap.exercise.model.Event;
 import java.io.Closeable;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class EventsCache implements Closeable {
@@ -20,17 +21,13 @@ public final class EventsCache implements Closeable {
         eventsMap = new ConcurrentHashMap<>();
     }
 
-    public void forEach(BiConsumer<LocalDate, Set<Event>> biConsumer) {
-        eventsMap.forEach(biConsumer);
-        eventsMap.values().removeIf(Collection::isEmpty);
+    public void forAllEvents(Consumer<Set<Event>> consumer) {
+        eventsMap.values().forEach(consumer);
     }
 
-    public void put(LocalDate date, Set<Event> events) {
-        if (eventsMap.containsKey(date)) {
-            eventsMap.get(date).addAll(events);
-        } else {
-            eventsMap.put(date, events);
-        }
+    public void put(LocalDate date, Event event) {
+        eventsMap.computeIfAbsent(date, k -> new HashSet<>())
+                 .add(event);
     }
 
     public void putAll(Map<LocalDate, Set<Event>> map) {

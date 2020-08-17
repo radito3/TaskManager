@@ -3,7 +3,6 @@ package com.sap.exercise.commands;
 import com.sap.exercise.Configuration;
 import com.sap.exercise.persistence.SessionProviderFactory;
 import com.sap.exercise.services.SharedResourcesFactory;
-import com.sap.exercise.notifications.NotificationFactory;
 import com.sap.exercise.printer.OutputPrinterProvider;
 import org.apache.log4j.Logger;
 

@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 
 class EventDataParser {
 
-    private String input;
+    private volatile String input;
     private final EventBuilder eventBuilder;
     private final OutputPrinter printer = OutputPrinterProvider.getPrinter();
 

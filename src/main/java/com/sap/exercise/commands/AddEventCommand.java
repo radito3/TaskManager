@@ -12,8 +12,7 @@ import com.sap.exercise.model.Event;
 // so as not to send a http request on every event field
 public class AddEventCommand implements Command {
 
-    private Event.EventType eventType;
-    private final Dao<Event> eventRepo = new EventDao();
+    private final Event.EventType eventType;
 
     public AddEventCommand(Event.EventType eventType) {
         this.eventType = eventType;
@@ -23,6 +22,7 @@ public class AddEventCommand implements Command {
     public CommandExecutionResult execute() {
         EventBuilder eventBuilder = EventBuilderFactory.newEventBuilder(eventType);
         EventDataParser dataParser = new EventDataParser(eventBuilder);
+        Dao<Event> eventRepo = new EventDao();
 
         dataParser.parseInput();
         eventRepo.save(eventBuilder.build());

@@ -10,7 +10,7 @@ public final class AsyncExecutionsService implements Closeable {
     private final ScheduledThreadPoolExecutor scheduledExecutor;
 
     AsyncExecutionsService() {
-        scheduledExecutor = new ScheduledThreadPoolExecutor(2, new DiscardOldestPolicy());
+        scheduledExecutor = new ScheduledThreadPoolExecutor(3, new DiscardOldestPolicy());
         scheduledExecutor.setMaximumPoolSize(5);
     }
 

@@ -14,8 +14,7 @@ import com.sap.exercise.model.Event;
 // rather than having to edit (potentially) every field
 public class EditEventCommand implements Command {
 
-    private String eventName;
-    private final Dao<Event> eventRepo = new EventDao();
+    private final String eventName;
 
     public EditEventCommand(String eventName) {
         this.eventName = eventName;
@@ -23,6 +22,7 @@ public class EditEventCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
+        Dao<Event> eventRepo = new EventDao();
         Event event = eventRepo.get(new Property<>("title", eventName))
                                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
         EventBuilder eventBuilder = EventBuilderFactory.newEventBuilder(event);

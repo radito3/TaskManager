@@ -1,9 +1,11 @@
 package com.sap.exercise.notifications;
 
+import com.sap.exercise.commands.ExitCommand;
 import com.sap.exercise.handler.EventDao;
 import com.sap.exercise.handler.TimeFrameCondition;
 import com.sap.exercise.model.Event;
 import com.sap.exercise.util.DateParser;
+import org.apache.log4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -44,7 +46,7 @@ public class NotificationsService {
                 try {
                     queue.take().send();
                 } catch (InterruptedException e) {
-                    System.err.println("Suppressed notification");
+                    Logger.getLogger(NotificationsService.class).error("Suppressed notification");
                 }
             }
         });

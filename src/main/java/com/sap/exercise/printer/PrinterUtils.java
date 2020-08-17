@@ -31,7 +31,7 @@ class PrinterUtils {
         Map<LocalDate, Set<Event>> result = new TreeMap<>();
 
         for (Event event : events) {
-            result.computeIfAbsent(event.getTimeOf().toLocalDate(), k -> new TreeSet<>(Comparator.comparing(Event::getTitle)))
+            result.computeIfAbsent(event.getTimeOf().toLocalDate(), k -> new TreeSet<>(Comparator.comparing(Event::getTimeOf)))
                   .add(event);
         }
 

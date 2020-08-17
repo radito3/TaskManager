@@ -26,7 +26,7 @@ public class DeleteEventCommand implements Command {
     @Override
     public CommandExecutionResult execute() {
         event = handler.get(new Property<>("title", eventName))
-                .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
+                       .orElseThrow(() -> new NoSuchElementException("Invalid event name"));
         evaluator = new DateArgumentEvaluator(start, end);
         evaluator.eval(this::deleteEvents);
 

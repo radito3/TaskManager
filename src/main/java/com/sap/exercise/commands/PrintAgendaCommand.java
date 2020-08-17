@@ -11,7 +11,9 @@ import java.util.Collection;
 
 public class PrintAgendaCommand implements Command {
 
-    private String startTime, endTime;
+    private final String startTime;
+    private final String endTime;
+    private final OutputPrinter printer = OutputPrinterProvider.getPrinter();
 
     public PrintAgendaCommand(String startTime, String endTime) {
         this.startTime = startTime;
@@ -20,7 +22,6 @@ public class PrintAgendaCommand implements Command {
 
     @Override
     public CommandExecutionResult execute() {
-        OutputPrinter printer = OutputPrinterProvider.getPrinter();
         DateArgumentEvaluator dateArgumentEvaluator = new DateArgumentEvaluator(startTime, endTime);
         Collection<Event> events = dateArgumentEvaluator.eval(this::getEvents);
 
