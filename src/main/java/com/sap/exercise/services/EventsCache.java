@@ -4,7 +4,6 @@ import com.sap.exercise.model.Event;
 
 import java.io.Closeable;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +46,7 @@ public final class EventsCache implements Closeable {
         for (Set<Event> events : eventsMap.values()) {
             events.removeIf(condition);
         }
-        eventsMap.values().removeIf(Collection::isEmpty);
+        eventsMap.values().removeIf(Set::isEmpty);
     }
 
     @Override

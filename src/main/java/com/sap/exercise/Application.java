@@ -35,7 +35,7 @@ public class Application {
         RuntimeService runtimeService = processEngine.getRuntimeService();
 
         Map<String, Object> variables = new HashMap<>();
-        variables.put("allCommands", new String[] {});
+        variables.put("allCommands", new String[0]);
         variables.put("error", false);
 
         runtimeService.startProcessInstanceByKey("BaseProcess", variables);

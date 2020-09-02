@@ -3,6 +3,7 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.PrintAgendaCommand;
 import com.sap.exercise.commands.helper.PrintAgendaCommandHelper;
+import com.sap.exercise.util.DateParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -18,14 +19,17 @@ public class PrintAgendaCommandParser extends AbstractCommandParser {
     @Override
     Command parseInternal(CommandLine cmd) {
         String today = LocalDate.now().toString();
-        String startTime = today,
-            endTime = today;
+        String startTime = today;
+        String endTime = today;
 
         if (cmd.hasOption('s')) {
-            startTime = cmd.getOptionValue('s');
+            String input = cmd.getOptionValue('s');
+            startTime = new DateParser(input).asString();
         }
+
         if (cmd.hasOption('e')) {
-            endTime = cmd.getOptionValue('e') + "-";
+            String input = cmd.getOptionValue('e');
+            endTime = new DateParser(input).asString();
         }
 
         return new PrintAgendaCommand(startTime, endTime);

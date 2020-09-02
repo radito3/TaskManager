@@ -1,56 +1,44 @@
 package com.sap.exercise.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 public class DateParser {
 
+    //TODO these formats aren't necessarily compatible with DateTimeFormatter
     public static final String[] DATE_FORMATS = new String[] { "dd-MM-yyyy HH:mm", "dd-MM-yyyy", "dd/MM/yyyy HH:mm",
             "dd/MM/yyyy", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "dd MMM yyyy HH:mm", "dd MMM yyyy", "yyyy-MM-dd" };
 
-    private LocalDateTime date;
+    private final LocalDateTime date;
 
     public DateParser(String text) {
-        String argument = StringUtils.removeEnd(text, "-").trim();
-        if (!tryParseArgument(argument)) {
+        TemporalAccessor date = tryParse(text.trim());
+        if (date == null) {
             throw new IllegalArgumentException("Unsupported date format");
         }
+        this.date = LocalDateTime.from(date);
     }
 
-    private boolean tryParseArgument(String argument) {
+    private TemporalAccessor tryParse(String text) {
         for (String format : DATE_FORMATS) {
             try {
-                date = LocalDateTime.from(DateTimeFormatter.ofPattern(format).parse(argument));
-                return true;
+                return DateTimeFormatter.ofPattern(format).parse(text);
             } catch (DateTimeParseException ex) {
                 //ignored
             }
         }
-        return false;
-    }
-
-    public DateParser() {
-        date = LocalDateTime.now();
-    }
-
-    private DateParser(LocalDateTime date) {
-        this.date = date;
+        return null;
     }
 
     public LocalDateTime getDate() {
         return date;
-    }
-
-    DateParser addOneWeek() {
-        return new DateParser(date.plusWeeks(1));
     }
 
     public String asString() {

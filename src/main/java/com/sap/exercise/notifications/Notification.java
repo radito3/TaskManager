@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Notification implements Delayed {
 
-    private LocalDateTime time;
+    private final LocalDateTime time;
 
     protected Notification(LocalDateTime time) {
         this.time = time;

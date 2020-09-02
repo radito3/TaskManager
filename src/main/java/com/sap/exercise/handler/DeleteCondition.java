@@ -1,18 +1,16 @@
 package com.sap.exercise.handler;
 
-import com.sap.exercise.util.DateArgumentEvaluator;
-
 public class DeleteCondition extends TimeFrameCondition {
 
-    private final DateArgumentEvaluator evaluator;
+    private final boolean toExecute;
 
-    public DeleteCondition(DateArgumentEvaluator evaluator, String startDate, String endDate) {
+    public DeleteCondition(String startDate, String endDate, boolean toExecute) {
         super(startDate, endDate);
-        this.evaluator = evaluator;
+        this.toExecute = toExecute;
     }
 
     @Override
     public boolean isToBeExecuted() {
-        return evaluator.numOfArgs() == 0;
+        return toExecute;
     }
 }

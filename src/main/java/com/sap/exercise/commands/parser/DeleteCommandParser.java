@@ -3,9 +3,12 @@ package com.sap.exercise.commands.parser;
 import com.sap.exercise.commands.Command;
 import com.sap.exercise.commands.DeleteEventCommand;
 import com.sap.exercise.commands.helper.DeleteCommandHelper;
+import com.sap.exercise.util.DateParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+
+import java.time.LocalDate;
 
 public class DeleteCommandParser extends AbstractCommandParser {
 
@@ -15,18 +18,26 @@ public class DeleteCommandParser extends AbstractCommandParser {
 
     @Override
     Command parseInternal(CommandLine cmd) {
-        String startTime = "",
-            endTime = "",
-            eventName = buildEventName(cmd.getArgs());
+        LocalDate today = LocalDate.now();
+        boolean hasStartTime = false;
+        boolean hasEndTime = false;
+        String startTime = today.toString();
+        String endTime = today.plusWeeks(1).toString();
+        String eventName = buildEventName(cmd.getArgs());
 
         if (cmd.hasOption('s')) {
-            startTime = cmd.getOptionValue('s');
-        }
-        if (cmd.hasOption('e')) {
-            endTime = cmd.getOptionValue('e') + "-";
+            String input = cmd.getOptionValue('s');
+            startTime = new DateParser(input).asString();
+            hasStartTime = true;
         }
 
-        return new DeleteEventCommand(startTime, endTime, eventName);
+        if (cmd.hasOption('e')) {
+            String input = cmd.getOptionValue('e');
+            endTime = new DateParser(input).asString();
+            hasEndTime = true;
+        }
+
+        return new DeleteEventCommand(startTime, endTime, eventName, !hasStartTime && !hasEndTime);
     }
 
     @Override
