@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 
-//ideally this would be a singleton bean
 public class NotificationsService {
 
     private static BlockingQueue<Notification> queue = new DelayQueue<>();

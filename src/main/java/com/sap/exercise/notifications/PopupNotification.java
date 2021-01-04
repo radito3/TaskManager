@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 class PopupNotification extends Notification {
 
-    private Event event;
+    private final Event event;
 
     PopupNotification(Event event, LocalDateTime time) {
         super(time);
@@ -17,8 +17,8 @@ class PopupNotification extends Notification {
     @Override
     public void send() {
         int duration = event.getDuration();
-        boolean daysOrMinutes = event.getAllDay();
-        String body = event.getTitle() + "\nDuration: " + duration + (daysOrMinutes ? " days" : " minutes");
+        boolean isAllDay = event.getAllDay();
+        String body = event.getTitle() + "\nDuration: " + duration + (isAllDay ? " days" : " minutes");
 
         JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), body, "Event reminder", JOptionPane.PLAIN_MESSAGE);
     }

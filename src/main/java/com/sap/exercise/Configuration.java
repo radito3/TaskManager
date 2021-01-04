@@ -12,7 +12,7 @@ public class Configuration {
 
     static {
         try {
-            INPUT = new FileInputStream(new File("src/main/resources/executeScript.txt"));
+            INPUT = new FileInputStream("src/main/resources/executeScript.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -20,5 +20,7 @@ public class Configuration {
 
     public static OutputStream OUTPUT = System.out;
     public static NotificationType NOTIFICATION_TYPE = NotificationType.POPUP;
-    public static String USER_EMAIL = "default-email";
+    public static String USER_EMAIL = System.getenv("user_email");
+    public static String USER_PASS = System.getenv("user_pass");
+    public static String RECIPIENT_EMAIL = "default-email";
 }

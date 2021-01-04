@@ -12,7 +12,7 @@ public class DefaultPersistenceConfigurationProvider {
     public static Configuration getConfiguration() {
         Configuration configuration = new Configuration();
 
-        setProperties(configuration);
+        configuration.setProperties(getProperties());
 
         configuration.addAnnotatedClass(Event.class)
                 .addAnnotatedClass(CalendarEvents.class);
@@ -20,13 +20,13 @@ public class DefaultPersistenceConfigurationProvider {
         return configuration;
     }
 
-    private static void setProperties(Configuration config) {
+    private static Properties getProperties() {
         Properties props = new Properties();
-        //TODO need to properly get environment variables
+
         props.setProperty(Environment.DRIVER, "org.postgresql.Driver");
-        props.setProperty(Environment.URL, "");//System.getenv("read_url"));
-        props.setProperty(Environment.USER, "");//System.getenv("username"));
-        props.setProperty(Environment.PASS, "");//System.getenv("password"));
+        props.setProperty(Environment.URL, System.getenv("db_url"));
+        props.setProperty(Environment.USER, System.getenv("db_username"));
+        props.setProperty(Environment.PASS, System.getenv("db_password"));
         props.setProperty(Environment.DIALECT, "org.hibernate.dialect.PostgreSQLDialect");
         props.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
         props.setProperty(Environment.SHOW_SQL, "false");
@@ -34,7 +34,7 @@ public class DefaultPersistenceConfigurationProvider {
         props.setProperty(Environment.POOL_SIZE, "1");
         props.setProperty(Environment.USE_SQL_COMMENTS, "false");
 
-        config.setProperties(props);
+        return props;
     }
 
 }
